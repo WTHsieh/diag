@@ -1,0 +1,122 @@
+CC src/main.o
+CC src/main-menu.o
+CC src/DMA/dma.o
+CC src/DMA/panther7-hdma.o
+CC src/DMA/socle-a2a.o
+CC src/DMA/socle-hdma.o
+CC src/GPIO/gpio.o
+CC src/GPIO/gpio-ctrl.o
+CC src/GPIO/gpio-menu.o
+CC src/GPIO/gpio-kpd-ctrl.o
+CC src/MEM/mem-ctrl.o
+CC src/MEM/mem-menu.o
+CC src/Interrupt/interrupt.o
+CC src/Interrupt/interrupt-menu.o
+CC src/UART/uart-ctrl.o
+CC src/UART/uart-menu.o
+CC src/TIMER/timer-ctrl.o
+CC src/TIMER/timer-menu.o
+CC src/WDT/wdtctrl.o
+CC src/RTC/rtc-ctrl.o
+CC src/RTC/rtc-menu.o
+CC src/SPI/spi-master.o
+CC src/SPI/eeprom-test.o
+CC src/SPI/marvel-wifi-test.o
+CC src/SPI/tsc2000-test.o
+CC src/SPI/socle-spi-slave-test.o
+CC src/SPI/spi-master-menu.o
+CC src/SPI/spi-master-ctrl.o
+CC src/SPI/spi-slave-ctrl.o
+CC src/SPI/spi-slave-menu.o
+CC src/UDC/usbctrl.o
+CC src/MAC/macctrl.o
+CC src/MAC/mac-menu.o
+CC src/MAC/if_socle.o
+CC src/MAC/EEP25x.o
+CC src/PANTHER7-HDMA/panther7-hdma-ctrl.o
+CC src/PANTHER7-HDMA/panther7-hdma-menu.o
+CC src/I2C/i2c.o
+CC src/I2C/i2c-ctrl.o
+CC src/I2C/i2c-menu.o
+CC src/I2C/TVP5145.o
+CC src/I2C/CH700X.o
+CC src/I2C/tps62353.o
+CC src/I2C/tps62353-ctrl.o
+CC src/I2C/tps62353-menu.o
+CC src/I2C/Si4703-ctrl.o
+CC src/I2C/Si4703-menu.o
+CC src/I2S/i2s-ctrl.o
+CC src/I2S/i2s-menu.o
+CC src/I2S/uda1342ts.o
+CC src/I2S/ms6335.o
+CC src/I2S/codec-menu.o
+CC src/I2S/codec-ctrl.o
+CC src/SDMMC/sdmmc-ctrl.o
+CC src/SDMMC/sdmmc-menu.o
+CC src/NOR-MXIC/nor-mxic-ctrl.o
+CC src/NOR-MXIC/nor-mxic-menu.o
+CC src/NAND/nand-flsh-ctrl.o
+CC src/NAND/nand-flsh-menu.o
+CC src/EHCI/ehcictrl.o
+CC src/EHCI/ehcimem.o
+CC src/EHCI/ehci-menu.o
+CC src/OHCI/ohcictrl.o
+CC src/OHCI/ohcimem.o
+CC src/OHCI/ohci-menu.o
+CC src/SCU/scu-ctrl.o
+CC src/SCU/pc9220-scu-ctrl.o
+CC src/SCU/pc9220-scu-menu.o
+CC src/LCD/lcd-ctrl.o
+CC src/LCD/lcd-menu.o
+CC src/ADC_PWM/adc_pwmt-ctrl.o
+CC src/ADC_PWM/adc_pwmt-menu.o
+CC src/ADC_PWM/adc-ctrl.o
+CC src/ADC_PWM/pwmt-ctrl.o
+CC src/VIP_VOP/vip-vop-menu.o
+CC src/VIP_VOP/vip.o
+CC src/VIP_VOP/vop.o
+CC src/VIP_VOP/vip-vop-ctrl.o
+CC src/LCM/lcm-ctrl.o
+CC src/LCM/lcm-menu.o
+CC src/LCM/lcm-t6963c.o
+CC src/LCM/lcm-eink-ctrl.o
+CC src/LCM/lcm-eink-menu.o
+CC CPU/arch/startup_arm.o
+CC platform/arch/irq.o
+CC platform/arch/scu.o
+CC platform/arch/tlb_mapping.o
+CC src/NAND/rscode-1.0_socle/rs.o
+CC src/NAND/rscode-1.0_socle/galois.o
+CC src/NAND/rscode-1.0_socle/berlekamp.o
+a - src/NAND/rscode-1.0_socle/rs.o
+a - src/NAND/rscode-1.0_socle/galois.o
+a - src/NAND/rscode-1.0_socle/berlekamp.o
+CC lib/c_lib/atob.o
+CC lib/c_lib/buffer.o
+CC lib/c_lib/genlib.o
+CC lib/c_lib/isdigit.o
+CC lib/c_lib/qsort.o
+CC lib/c_lib/sprintf.o
+CC lib/c_lib/str_fmt.o
+CC lib/c_lib/strcspn.o
+CC lib/c_lib/strichr.o
+a - lib/c_lib/atob.o
+a - lib/c_lib/buffer.o
+a - lib/c_lib/genlib.o
+a - lib/c_lib/isdigit.o
+a - lib/c_lib/qsort.o
+a - lib/c_lib/sprintf.o
+a - lib/c_lib/str_fmt.o
+a - lib/c_lib/strcspn.o
+a - lib/c_lib/strichr.o
+CC lib/socle_lib/test_item.o
+CC lib/socle_lib/board.o
+a - lib/socle_lib/test_item.o
+a - lib/socle_lib/board.o
+CC lib/io_lib/getchar.o
+CC lib/io_lib/scanf.o
+CC lib/io_lib/vsprintf.o
+a - lib/io_lib/getchar.o
+a - lib/io_lib/scanf.o
+a - lib/io_lib/vsprintf.o
+LD build/ELF.ld
