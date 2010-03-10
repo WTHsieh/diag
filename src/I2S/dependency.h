@@ -31,7 +31,7 @@
 #define SOCLE_I2S_SUPPORT_HWDMA_PANTHER7_HDMA_TEST 0
 #endif
 
-#if defined(CONFIG_PDK) || defined(CONFIG_PC7210) || defined(CONFIG_MSMV) || defined(CONFIG_PC9220)
+#if defined(CONFIG_PDK) || defined(CONFIG_PC7210) || defined(CONFIG_MSMV) || defined(CONFIG_SQ8000)
 #define TX_DMA_EXT_HDREQ 6
 #define RX_DMA_EXT_HDREQ 7
 #elif defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_SCDK)
@@ -42,7 +42,7 @@
 #define RX_DMA_EXT_HDREQ 0
 #endif
 
-#if defined(CONFIG_PDK) ||defined(CONFIG_PC7210)|| defined(CONFIG_PC9220)
+#if defined(CONFIG_PDK) ||defined(CONFIG_PC7210)|| defined(CONFIG_SQ8000)
 #define SOCLE_I2S_HDMA_AUTO_TEST	0
 #define SOCLE_I2S_HWDMA_BURST_INCR8	0
 #define SOCLE_I2S_HWDMA_BURST_INCR16	0

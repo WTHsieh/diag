@@ -6,7 +6,7 @@
 #include "dependency.h"
 #include "i2c.h"
 
-#if defined (CONFIG_PC9220)
+#if defined (CONFIG_SQ8000)
 #include <scu.h>
 #include "../../platform/arch/scu-reg.h"
 #endif
@@ -34,14 +34,14 @@ I2CTesting(int autotest)
 {
 	int ret = 0;
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	//socle_scu_dev_enable(SCU_DEVCON_I2C_GPIO);
 	socle_scu_dev_enable(SOCLE_DEVCON_I2C);
 #endif
 
 	ret = test_item_ctrl(&socle_i2c_pre_test_container, autotest);
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	//socle_scu_dev_disable(SCU_DEVCON_I2C_GPIO);
 	socle_scu_dev_disable(SOCLE_DEVCON_I2C);
 #endif

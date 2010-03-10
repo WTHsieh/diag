@@ -20,7 +20,7 @@ ifeq "y" "$(CONFIG_SCDK)"
 local_src	+= cdk-scu-ctrl.c cdk-scu-menu.c
 endif
 
-ifeq "y" "$(CONFIG_PC9220)"
+ifeq "y" "$(CONFIG_SQ8000)"
 local_src	+= pc9220-scu-ctrl.c pc9220-scu-menu.c
 endif
 

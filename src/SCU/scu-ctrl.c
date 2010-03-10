@@ -9,7 +9,7 @@ scu_test(int autotest)
 
 #if defined (CONFIG_CDK) || (CONFIG_PC9002) || (CONFIG_SCDK)
 	test_func = cdk_scu_test;
-#elif defined (CONFIG_PC9220)
+#elif defined (CONFIG_SQ8000)
 	test_func = pc9220_scu_test;
 #else
 #error "SCU test is not well defined!"

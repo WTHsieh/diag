@@ -7,7 +7,7 @@
 #include "i2s-ctrl.h"
 #include "dependency.h"
 #include "codec-ctrl.h"
-#if defined (CONFIG_PC9220)
+#if defined (CONFIG_SQ8000)
 #include <scu.h>
 #include "../../platform/arch/scu-reg.h"
 #endif
@@ -1876,7 +1876,7 @@ extern int
 I2STesting(int autotest)
 {
 	int ret = 0;
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_enable(SOCLE_DEVCON_I2C);
 	socle_scu_dev_enable(SOCLE_DEVCON_I2S_TX_RX);
 #endif
@@ -1897,7 +1897,7 @@ I2STesting(int autotest)
 
 	ret |= test_item_ctrl(&socle_i2s_main_test_container, autotest);
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 socle_scu_dev_disable(SOCLE_DEVCON_I2C);
 socle_scu_dev_disable(SOCLE_DEVCON_I2S_TX_RX);
 #endif

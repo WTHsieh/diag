@@ -10,7 +10,7 @@
 #include "MP_GPIO/mp-gpio.h"
 #endif
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 #include <scu.h>
 #endif
 
@@ -202,7 +202,7 @@ SDTesting(int autotest)
 	socle_mp_gpio_set_port_num_value(PA,5,0);
 #endif
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_enable(SOCLE_DEVCON_SDMMC);	
 #endif
 	socle_sdmmc_base = SOCLE_APB0_SDMMC0;
@@ -790,7 +790,7 @@ socle_sdmmc_swdma_burst_type_single_test(int autotest)
 	int ret = 0;
 
 	socle_sdmmc_burst_type = SOCLE_DMA_BURST_SINGLE;
-#if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_PC9220) || defined(CONFIG_SCDK)
+#if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_SQ8000) || defined(CONFIG_SCDK)
 	{
 	  extern struct test_item socle_sdmmc_xfer_width_test_items[];
 	  
@@ -799,7 +799,7 @@ socle_sdmmc_swdma_burst_type_single_test(int autotest)
 	}
 #endif
 	ret = test_item_ctrl(&socle_sdmmc_xfer_width_test_container, autotest);
-#if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_PC9220) || defined(CONFIG_SCDK)
+#if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_SQ8000) || defined(CONFIG_SCDK)
 	{
 	  extern struct test_item socle_sdmmc_xfer_width_test_items[];
 	  
@@ -817,7 +817,7 @@ socle_sdmmc_swdma_burst_type_incr4_test(int autotest)
 	int ret = 0;
 
 	socle_sdmmc_burst_type = SOCLE_DMA_BURST_INCR4;
-#if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_PC9220) || defined(CONFIG_SCDK)
+#if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_SQ8000) || defined(CONFIG_SCDK)
 	{
 	  extern struct test_item socle_sdmmc_xfer_width_test_items[];
 	  
@@ -826,7 +826,7 @@ socle_sdmmc_swdma_burst_type_incr4_test(int autotest)
 	}
 #endif
 	ret = test_item_ctrl(&socle_sdmmc_xfer_width_test_container, autotest);
-#if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_PC9220) || defined(CONFIG_SCDK)
+#if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_SQ8000) || defined(CONFIG_SCDK)
 	{
 	  extern struct test_item socle_sdmmc_xfer_width_test_items[];
 	  
@@ -842,7 +842,7 @@ socle_sdmmc_swdma_burst_type_incr8_test(int autotest)
 	int ret = 0;
 
 	socle_sdmmc_burst_type = SOCLE_DMA_BURST_INCR8;
-#if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_PC9220) || defined(CONFIG_SCDK)
+#if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_SQ8000) || defined(CONFIG_SCDK)
 	{
 	  extern struct test_item socle_sdmmc_xfer_width_test_items[];
 	  
@@ -851,7 +851,7 @@ socle_sdmmc_swdma_burst_type_incr8_test(int autotest)
 	}
 #endif
 	ret = test_item_ctrl(&socle_sdmmc_xfer_width_test_container, autotest);
-#if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_PC9220) || defined(CONFIG_SCDK)
+#if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_SQ8000) || defined(CONFIG_SCDK)
 	{
 	  extern struct test_item socle_sdmmc_xfer_width_test_items[];
 	  
@@ -868,7 +868,7 @@ socle_sdmmc_swdma_burst_type_incr16_test(int autotest)
 	int ret = 0;
 
 	socle_sdmmc_burst_type = SOCLE_DMA_BURST_INCR16;
-#if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_PC9220) || defined(CONFIG_SCDK)
+#if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_SQ8000) || defined(CONFIG_SCDK)
 	{
 	  extern struct test_item socle_sdmmc_xfer_width_test_items[];
 	  
@@ -877,7 +877,7 @@ socle_sdmmc_swdma_burst_type_incr16_test(int autotest)
 	}
 #endif
 	ret = test_item_ctrl(&socle_sdmmc_xfer_width_test_container, autotest);
-#if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_PC9220) || defined(CONFIG_SCDK)
+#if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_SQ8000) || defined(CONFIG_SCDK)
 	{
 	  extern struct test_item socle_sdmmc_xfer_width_test_items[];
 	  
@@ -1980,14 +1980,14 @@ socle_sdmmc_device_initialize(struct socle_sdmmc_device *dev)
 	dev->media_changed = 1;
 	rdata = socle_sdmmc_read(SOCLE_SDMMC_SD_CARDA, socle_sdmmc_base);
 	if (SOCLE_SDMMC_CARD_DETECT_SIGNAL_HIGH == (rdata & SOCLE_SDMMC_CARD_DETECT_SIGNAL_HIGH)) {
-#if defined(CONFIG_PC9002) || defined(CONFIG_SCDK) || defined(CONFIG_PC9220)		
+#if defined(CONFIG_PC9002) || defined(CONFIG_SCDK) || defined(CONFIG_SQ8000)		
 		dev->alive_flag = 1;
 #else
 		dev->alive_flag = 0;
 #endif
 	}
 	else {
-#if defined(CONFIG_PC9002) || defined(CONFIG_SCDK) || defined(CONFIG_PC9220)
+#if defined(CONFIG_PC9002) || defined(CONFIG_SCDK) || defined(CONFIG_SQ8000)
 		dev->alive_flag= 0;
 #else
 		dev->alive_flag = 1;
@@ -2037,8 +2037,8 @@ socle_sdmmc_isr(void *data)
 		rdata = socle_sdmmc_read(SOCLE_SDMMC_SD_CARDA, socle_sdmmc_base);
 		if (SOCLE_SDMMC_CARD_DETECT_SIGNAL_HIGH == (rdata & SOCLE_SDMMC_CARD_DETECT_SIGNAL_HIGH)) {	//==  
 		  
-#if defined(CONFIG_PC9002) || defined(CONFIG_SCDK) || defined(CONFIG_PC9220)
-			printf("\nCONFIG_PC9220 Socle SD/MMC host: card has been inserted\n");
+#if defined(CONFIG_PC9002) || defined(CONFIG_SCDK) || defined(CONFIG_SQ8000)
+			printf("\nCONFIG_SQ8000 Socle SD/MMC host: card has been inserted\n");
 			dev->alive_flag = 1;
 			dev->media_changed = 1;
 			
@@ -2058,8 +2058,8 @@ socle_sdmmc_isr(void *data)
 
 		} else {
 		  
-#if defined(CONFIG_PC9002) || defined(CONFIG_SCDK) || defined(CONFIG_PC9220)
-			printf("\nCONFIG_PC9220 Socle SD/MMC host: card has been removed\n");
+#if defined(CONFIG_PC9002) || defined(CONFIG_SCDK) || defined(CONFIG_SQ8000)
+			printf("\nCONFIG_SQ8000 Socle SD/MMC host: card has been removed\n");
 			dev->alive_flag = 0;
 			dev->media_changed = 0;
 

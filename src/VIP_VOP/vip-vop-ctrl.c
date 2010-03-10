@@ -7,7 +7,7 @@
 #include "vip.h"
 #include "vop.h"
 
-#if defined (CONFIG_PC9220)
+#if defined (CONFIG_SQ8000)
 #include <scu.h>
 #endif
 
@@ -86,12 +86,12 @@ extern int
 VIP_VOP_Testing(int autotest)
 {
 	int ret = 0;
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_enable(SOCLE_DEVCON_I2C);
 	socle_scu_dev_enable(SOCLE_DEVCON_LCDC_VOP);
 #endif
 	ret = test_item_ctrl(&socle_vip_vop_main_container, autotest);
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_disable(SOCLE_DEVCON_I2C);
 	socle_scu_dev_disable(SOCLE_DEVCON_LCDC_VOP);
 #endif

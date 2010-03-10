@@ -29,7 +29,7 @@
 
 
 
-#if defined (CONFIG_PC7210) || defined (CONFIG_PDK) || defined (CONFIG_PC9220)
+#if defined (CONFIG_PC7210) || defined (CONFIG_PDK) || defined (CONFIG_SQ8000)
 #include <scu.h>
 #endif
 
@@ -228,7 +228,7 @@ TestEntry(void)
 		socle_scu_upll_normal();
 	#endif
 
-	#ifdef CONFIG_PC9220
+	#ifdef CONFIG_SQ8000
         	socle_scu_dev_enable(SOCLE_DEVCON_UART0);
         	//socle_scu_dev_enable(SCU_DEVCON_UART_HDMA23);   //for test
 	#endif

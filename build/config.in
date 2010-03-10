@@ -1,18 +1,18 @@
-mainmenu "SOCLE Diagnostic Program Configuration"
+mainmenu "SQ Diagnostic Program Configuration"
 
-comment "Socle Platforms"
+comment "SQ Platforms"
 choice
 	prompt "Platform Type"
-	default CONFIG_PC9220
+	default CONFIG_SQ8000
 
-config CONFIG_PC9220
-	bool "PDK-PC9220"
+config CONFIG_SQ8000
+	bool "EVBV1-SQ8000"
 	help
-		PDK-PC9220
+		EVBV1-SQ8000
 
 endchoice
 
-comment "Socle CPUs"
+comment "SQ CPUs"
 
 choice
 	prompt "CPU Type"
@@ -41,7 +41,7 @@ config CONFIG_ARM9
 endchoice
 
 
-comment "Socle CPU Endians"
+comment "SQ CPU Endians"
 
 choice
 	prompt "CPU Endian Type"
@@ -60,79 +60,79 @@ config CONFIG_LITTLE_ENDIAN
 endchoice
 
 
-comment "Socle IPs Test Items"
+comment "SQ IPs Test Items"
 
 #	GPIO
 config CONFIG_GPIO
 	bool "GPIO Test"
 	help
-		Socle General Purpose Input Output Test
+		SQ General Purpose Input Output Test
 
 #	MEMORY
 config CONFIG_MEMORY
 	bool "DDR + SDR Test"
 	help
-		Socle DDR + SDR Test
+		SQ DDR + SDR Test
 		
 #	INTERRUPT
 config CONFIG_INTERRUPT
 	bool "Interrupt Test"
 	help
-		Socle Interrupt Test
+		SQ Interrupt Test
 
 #	UART
 config CONFIG_UART
 	bool "UART Test"
 	help
-		Socle UART Test
+		SQ UART Test
 
 #	TIMER
 config CONFIG_TIMER
 	bool "Timer Test"
 	help
-		Socle Timer Test
+		SQ Timer Test
 
 #	WDT
 config CONFIG_WDT
 	bool "WDT Test"
 	help
-		Socle Watch Dog Timer Test
+		SQ Watch Dog Timer Test
 
 #	RTC
 config CONFIG_RTC
 	bool "RTC Test"
 	help
-		Socle Real Time Clock Test
+		SQ Real Time Clock Test
 
 #	SPI
 config CONFIG_SPI
 	bool "SPI Test"
 	help
-		Socle Serial Peripheral Interface Test
+		SQ Serial Peripheral Interface Test
 
 #	UDC
 config CONFIG_UDC
 	bool "UDC Test"
 	help
-		Socle Universal Serial Bus Test
+		SQ Universal Serial Bus Test
 
 #	MAC
 config CONFIG_MAC
 	bool "MAC Test"
 	help
-		Socle Medium Access Control Test
+		SQ Medium Access Control Test
 
 #	PANTHER7-HDMA
 config CONFIG_PANTHER7_HDMA
 	bool "HDMA Test for PANTHER7"
 	help
-		Socle PANTHER7 HDMA Test
+		SQ PANTHER7 HDMA Test
 
 #	I2S
 config CONFIG_I2S
 	bool "I2S Test"
 	help
-		Socle Inter-Integrated Sound Bus Test
+		SQ Inter-Integrated Sound Bus Test
 
 choice
 	prompt "Audio Codec Type"
@@ -156,70 +156,70 @@ endchoice
 config CONFIG_I2C
 	bool "I2C Test"
 	help
-		Socle Inter-Integrated Circuit Bus Test
+		SQ Inter-Integrated Circuit Bus Test
 
 #	SDMMC
 config CONFIG_SDMMC
 	bool "SDMMC Test"
 	help
-		Socle Secure Digital Test
+		SQ Secure Digital Test
 
 #	NOR-MXIC
 config CONFIG_NOR_MXIC
 	bool "NOR-FLASH-MXIC Test"
 	help
-		Socle NOR-FLASH-MXIC Test
+		SQ NOR-FLASH-MXIC Test
 		
 #	NAND
 config CONFIG_NAND
 	bool "NAND-FLASH Test"
 	help
-		Socle NAND-FLASH Test
+		SQ NAND-FLASH Test
 
 #	EHCI
 config CONFIG_EHCI
 	bool "EHCI Test"
 	help
-		Socle EHCI Test
+		SQ EHCI Test
 
 #	OHCI
 config CONFIG_OHCI
 	bool "OHCI Test"
 	help
-		Socle OHCI Test
+		SQ OHCI Test
 
 
 #	SCU
 config CONFIG_SCU
 	bool "SCU Test"
 	help
-		Socle System Control Unit Test
+		SQ System Control Unit Test
 
 #	LCD & PWM
 config CONFIG_SOCLE_LCD
-	bool "Socle LCD Test"
+	bool "SQ LCD Test"
 	help
-		Socle LCD(CADENCE) Test
+		SQ LCD(CADENCE) Test
 
 #	ADC & PWM
 config CONFIG_ADC_PWM
 	bool "ADC & PWM Test"
 	help
-		Socle ADC & PWM Test
+		SQ ADC & PWM Test
 
 #	VIOP
 config CONFIG_VIOP
-	bool "SOCLE VIOP Test"
+	bool "SQ VIOP Test"
 	help
-		Socle VIOP Test
+		SQ VIOP Test
 
 #	LCM
 config CONFIG_LCM
 	bool "LCM Test"
 	help
-		Socle LCD Module Test
+		SQ LCD Module Test
 
-comment "Socle Debugers"
+comment "SQ Debugers"
 
 choice
 	prompt "Debuger Type"
@@ -239,7 +239,7 @@ config CONFIG_GDB
 endchoice
 
 
-comment "Socle UART Display"
+comment "SQ UART Display"
 
 config CONFIG_UART_DISP
 	bool "With UART"

@@ -24,7 +24,7 @@ socle_spi_marvel_wifi(int autotest)
 
 	/* Configure SPI controller */
 	socle_spi_write(
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 			SOCLE_SPI_MASTER_SIGNAL_CTL_HW |
 			SOCLE_SPI_MASTER_SIGNAL_ACT_NO |		
 			SOCLE_SPI_MODE_MASTER |

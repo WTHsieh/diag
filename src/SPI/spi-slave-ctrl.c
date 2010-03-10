@@ -4,7 +4,7 @@
 #include "spi-regs.h"
 #include "dependency.h"
 
-#if defined (CONFIG_PC9220)
+#if defined (CONFIG_SQ8000)
 #include <scu.h>
 #include "../../platform/arch/scu-reg.h"
 #endif
@@ -96,7 +96,7 @@ extern struct test_item_container socle_spi_slave_model_test_container;
 int socle_spi_slave0_test(int autotest)
 {
 	int ret = 0;
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_enable(SOCLE_DEVCON_SPI0);
 	socle_scu_hdma_req45_spi0();
 #endif
@@ -111,7 +111,7 @@ int socle_spi_slave0_test(int autotest)
 	socle_spi_write(SOCLE_SPI_SOFT_RST, SOCLE_SPI_FWCR);
 	ret = test_item_ctrl(&socle_spi_slave_model_test_container, autotest);
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_disable(SOCLE_DEVCON_SPI0);
 #endif
 	
@@ -122,7 +122,7 @@ int socle_spi_slave0_test(int autotest)
 int socle_spi_slave1_test(int autotest)
 {
 	int ret = 0;
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_enable(SOCLE_DEVCON_SPI1);
 	socle_scu_hdma_req45_spi1();
 #endif	
@@ -135,7 +135,7 @@ int socle_spi_slave1_test(int autotest)
 	socle_spi_rx_dma_ch_num = PANTHER7_HDMA_CH_0;
 	socle_spi_write(SOCLE_SPI_SOFT_RST, SOCLE_SPI_FWCR);
 	ret = test_item_ctrl(&socle_spi_slave_model_test_container, autotest);
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_disable(SOCLE_DEVCON_SPI1);
 #endif
 	

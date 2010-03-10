@@ -123,7 +123,7 @@ vipSetFrameMode(int frame_mode)
 extern void
 vipReset()
 {
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_vip_write(VIP_RESET, SOCLE_VIP_RESET);
 #else
 	socle_vip_write(VIP_CTRL_RESET, SOCLE_VIP_CTRL);

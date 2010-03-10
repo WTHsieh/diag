@@ -415,10 +415,10 @@ struct test_item_container main_test_item_container = {
 #elif defined (CONFIG_PC9002)
 	"PDK-PC9002 Development Kit Test Program",
 	"PDK-PC9002",
-#elif defined (CONFIG_PC9220)
+#elif defined (CONFIG_SQ8000)
 	"SQ8000 Development Kit Test Program",
-	//"PDK-PC9220 Development Kit Test Program",
-	//"PDK-PC9220",
+	//"EVBV1-SQ8000 Development Kit Test Program",
+	//"EVBV1-SQ8000",
 	"SQ8000",
 #elif defined (CONFIG_SCDK)
 	"SCDK Development Kit Test Program",

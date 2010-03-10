@@ -95,7 +95,7 @@ socle_adc_init(void)
 {
 	int data;
 
-#ifndef CONFIG_PC9220
+#ifndef CONFIG_SQ8000
 	// adc power up and reset
 	adc_read(ADC_CTRL, &data, socle_adc_base);
 	adc_write(ADC_CTRL, ADC_PWR_UP | data, socle_adc_base);

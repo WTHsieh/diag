@@ -1,7 +1,7 @@
 #include <platform.h>
 #include <irqs.h>
 #include "regs-wdt.h"
-#if defined (CONFIG_PC9220)
+#if defined (CONFIG_SQ8000)
 #include <scu.h>
 #endif
 
@@ -13,7 +13,7 @@ wdt_watching(int autotest)
 #if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_SCDK)
 	iowrite32(ioread32(SOCLE_APB0_SCU + 0x28) | (0x1 << 13), SOCLE_APB0_SCU + 0x28);
 #endif
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_wdt_reset_enable(1);
 #endif 
 

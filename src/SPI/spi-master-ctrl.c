@@ -65,14 +65,14 @@ extern int socle_spi_master0_test(int autotest)
 		socle_spi_transfer_test_items[3].enable = SOCLE_SPI_TSC2000_0_TEST;
 	}	
 	socle_spi_base = SOCLE_APB0_SPI0;
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 		socle_scu_dev_enable(SOCLE_DEVCON_SPI0);
 		socle_scu_hdma_req45_spi0();
 #endif
 	socle_spi_master_init(socle_spi_base,SOCLE_INTC_SPI0);
 		
 	ret = test_item_ctrl(&socle_spi_transfer_test_container, autotest);
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_disable(SOCLE_DEVCON_SPI0);
 #endif
 	socle_spi_master_free();
@@ -90,13 +90,13 @@ extern int socle_spi_master1_test(int autotest)
 		socle_spi_transfer_test_items[3].enable = SOCLE_SPI_TSC2000_1_TEST;
 	}
 	socle_spi_base = SOCLE_APB0_SPI1;
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 		socle_scu_dev_enable(SOCLE_DEVCON_SPI1);
 		socle_scu_hdma_req45_spi1();
 #endif
 	socle_spi_master_init(socle_spi_base,SOCLE_INTC_SPI1);
 	ret = test_item_ctrl(&socle_spi_transfer_test_container, autotest);
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_disable(SOCLE_DEVCON_SPI1);
 #endif
 	socle_spi_master_free();	
@@ -279,7 +279,7 @@ socle_spi_master_ch8_test(int autotest)
 	
 		/* Configure SPI controller */
 	socle_spi_write(
-#ifdef CONFIG_PC9220 
+#ifdef CONFIG_SQ8000 
 		SOCLE_SPI_MASTER_SIGNAL_CTL_HW |
 		SOCLE_SPI_MASTER_SIGNAL_ACT_NO |	
 		SOCLE_SPI_MODE_MASTER |
@@ -315,7 +315,7 @@ socle_spi_master_ch16_test(int autotest)
 	
 		/* Configure SPI controller */
 	socle_spi_write(
-#ifdef CONFIG_PC9220 
+#ifdef CONFIG_SQ8000 
 		SOCLE_SPI_MASTER_SIGNAL_CTL_HW |
 		SOCLE_SPI_MASTER_SIGNAL_ACT_NO |	
 		SOCLE_SPI_MODE_MASTER |
@@ -349,7 +349,7 @@ socle_spi_slave_normal_test(int autotest)
 	int type=SLAVE_NORMAL;
 	
 	socle_spi_write(
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 		SOCLE_SPI_MASTER_SIGNAL_CTL_HW |
 		SOCLE_SPI_MASTER_SIGNAL_ACT_NO |		
 		SOCLE_SPI_MODE_MASTER |
@@ -373,7 +373,7 @@ socle_spi_slave_hdma_test(int autotest)
 	int type=SLAVE_HDMA;
 	
 		socle_spi_write(
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 		SOCLE_SPI_MASTER_SIGNAL_CTL_HW |
 		SOCLE_SPI_MASTER_SIGNAL_ACT_NO |		
 		SOCLE_SPI_MODE_MASTER |
@@ -396,7 +396,7 @@ extern int socle_spi_slave_reset_test(int autotest)
 	int type=SLAVE_RESET;
 	
 		socle_spi_write(
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 		SOCLE_SPI_MASTER_SIGNAL_CTL_HW |
 		SOCLE_SPI_MASTER_SIGNAL_ACT_NO |		
 		SOCLE_SPI_MODE_MASTER |
@@ -427,7 +427,7 @@ socle_spi_internal_normal_run(int autotest)
     
     /* Configure SPI controller */
 	socle_spi_write(
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 		SOCLE_SPI_MASTER_SIGNAL_CTL_HW |
 		SOCLE_SPI_MASTER_SIGNAL_ACT_NO |		
 		SOCLE_SPI_MODE_MASTER |
@@ -567,7 +567,7 @@ socle_spi_master_internal_hdma_run(int autotest)
 	socle_enable_dma(socle_spi_rx_dma_ch_num);
 			
 	socle_spi_write(
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 		SOCLE_SPI_MASTER_SIGNAL_CTL_HW |
 		SOCLE_SPI_MASTER_SIGNAL_ACT_NO |		
 		SOCLE_SPI_MODE_MASTER |

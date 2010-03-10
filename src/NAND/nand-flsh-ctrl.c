@@ -10,7 +10,7 @@
 #include "../CACHE/cache.h"
 #endif
 
-#if defined (CONFIG_PC9220)
+#if defined (CONFIG_SQ8000)
 #include <scu.h>
 #include "../../platform/arch/scu-reg.h"
 #endif
@@ -145,7 +145,7 @@ nand_test(int autotest)
 	}
 #endif
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_enable(SCU_DEVCON_NFC_GPIO);
 #endif
 
@@ -170,7 +170,7 @@ nand_test(int autotest)
 	ret = test_item_ctrl(&socle_nand_flsh_main_test_container, autotest);
 	free_irq(SOCLE_INTC_NAND0);
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_disable(SCU_DEVCON_NFC_GPIO);
 #endif
 
@@ -1270,7 +1270,7 @@ socle_nand_flsh_ecc_correct_test(int autotest)
 	int (*socle_correct_data)(int s, u32 p);
 	int i;
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	if(autotest == 1)
 		i = 1;
 	else{

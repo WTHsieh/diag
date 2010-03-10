@@ -26,7 +26,7 @@
 #endif
 
 /*	only support 15B (older) or support 15B/8B function	*/ 
-#if defined(CONFIG_PC9220)
+#if defined(CONFIG_SQ8000)
 #define CONFIG_NAND_TWO_ECC_MODEL
 #endif
 
@@ -53,7 +53,7 @@
 #define SOCLE_NAND_SWDMA_HDMA_TEST 0
 #endif
 
-#if defined(CONFIG_PANTHER7_HDMA) && (defined(CONFIG_PDK) || defined(CONFIG_PC7210) || defined(CONFIG_PC9220))
+#if defined(CONFIG_PANTHER7_HDMA) && (defined(CONFIG_PDK) || defined(CONFIG_PC7210) || defined(CONFIG_SQ8000))
 #define SOCLE_NAND_SWDMA_PANTHER7_HDMA_TEST 1
 #else
 #define SOCLE_NAND_SWDMA_PANTHER7_HDMA_TEST 0

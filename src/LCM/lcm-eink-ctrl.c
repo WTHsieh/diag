@@ -3,7 +3,7 @@
 #include <platform.h>
 #include <test_item.h>
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 #include <GPIO/gpio.h>
 #else
 #include <MP_GPIO/mp-gpio.h>
@@ -15,7 +15,7 @@
 #define BMP_BASE			(0xb00000)
 #define EINK_DELAY			(1000)
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 static int eink_database = 0x11000000;
 #else
 static int eink_database = 0x10000000;
@@ -23,7 +23,7 @@ static int eink_database = 0x10000000;
 
 
 // define pin
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 
 #define EINK_SET_WUP()				socle_gpio_set_value_with_mask(PN, SHIFT_MASK(4), SHIFT_MASK(4))
 #define EINK_CLR_WUP()				socle_gpio_set_value_with_mask(PN, 0, SHIFT_MASK(4))

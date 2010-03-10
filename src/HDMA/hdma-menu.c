@@ -1,7 +1,7 @@
 #include <test_item.h>
 
 /*	test item define	*/
-#if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_PC9220) || defined(CONFIG_SCDK) || defined(CONFIG_MSMV)
+#if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_SQ8000) || defined(CONFIG_SCDK) || defined(CONFIG_MSMV)
 #define HDMA_CH2_AUTO	1
 #define	HDMA_CH2_ENABLE	1
 #define	HDMA_CH3_AUTO	1

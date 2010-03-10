@@ -14,7 +14,7 @@
 #define SCDK_FPGA_TEST 0
 #endif
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 #define MSDR_TEST 1
 #else
 #define MSDR_TEST 0

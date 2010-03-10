@@ -60,7 +60,7 @@
 #endif
 
 /* Configure the test menu */
-#if defined(CONFIG_PANTHER7_HDMA) && (defined(CONFIG_PDK) || defined(CONFIG_PC7210) || defined(CONFIG_PC9220))
+#if defined(CONFIG_PANTHER7_HDMA) && (defined(CONFIG_PDK) || defined(CONFIG_PC7210) || defined(CONFIG_SQ8000))
 #define SOCLE_UART_HWDMA_PANTHER7_HDMA_TEST 1
 #else
 #define SOCLE_UART_HWDMA_PANTHER7_HDMA_TEST 0
@@ -76,7 +76,7 @@
 #endif
 #endif
 
-#if defined(CONFIG_PC9002) || defined(CONFIG_PC9220)
+#if defined(CONFIG_PC9002) || defined(CONFIG_SQ8000)
 #define SOCLE_UART_GPS_0_TEST 0 
 #define SOCLE_UART_GPS_1_TEST 1
 #define SOCLE_UART_GPS_2_TEST 0
@@ -88,7 +88,7 @@
 #define SOCLE_UART_GPS_3_TEST 0
 #endif
 
-#if defined(CONFIG_PC9002) || defined(CONFIG_PC9220)
+#if defined(CONFIG_PC9002) || defined(CONFIG_SQ8000)
 #define SOCLE_UART_EXT_0_TEST 1
 #define SOCLE_UART_EXT_1_TEST 0
 #define SOCLE_UART_EXT_2_TEST 0

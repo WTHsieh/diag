@@ -1,7 +1,7 @@
 #include <platform.h>
 #include <irqs.h>
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 #define LCM_EINK_TEST		1
 #else
 #define LCM_EINK_TEST		0

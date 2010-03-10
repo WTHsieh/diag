@@ -20,7 +20,7 @@
 #include "ampire-panel.h"
 #include "dependency.h"
 
-#if defined (CONFIG_PC9220)
+#if defined (CONFIG_SQ8000)
 #include <scu.h>
 #include "../../platform/arch/scu-reg.h"
 #endif
@@ -61,7 +61,7 @@ struct socle_lcd socle_lcd_set = {
 	.vtiming = 0x040f04f0,
 #if defined (CONFIG_PC7210)
 	.pixelclock = 0xa,
-#elif defined (CONFIG_PC9220)
+#elif defined (CONFIG_SQ8000)
 	.pixelclock = 4,
 #else
 	.pixelclock = 2,		//default 2
@@ -1879,13 +1879,13 @@ int SOCLE_LCD_Testing (int autotest)
 {
 	int ret = 0;
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_enable(SOCLE_DEVCON_PWM0);
 	socle_scu_dev_enable(SOCLE_DEVCON_LCDC);
 #endif
 
 	//PWM Setting
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	writel (6, 0x19090004);
 	writel (0xf, 0x19090008);
 	writel (0x29, 0x1909000c);
@@ -1908,14 +1908,14 @@ int SOCLE_LCD_Testing (int autotest)
 	//Set Panel timing
 	socle_lcd_write(socle_lcd_set.htiming, SOCLE_LCD_H_TIMING);
 	socle_lcd_write(socle_lcd_set.vtiming, SOCLE_LCD_V_TIMING);
-#ifdef CONFIG_PC9220	
+#ifdef CONFIG_SQ8000	
 	socle_lcd_write(SOCLE_LCD_CTRL0_PXCLK_POLAR |(SOCLE_LCD_CTRL0_PCLOCK * socle_lcd_set.pixelclock)| SOCLE_LCD_CTRL0_HSYNC | SOCLE_LCD_CTRL0_VSYNC,SOCLE_LCD_CTRL0);
 #else
 	socle_lcd_write((SOCLE_LCD_CTRL0_PCLOCK * socle_lcd_set.pixelclock)| SOCLE_LCD_CTRL0_HSYNC | SOCLE_LCD_CTRL0_VSYNC,SOCLE_LCD_CTRL0);
 #endif
 	ret = test_item_ctrl(&socle_lcd_controller_format_container, autotest);
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_disable(SOCLE_DEVCON_PWM0);
 	socle_scu_dev_disable(SOCLE_DEVCON_LCDC);
 #endif
@@ -1925,13 +1925,13 @@ int SOCLE_LCD_Testing (int autotest)
 
 extern void Socle_vip_lcd_initial(int output422)
 {
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_enable(SOCLE_DEVCON_PWM0);
 	socle_scu_dev_enable(SOCLE_DEVCON_LCDC);
 #endif
 
 	//PWM Setting
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	writel (6, 0x19090004);
 	writel (0xf, 0x19090008);
 	writel (0x29, 0x1909000c);
@@ -1952,7 +1952,7 @@ extern void Socle_vip_lcd_initial(int output422)
 	//Set Panel timing
 	socle_lcd_write(socle_lcd_set.htiming, SOCLE_LCD_H_TIMING);
 	socle_lcd_write(socle_lcd_set.vtiming, SOCLE_LCD_V_TIMING);
-#ifdef CONFIG_PC9220	
+#ifdef CONFIG_SQ8000	
 	socle_lcd_write(SOCLE_LCD_CTRL0_PXCLK_POLAR |(SOCLE_LCD_CTRL0_PCLOCK * socle_lcd_set.pixelclock)| SOCLE_LCD_CTRL0_HSYNC | SOCLE_LCD_CTRL0_VSYNC,SOCLE_LCD_CTRL0);
 #else
 	socle_lcd_write((SOCLE_LCD_CTRL0_PCLOCK * socle_lcd_set.pixelclock)| SOCLE_LCD_CTRL0_HSYNC | SOCLE_LCD_CTRL0_VSYNC,SOCLE_LCD_CTRL0);

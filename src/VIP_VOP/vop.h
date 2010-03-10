@@ -1,6 +1,6 @@
 #include <platform.h>
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 #define SOCLE_VOP_BASE SOCLE_AHB0_VOP
 #else
 #define SOCLE_VOP_BASE 0xB8080000

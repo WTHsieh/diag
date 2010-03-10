@@ -6,16 +6,16 @@
 
 
 /*
- * Socle Platforms
+ * SQ Platforms
  */
-#define CONFIG_PC9220 1
-#define ENABLE_PC9220 1
-#define USE_PC9220(...)  __VA_ARGS__
-#define SKIP_PC9220(...)
+#define CONFIG_SQ8000 1
+#define ENABLE_SQ8000 1
+#define USE_SQ8000(...)  __VA_ARGS__
+#define SKIP_SQ8000(...)
 
 
 /*
- * Socle CPUs
+ * SQ CPUs
  */
 #undef CONFIG_MIPS
 #define ENABLE_MIPS 0
@@ -39,7 +39,7 @@
 
 
 /*
- * Socle CPU Endians
+ * SQ CPU Endians
  */
 #undef CONFIG_BIG_ENDIAN
 #define ENABLE_BIG_ENDIAN 0
@@ -53,7 +53,7 @@
 
 
 /*
- * Socle IPs Test Items
+ * SQ IPs Test Items
  */
 #define CONFIG_GPIO 1
 #define ENABLE_GPIO 1
@@ -182,7 +182,7 @@
 
 
 /*
- * Socle Debugers
+ * SQ Debugers
  */
 #define CONFIG_SEMIHOST 1
 #define ENABLE_SEMIHOST 1
@@ -196,7 +196,7 @@
 
 
 /*
- * Socle UART Display
+ * SQ UART Display
  */
 #define CONFIG_UART_DISP 1
 #define ENABLE_UART_DISP 1

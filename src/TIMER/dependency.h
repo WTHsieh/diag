@@ -18,7 +18,7 @@
 #endif
 
 
-#if defined(CONFIG_PDK) || defined(CONFIG_PC7210) || defined(CONFIG_PC9220)
+#if defined(CONFIG_PDK) || defined(CONFIG_PC7210) || defined(CONFIG_SQ8000)
 #define SOCLE_TIMER_CHAIN_MODE_1_TEST 1
 #define SOCLE_TIMER_CHAIN_MODE_2_TEST 1
 #else

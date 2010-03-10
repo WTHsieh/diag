@@ -9,7 +9,7 @@
 #include "macctrl.h"
 #include <test_item.h>
 
-#if defined (CONFIG_PC9220)
+#if defined (CONFIG_SQ8000)
 #include <scu.h>
 #include "../../platform/arch/scu-reg.h"
 #endif
@@ -351,7 +351,7 @@ int mac_normal_test(int autotest)
 	int		clock;
 	char 	cmd_buf[20] = {DEFAULT_MAC_TESTING_ITEM};
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_enable(SCU_DEVCON_MAC_GPIO);
 #endif
 
@@ -2142,7 +2142,7 @@ case_v_break:
 
 	}
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_disable(SCU_DEVCON_MAC_GPIO);
 #endif
 	

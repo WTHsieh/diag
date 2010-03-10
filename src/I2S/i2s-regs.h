@@ -1,7 +1,7 @@
 #ifndef __I2S_H_INCLUDED
 #define __I2S_H_INCLUDED
 
-#if defined(CONFIG_PDK) ||defined(CONFIG_PC7210)|| defined(CONFIG_PC9220) 
+#if defined(CONFIG_PDK) ||defined(CONFIG_PC7210)|| defined(CONFIG_SQ8000) 
 #define FIFO_DEPTH 8
 #define PCM_BURST_TYPE SOCLE_DMA_BURST_INCR4
 #endif

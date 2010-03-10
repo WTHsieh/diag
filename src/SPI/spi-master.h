@@ -2,7 +2,7 @@
 #include "spi-regs.h"
 #include "dependency.h"
 
-#if defined (CONFIG_PC9220)
+#if defined (CONFIG_SQ8000)
 #include <scu.h>
 #include "../../platform/arch/scu-reg.h"
 #endif

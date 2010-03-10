@@ -54,7 +54,7 @@
 
 #endif //SOCLE_GPIO_WITH_INT
 
-#if defined(CONFIG_PDK) || defined(CONFIG_PC7210) || defined(CONFIG_PC9220)
+#if defined(CONFIG_PDK) || defined(CONFIG_PC7210) || defined(CONFIG_SQ8000)
 #define SOCLE_GPIO_KPD_TEST		1
 #else
 #define SOCLE_GPIO_KPD_TEST		0

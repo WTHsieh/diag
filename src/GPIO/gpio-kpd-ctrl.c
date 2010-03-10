@@ -103,7 +103,7 @@ pdk_gpio_kpd_isr(void *param)
 	col = kpd_value_convert(tmp1 & 0x7);
 	row = kpd_value_convert(((tmp1 & 0x30) >> 4) | (tmp2 & 0x10) >> 2);
 #endif
-#elif defined CONFIG_PC9220	
+#elif defined CONFIG_SQ8000	
 	// read col pins
 	socle_gpio_get_value_with_mask(PJ, 0xf0);
 
@@ -170,7 +170,7 @@ pdk_gpio_kpd_isr(void *param)
 	socle_gpio_set_value_with_mask(PA, 0x0, 0x30);
 	// PF4, PF5
 	socle_gpio_set_value_with_mask(PF, 0x0, 0x30);
-#elif defined CONFIG_PC9220	
+#elif defined CONFIG_SQ8000	
 	// write col pins as 0
 	// PJ4, PJ5, PJ6, PJ7	
 	socle_gpio_set_value_with_mask(PJ, 0x0, 0xf0);
@@ -226,7 +226,7 @@ gpio_kpd_init(void)
 	// enable all interrupt
 	socle_gpio_set_interrupt_mask_with_mask(PA, 0x3F, 0x3F);
 	socle_gpio_set_interrupt_mask_with_mask(PF, 0x30, 0x30);
-#elif CONFIG_PC9220	//20080109 leonid+ for PDK-PC7210
+#elif CONFIG_SQ8000	//20080109 leonid+ for PDK-PC7210
 	// normal mode
 	socle_gpio_test_mode_en(PJ, 0);
 
@@ -300,7 +300,7 @@ socle_gpio_kpd_test(int autotest)
 {
 	int ret = 0, count = 0, irq;
 
-#ifdef CONFIG_PC9220	
+#ifdef CONFIG_SQ8000	
 	irq = socle_gpio_get_irq(PJ);
 #else
 	irq = socle_gpio_get_irq(PA);

@@ -19,7 +19,7 @@
 
 #define FLASH_SECTOR_SIZE  0x10000
 
-#if defined (CONFIG_PC9002) || (CONFIG_PC9220)
+#if defined (CONFIG_PC9002) || (CONFIG_SQ8000)
  	#define MODE_BASE (SOCLE_AHB0_SDRSTMC+0x8020)
 #endif
 

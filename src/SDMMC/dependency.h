@@ -35,7 +35,7 @@
 #define SOCLE_SDMMC_SWDMA_PANTHER7_HDMA_TEST 0
 #endif
 
-#if defined(CONFIG_CDK) || defined(CONFIG_PC9220) || defined(CONFIG_PC9002) || defined(CONFIG_SCDK)
+#if defined(CONFIG_CDK) || defined(CONFIG_SQ8000) || defined(CONFIG_PC9002) || defined(CONFIG_SCDK)
 #define SOCLE_SDMMC_MUTLIPLE_PARTIAL_READ_TEST 0
 #else
 #define SOCLE_SDMMC_MUTLIPLE_PARTIAL_READ_TEST 0 

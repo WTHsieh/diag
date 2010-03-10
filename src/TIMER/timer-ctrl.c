@@ -5,7 +5,7 @@
 #include <platform.h>
 #include "dependency.h"
 
-#if defined (CONFIG_PC9220)
+#if defined (CONFIG_SQ8000)
 #include <scu.h>
 #include "../../platform/arch/scu-reg.h"
 #endif
@@ -46,7 +46,7 @@ TIMERTesting(int autotest)
 {
 	int ret = 0;
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_enable(SCU_DEVCON_TMR_GPIO);
 #endif
 
@@ -71,7 +71,7 @@ TIMERTesting(int autotest)
 	free_irq(SOCLE_INTC_TMR0_1);
 	free_irq(SOCLE_INTC_TMR0_2);
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_disable(SCU_DEVCON_TMR_GPIO);
 #endif
 

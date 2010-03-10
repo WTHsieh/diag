@@ -153,7 +153,7 @@ socle_development_board_information(void)
 	printf("CPU     Clock Frequency : %4dM Hz\n", socle_get_cpu_clock() / (1000 * 1000));
 	printf("AHB Bus Clock Frequency : %4dM Hz\n", socle_get_ahb_clock() / (1000 * 1000));
 	printf("APB Bus Clock Frequency : %4dM Hz\n", socle_get_apb_clock() / (1000 * 1000));
-#if defined(CONFIG_PC7210) || defined(CONFIG_PDK) || defined(CONFIG_PC9220)
+#if defined(CONFIG_PC7210) || defined(CONFIG_PDK) || defined(CONFIG_SQ8000)
 	printf("UART Frequency 		: %4dM Hz\n", socle_get_uart_clock() / (1000 * 1000));
 #endif
 	printf("--------------------------------------------------\n");

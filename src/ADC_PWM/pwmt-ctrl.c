@@ -285,7 +285,7 @@ socle_init_pwmt(void)
 
 	PWMT_DBG("pwmt init\n");
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_enable(SOCLE_DEVCON_PWM0);
 	socle_scu_dev_enable(SOCLE_DEVCON_PWM1);
 #endif

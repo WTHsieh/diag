@@ -26,8 +26,8 @@ ifeq "y" "$(CONFIG_PC9002)"
 platform_arch   = PDK_PC9002
 endif
 
-ifeq "y" "$(CONFIG_PC9220)"
-platform_arch   = PDK_PC9220
+ifeq "y" "$(CONFIG_SQ8000)"
+platform_arch   = EVBV1_SQ8000
 endif
 
 ifeq "y" "$(CONFIG_SCDK)"

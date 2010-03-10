@@ -7,11 +7,11 @@
 #include "uart-regs.h"
 #include "dependency.h"
 
-#if defined (CONFIG_PC9220)
+#if defined (CONFIG_SQ8000)
 #include "../../platform/arch/scu-reg.h"
 #endif
 
-#if defined (CONFIG_PC7210) || defined (CONFIG_PDK) || defined (CONFIG_PC9220)
+#if defined (CONFIG_PC7210) || defined (CONFIG_PDK) || defined (CONFIG_SQ8000)
 #include <scu.h>
 #endif
 
@@ -84,7 +84,7 @@ socle_uart_0_test(int autotest)
 
 	socle_uart_base = SOCLE_APB0_UART0;
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_enable(SOCLE_DEVCON_UART0);
 	socle_scu_hdma_req01_uart(0);
 	socle_scu_hdma_req23_uart(0);
@@ -121,7 +121,7 @@ socle_uart_0_test(int autotest)
 
 	free_irq(SOCLE_INTC_UART0);
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_disable(SOCLE_DEVCON_UART0);
 #endif
 	return ret;
@@ -134,7 +134,7 @@ socle_uart_1_test(int autotest)
 
 	socle_uart_base = SOCLE_APB0_UART1;
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
 	socle_scu_dev_enable(SOCLE_DEVCON_UART1);
 	socle_scu_hdma_req01_uart(1);
 	socle_scu_hdma_req23_uart(1);
@@ -175,7 +175,7 @@ socle_uart_1_test(int autotest)
 
 	free_irq(SOCLE_INTC_UART1);
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
         socle_scu_dev_disable(SOCLE_DEVCON_UART1);
 #endif
 
@@ -189,7 +189,7 @@ socle_uart_2_test(int autotest)
 
 	socle_uart_base = SOCLE_APB0_UART2;
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
         socle_scu_dev_enable(SOCLE_DEVCON_UART2);
         socle_scu_hdma_req01_uart(2);
         socle_scu_hdma_req23_uart(2);
@@ -230,7 +230,7 @@ socle_uart_2_test(int autotest)
 
 	free_irq(SOCLE_INTC_UART2);
 
-#ifdef CONFIG_PC9220
+#ifdef CONFIG_SQ8000
         socle_scu_dev_disable(SOCLE_DEVCON_UART2);
 #endif
 
