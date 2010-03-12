@@ -1,5 +1,5 @@
-#ifndef	__SOCLE_ADC_REGS_H_INCLUDED
-#define	__SOCLE_ADC_REGS_H_INCLUDED
+#ifndef	__SQ_ADC_REGS_H_INCLUDED
+#define	__SQ_ADC_REGS_H_INCLUDED
 
 #include <global.h>
 
@@ -43,4 +43,4 @@
 //[6]
 #define ADC_INT_STAS		BIT_SHIHT(6)
 
-#endif //__SOCLE_ADC_REGS_H_INCLUDED
+#endif //__SQ_ADC_REGS_H_INCLUDED

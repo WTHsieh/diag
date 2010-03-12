@@ -103,12 +103,12 @@ char getchar(void)
 	//modified by cyli 060207
 	
 #if defined(CONFIG_PDK) || defined(CONFIG_PC7210)
-	if(((ioread32(SOCLE_APB0_SCU+0xc) >> 13) & 0x7) !=6)		//20071231 leonid+ for check scu_ucfg
-		p=(unsigned long*)SOCLE_APB0_UART1;
+	if(((ioread32(SQ_APB0_SCU+0xc) >> 13) & 0x7) !=6)		//20071231 leonid+ for check scu_ucfg
+		p=(unsigned long*)SQ_APB0_UART1;
 	else
-		p=(unsigned long*)SOCLE_APB0_UART0;
+		p=(unsigned long*)SQ_APB0_UART0;
 #else
-		p=(unsigned long*)SOCLE_APB0_UART0;
+		p=(unsigned long*)SQ_APB0_UART0;
 #endif
 	while((*(p+5)&(1<<0))!=1);	//wait for data
 	return(*p);

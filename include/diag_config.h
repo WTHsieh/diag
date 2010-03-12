@@ -1,5 +1,5 @@
-#ifndef __SOCLE_DIAG_CONFIG_H
-#define __SOCLE_DIAG_CONFIG_H
+#ifndef __SQ_DIAG_CONFIG_H
+#define __SQ_DIAG_CONFIG_H
 /*
  * Automatically generated header file: don't edit
  */
@@ -160,10 +160,10 @@
 #define USE_SCU(...)  __VA_ARGS__
 #define SKIP_SCU(...)
 
-#define CONFIG_SOCLE_LCD 1
-#define ENABLE_SOCLE_LCD 1
-#define USE_SOCLE_LCD(...)  __VA_ARGS__
-#define SKIP_SOCLE_LCD(...)
+#define CONFIG_SQ_LCD 1
+#define ENABLE_SQ_LCD 1
+#define USE_SQ_LCD(...)  __VA_ARGS__
+#define SKIP_SQ_LCD(...)
 
 #define CONFIG_ADC_PWM 1
 #define ENABLE_ADC_PWM 1
@@ -203,4 +203,4 @@
 #define USE_UART_DISP(...)  __VA_ARGS__
 #define SKIP_UART_DISP(...)
 
-#endif /* __SOCLE_DIAG_CONFIG_H */
+#endif /* __SQ_DIAG_CONFIG_H */

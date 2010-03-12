@@ -14,15 +14,15 @@ static struct intr_handler irq_vector_table[INTC_MAX_IRQ];		// IRQ controller in
 static inline void
 int_irq_set_type (int i, int type)
 {
-	iowrite32((ioread32(SOCLE_INTC_IRQ_SCR(INTC_REG_BASE, i)) & ~SRCTYPE_MASK) | type,
-				SOCLE_INTC_IRQ_SCR(INTC_REG_BASE, i));
+	iowrite32((ioread32(SQ_INTC_IRQ_SCR(INTC_REG_BASE, i)) & ~SRCTYPE_MASK) | type,
+				SQ_INTC_IRQ_SCR(INTC_REG_BASE, i));
 }
 
 static inline void
 int_fiq_set_type (int i, int type)
 {
-	iowrite32((ioread32(SOCLE_INTC_FIQ_SCR(INTC_REG_BASE, i)) & ~SRCTYPE_MASK) | type,
-				SOCLE_INTC_FIQ_SCR(INTC_REG_BASE, i));
+	iowrite32((ioread32(SQ_INTC_FIQ_SCR(INTC_REG_BASE, i)) & ~SRCTYPE_MASK) | type,
+				SQ_INTC_FIQ_SCR(INTC_REG_BASE, i));
 }
 
 // connectInterrupt()
@@ -43,12 +43,12 @@ request_irq (int irq, void (*routine)(void*), void* pparam)
 	irq_vector_table[irq].pparam  = pparam;
 
 	// irq enable
-	iowrite32(ioread32(SOCLE_INTC_IRQ_IECR(INTC_REG_BASE)) | (0x1 << irq),
-				SOCLE_INTC_IRQ_IECR(INTC_REG_BASE));
+	iowrite32(ioread32(SQ_INTC_IRQ_IECR(INTC_REG_BASE)) | (0x1 << irq),
+				SQ_INTC_IRQ_IECR(INTC_REG_BASE));
 
 	// irq set mask
-	iowrite32(ioread32(SOCLE_INTC_IRQ_IMR(INTC_REG_BASE)) | (0x1 << irq),
-				SOCLE_INTC_IRQ_IMR(INTC_REG_BASE));
+	iowrite32(ioread32(SQ_INTC_IRQ_IMR(INTC_REG_BASE)) | (0x1 << irq),
+				SQ_INTC_IRQ_IMR(INTC_REG_BASE));
 }
 
 extern void
@@ -64,12 +64,12 @@ free_irq (int irq)
 	irq_vector_table[irq].pparam  = NULL;
 
 	// irq disable
-	iowrite32(ioread32(SOCLE_INTC_IRQ_IECR(INTC_REG_BASE)) & ~(0x1 << irq),
-				SOCLE_INTC_IRQ_IECR(INTC_REG_BASE));
+	iowrite32(ioread32(SQ_INTC_IRQ_IECR(INTC_REG_BASE)) & ~(0x1 << irq),
+				SQ_INTC_IRQ_IECR(INTC_REG_BASE));
 
 	// irq clear mask
-	iowrite32(ioread32(SOCLE_INTC_IRQ_IMR(INTC_REG_BASE)) & ~(0x1 << irq),
-				SOCLE_INTC_IRQ_IMR(INTC_REG_BASE));
+	iowrite32(ioread32(SQ_INTC_IRQ_IMR(INTC_REG_BASE)) & ~(0x1 << irq),
+				SQ_INTC_IRQ_IMR(INTC_REG_BASE));
 }
 
 
@@ -87,10 +87,10 @@ free_fiq (int fiq)
 extern void
 irq_dispatch (void)
 {
-	u32_t v = ioread32(SOCLE_INTC_IRQ_ISR(INTC_REG_BASE));		// index for interrupt source
+	u32_t v = ioread32(SQ_INTC_IRQ_ISR(INTC_REG_BASE));		// index for interrupt source
 
 #if 0  //for debug
-	u32_t w = ioread32(SOCLE_INTC_IRQ_IPR(INTC_REG_BASE));
+	u32_t w = ioread32(SQ_INTC_IRQ_IPR(INTC_REG_BASE));
 	if (w != (1 << v)) {
 		printf("IRQ dispatch: IPR = 0x%08x\n", w);
 		printf("IRQ dispatch: ISR = 0x%08x\n", v);
@@ -107,7 +107,7 @@ irq_dispatch (void)
 	irq_vector_table[v].vec(irq_vector_table[v].pparam);
 
 	// clear interrupt
-	iowrite32(1 << v, SOCLE_INTC_IRQ_ICCR(INTC_REG_BASE));
+	iowrite32(1 << v, SQ_INTC_IRQ_ICCR(INTC_REG_BASE));
 }
 
 extern void
@@ -116,10 +116,10 @@ init_irq_controller (void)
 	int i;
 
 	// disable all interrupt
-	iowrite32(0, SOCLE_INTC_IRQ_IECR(INTC_REG_BASE));
+	iowrite32(0, SQ_INTC_IRQ_IECR(INTC_REG_BASE));
 
 	// clear all interrupt
-	iowrite32(0xFFFFFFFF, SOCLE_INTC_IRQ_ICCR(INTC_REG_BASE));
+	iowrite32(0xFFFFFFFF, SQ_INTC_IRQ_ICCR(INTC_REG_BASE));
 
 	for (i = 0; i < INTC_MAX_IRQ; i++) {
 		//if (i == 19)

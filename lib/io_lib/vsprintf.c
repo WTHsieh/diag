@@ -61,12 +61,12 @@ static void	semi_puts(char *s)
 {
 	volatile char* p;
 #if defined(CONFIG_PDK) || defined(CONFIG_PC7210)
-	if(((ioread32(SOCLE_APB0_SCU+0xc) >> 13) & 0x7) !=6)		//20071231 leonid+ for check scu_ucfg
-		p=(char*)SOCLE_APB0_UART1;
+	if(((ioread32(SQ_APB0_SCU+0xc) >> 13) & 0x7) !=6)		//20071231 leonid+ for check scu_ucfg
+		p=(char*)SQ_APB0_UART1;
 	else
-		p=(char*)SOCLE_APB0_UART0;
+		p=(char*)SQ_APB0_UART0;
 #else
-		p=(char*)SOCLE_APB0_UART0;
+		p=(char*)SQ_APB0_UART0;
 #endif
 	while(*s!=0)
 	{

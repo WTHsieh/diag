@@ -1,22 +1,22 @@
 //register address define
-#define SOCLE_VIP_AHBR_CTRL         0x0000
-#define SOCLE_VIP_INT_MASK          0x0004
-#define SOCLE_VIP_INT_STS           0x0008
-#define SOCLE_VIP_STS               0x000C
-#define SOCLE_VIP_CTRL              0x0010
-#define SOCLE_VIP_CAPTURE_F1SA_Y    0x0014
-#define SOCLE_VIP_CAPTURE_F1SA_Cb   0x0018
-#define SOCLE_VIP_CAPTURE_F1SA_Cr   0x001C
-#define SOCLE_VIP_CAPTURE_F2SA_Y    0x0020
-#define SOCLE_VIP_CAPTURE_F2SA_Cb   0x0024
-#define SOCLE_VIP_CAPTURE_F2SA_Cr   0x0028
-#define SOCLE_VIP_FB_SR             0x002C
-#define SOCLE_VIP_FS                0x0030
+#define SQ_VIP_AHBR_CTRL         0x0000
+#define SQ_VIP_INT_MASK          0x0004
+#define SQ_VIP_INT_STS           0x0008
+#define SQ_VIP_STS               0x000C
+#define SQ_VIP_CTRL              0x0010
+#define SQ_VIP_CAPTURE_F1SA_Y    0x0014
+#define SQ_VIP_CAPTURE_F1SA_Cb   0x0018
+#define SQ_VIP_CAPTURE_F1SA_Cr   0x001C
+#define SQ_VIP_CAPTURE_F2SA_Y    0x0020
+#define SQ_VIP_CAPTURE_F2SA_Cb   0x0024
+#define SQ_VIP_CAPTURE_F2SA_Cr   0x0028
+#define SQ_VIP_FB_SR             0x002C
+#define SQ_VIP_FS                0x0030
 
-#define SOCLE_VIP_CROP              0x0038
-#define SOCLE_VIP_CRM               0x003C
-#define SOCLE_VIP_RESET             0x0040
-#define SOCLE_VIP_L_SFT             0x0044
+#define SQ_VIP_CROP              0x0038
+#define SQ_VIP_CRM               0x003C
+#define SQ_VIP_RESET             0x0040
+#define SQ_VIP_L_SFT             0x0044
 
 //VIP_AHBR_CTRL
 #define VIP_AHBR_CTRL_INCR      0x1

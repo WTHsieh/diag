@@ -21,7 +21,7 @@ local_src	+= cdk-scu-ctrl.c cdk-scu-menu.c
 endif
 
 ifeq "y" "$(CONFIG_SQ8000)"
-local_src	+= pc9220-scu-ctrl.c pc9220-scu-menu.c
+local_src	+= sq8000-scu-ctrl.c sq8000-scu-menu.c
 endif
 
 include build/common.mk

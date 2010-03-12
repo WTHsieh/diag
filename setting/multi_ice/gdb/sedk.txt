@@ -1,6 +1,6 @@
-## Socle Technology Corp.
+## Sq Technology Corp.
 ######################################
-echo Socle Soc Enable Development Kit \n
+echo Sq Soc Enable Development Kit \n
 echo GDB initial... \n
 
 ##SCU

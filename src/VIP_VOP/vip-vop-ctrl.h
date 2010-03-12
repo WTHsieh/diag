@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 #define ldk	//LDK setting
-//#define pc9220	//pc9220
+//#define sq8000	//sq8000
 
 #define MM_SDRAM_BANK0             	0xA0000000
 #define MM_SDRAM_BANK1          	0xA8000000
@@ -108,7 +108,7 @@ extern "C" {
 #endif
 
 //danny testing --s
-//pc9220 
+//sq8000 
 extern	int VIP_VOP_Testing(int autotest);
 //danny testing --e
 extern	int		MPEG4Testing(int autotest);

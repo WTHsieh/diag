@@ -1,6 +1,6 @@
-## Socle Technology Corp.
+## Sq Technology Corp.
 ######################################
-echo Socle Leopard III V2.1 \n
+echo Sq Leopard III V2.1 \n
 echo GDB initial... \n
 
 ######################################

@@ -14,7 +14,7 @@
 #endif
 
 #ifdef CONFIG_INR_PC7230
-#define T6963C_BASE		SOCLE_NOR_FLASH_BANK0
+#define T6963C_BASE		SQ_NOR_FLASH_BANK0
 #define T6963C_BKLGT_PWM_IDX		0	// backlight
 #define T6963C_CNTRT_PWM_IDX		1	// contrast
 #else

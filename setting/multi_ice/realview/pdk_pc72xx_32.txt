@@ -1,6 +1,6 @@
-// Socle Technology Corp.
+// Sq Technology Corp.
 /////////////////////////////////////
-// Socle Panther Development Kit PC72xx 32 bit
+// Sq Panther Development Kit PC72xx 32 bit
 // RVDEBUG initial...
 
 //SCU

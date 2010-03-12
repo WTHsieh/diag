@@ -464,8 +464,8 @@ double dtime()
 #endif
 
 /********************************************************/
-/* Socle uPlatform (32 bit) dtime routine               */
-/* Provided by: Charley Chou, charley@socle-tech.com.tw */
+/* Sq uPlatform (32 bit) dtime routine               */
+/* Provided by: Charley Chou, charley@sq-tech.com.tw */
 /********************************************************/
 #if defined(CPU_ARCH_LEXRA) || defined(CPU_ARCH_MIPS) || defined(uDK) || defined(L2)
 double dtime(void)

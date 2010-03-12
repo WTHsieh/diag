@@ -212,7 +212,7 @@ t6963c_write_string_data(int line, int column, u8 *str, int len)
 }
 
 static int
-socle_lcm_init(void)
+sq_lcm_init(void)
 {
 	// set text home address TXT_HOME_ADDR
 	if (t6963c_write_data_16(TXT_HOME_ADDR))
@@ -263,11 +263,11 @@ socle_lcm_init(void)
 
 #if 0
 static int
-socle_lcm_t6963c_test_sub(void)
+sq_lcm_t6963c_test_sub(void)
 {
 	int i;
 
-	if (socle_lcm_init())
+	if (sq_lcm_init())
 		return -1;
 
 	if (t6963c_write_ext_char_gen_data(extcg, 0x80, DATA_NUM(extcg)))
@@ -313,7 +313,7 @@ socle_lcm_t6963c_test_sub(void)
 #endif
 
 static int
-socle_lcm_t6963c_print_bar(int line, int bar)
+sq_lcm_t6963c_print_bar(int line, int bar)
 {
 	if ((line < 0) || (line >= TXT_LINE))
 		return -1;
@@ -330,7 +330,7 @@ socle_lcm_t6963c_print_bar(int line, int bar)
 }
 
 static int
-socle_lcm_t6963c_print_str_with_attr(int line, int column, u8 *str, int attr_data)
+sq_lcm_t6963c_print_str_with_attr(int line, int column, u8 *str, int attr_data)
 {
 	int len;
 
@@ -352,7 +352,7 @@ socle_lcm_t6963c_print_str_with_attr(int line, int column, u8 *str, int attr_dat
 
 #ifdef T6963C_REVERSE
 static int
-socle_lcm_t6963c_draw_line_with_attr(int line, int column, int vertical, int len, int attr_data)
+sq_lcm_t6963c_draw_line_with_attr(int line, int column, int vertical, int len, int attr_data)
 {
 	int i;
 	char sq[2]= "";
@@ -369,7 +369,7 @@ socle_lcm_t6963c_draw_line_with_attr(int line, int column, int vertical, int len
 
 		sq[0] = RECTANGLE_V;
 		for (i = 0; i < len; i++) {
-			if (socle_lcm_t6963c_print_str_with_attr(line + i, column, sq, attr_data))
+			if (sq_lcm_t6963c_print_str_with_attr(line + i, column, sq, attr_data))
 				return -1;
 		}
 	} else {
@@ -381,7 +381,7 @@ socle_lcm_t6963c_draw_line_with_attr(int line, int column, int vertical, int len
 
 		sq[0] = RECTANGLE_H;
 		for (i = 0; i < len; i++) {
-			if (socle_lcm_t6963c_print_str_with_attr(line, column + i, sq, attr_data))
+			if (sq_lcm_t6963c_print_str_with_attr(line, column + i, sq, attr_data))
 				return -1;
 		}
 	}
@@ -390,7 +390,7 @@ socle_lcm_t6963c_draw_line_with_attr(int line, int column, int vertical, int len
 }
 
 static int
-socle_lcm_t6963c_draw_rectangle_with_attr(int line, int column, int w, int h, int attr_data)
+sq_lcm_t6963c_draw_rectangle_with_attr(int line, int column, int w, int h, int attr_data)
 {
 	int i;
 	char sq[2]= "";
@@ -406,36 +406,36 @@ socle_lcm_t6963c_draw_rectangle_with_attr(int line, int column, int w, int h, in
 		w = COLUMN - column - 1;
 
 	sq[0] = RECTANGLE_U_L;
-	if (socle_lcm_t6963c_print_str_with_attr(line, column, sq, attr_data))
+	if (sq_lcm_t6963c_print_str_with_attr(line, column, sq, attr_data))
 		return -1;
 	sq[0] = RECTANGLE_H;
 	for (i = 0; i < (w - 2); i++) {
-		if (socle_lcm_t6963c_print_str_with_attr(line, column + 1 + i, sq, attr_data))
+		if (sq_lcm_t6963c_print_str_with_attr(line, column + 1 + i, sq, attr_data))
 			return -1;
 	}
 	sq[0] = RECTANGLE_U_R;
-	if (socle_lcm_t6963c_print_str_with_attr(line, column + w - 1, sq, attr_data))
+	if (sq_lcm_t6963c_print_str_with_attr(line, column + w - 1, sq, attr_data))
 		return -1;
 
 	for (i = 0; i < (h - 2); i++) {
 		sq[0] = RECTANGLE_V;
-		if (socle_lcm_t6963c_print_str_with_attr(line + 1 + i, column, sq, attr_data))
+		if (sq_lcm_t6963c_print_str_with_attr(line + 1 + i, column, sq, attr_data))
 			return -1;
 		sq[0] = RECTANGLE_V;
-		if (socle_lcm_t6963c_print_str_with_attr(line + 1 + i, column + w - 1, sq, attr_data))
+		if (sq_lcm_t6963c_print_str_with_attr(line + 1 + i, column + w - 1, sq, attr_data))
 			return -1;
 	}
 
 	sq[0] = RECTANGLE_L_L;
-	if (socle_lcm_t6963c_print_str_with_attr(line + h -1, column, sq, attr_data))
+	if (sq_lcm_t6963c_print_str_with_attr(line + h -1, column, sq, attr_data))
 		return -1;
 	sq[0] = RECTANGLE_H;
 	for (i = 0; i < (w - 2); i++) {
-		if (socle_lcm_t6963c_print_str_with_attr(line + h -1, column + 1 + i, sq, attr_data))
+		if (sq_lcm_t6963c_print_str_with_attr(line + h -1, column + 1 + i, sq, attr_data))
 			return -1;
 	}
 	sq[0] = RECTANGLE_L_R;
-	if (socle_lcm_t6963c_print_str_with_attr(line + h -1, column + w - 1, sq, attr_data))
+	if (sq_lcm_t6963c_print_str_with_attr(line + h -1, column + w - 1, sq, attr_data))
 		return -1;
 
 	return 0;
@@ -443,11 +443,11 @@ socle_lcm_t6963c_draw_rectangle_with_attr(int line, int column, int w, int h, in
 #endif
 
 static int
-socle_lcm_t6963c_test_sub(void)
+sq_lcm_t6963c_test_sub(void)
 {
 	int i, j;
 
-	if (socle_lcm_init())
+	if (sq_lcm_init())
 		return -1;
 
 #ifdef T6963C_REVERSE
@@ -455,13 +455,13 @@ socle_lcm_t6963c_test_sub(void)
 		return -1;
 #endif
 	
-	if (socle_lcm_t6963c_print_str_with_attr(1, 1, "Diagnostic  Program", BLINK_NORMAL_DISP))
+	if (sq_lcm_t6963c_print_str_with_attr(1, 1, "Diagnostic  Program", BLINK_NORMAL_DISP))
 		return -1;
-	if (socle_lcm_t6963c_print_str_with_attr(3, 2, "Socle Tech. Corp.", NORMAL_DISP))
+	if (sq_lcm_t6963c_print_str_with_attr(3, 2, "Sq Tech. Corp.", NORMAL_DISP))
 		return -1;
 
 	for (i = 0; i < 3; i++) {
-		if (socle_lcm_t6963c_print_bar(i + 5, 1))
+		if (sq_lcm_t6963c_print_bar(i + 5, 1))
 			return -1;
 
 		for (j = 0; j < 16; j++) {
@@ -476,40 +476,40 @@ socle_lcm_t6963c_test_sub(void)
 				return -1;
 		}
 
-		if (socle_lcm_t6963c_print_bar(i + 5, 0))
+		if (sq_lcm_t6963c_print_bar(i + 5, 0))
 			return -1;
 	}
 
 	for (i = 0; i < 3; i++) {
-		if (socle_lcm_t6963c_print_str_with_attr(i + 5, 2, "                ", NORMAL_DISP))
+		if (sq_lcm_t6963c_print_str_with_attr(i + 5, 2, "                ", NORMAL_DISP))
 			return -1;
 	}
 
 	//flash
 	for (i = 0; i < 4; i++) {
-		if (socle_lcm_t6963c_print_bar(3, 1))
+		if (sq_lcm_t6963c_print_bar(3, 1))
 			return -1;
 		MSDELAY(100);
 
-		if (socle_lcm_t6963c_print_bar(3, 0))
+		if (sq_lcm_t6963c_print_bar(3, 0))
 			return -1;
 		MSDELAY(100);
 	}
-	if (socle_lcm_t6963c_print_bar(3, 1))
+	if (sq_lcm_t6963c_print_bar(3, 1))
 		return -1;
 
 #ifdef T6963C_REVERSE
-	if (socle_lcm_t6963c_draw_rectangle_with_attr(0, 0, COLUMN - 1, 5, NORMAL_DISP))
+	if (sq_lcm_t6963c_draw_rectangle_with_attr(0, 0, COLUMN - 1, 5, NORMAL_DISP))
 		return -1;
-	if (socle_lcm_t6963c_draw_line_with_attr(2, 1, 0, COLUMN - 3,  NORMAL_DISP))
+	if (sq_lcm_t6963c_draw_line_with_attr(2, 1, 0, COLUMN - 3,  NORMAL_DISP))
 		return -1;
 #endif
 
-	if (socle_lcm_t6963c_print_str_with_attr(5, 0, "www.socle-tech.com.tw", REVERSE_DISP))
+	if (sq_lcm_t6963c_print_str_with_attr(5, 0, "www.sq-tech.com.tw", REVERSE_DISP))
 		return -1;
-	if (socle_lcm_t6963c_print_str_with_attr(6, 1, "TEL : 886-3-5163166", REVERSE_DISP))
+	if (sq_lcm_t6963c_print_str_with_attr(6, 1, "TEL : 886-3-5163166", REVERSE_DISP))
 		return -1;
-	if (socle_lcm_t6963c_print_str_with_attr(7, 1, "FAX : 886-3-5163177", REVERSE_DISP))
+	if (sq_lcm_t6963c_print_str_with_attr(7, 1, "FAX : 886-3-5163177", REVERSE_DISP))
 		return -1;
 
 	if (t6963c_write_attribute_data(3, 1, COLUMN - 4, BLINK_REVERSE_DISP))
@@ -524,7 +524,7 @@ socle_lcm_t6963c_test_sub(void)
 #include "../GPIO/gpio.h"
 
 extern int
-socle_lcm_t6963c_test(int autotest)
+sq_lcm_t6963c_test(int autotest)
 {
 	int ret = 0;
 
@@ -533,12 +533,12 @@ socle_lcm_t6963c_test(int autotest)
 #include "../ADC_PWM/pwmt-regs.h"
 #include "../GPIO/gpio.h"
 
-	struct socle_pwmt *p;
+	struct sq_pwmt *p;
 
 	// backlight
-	p = get_socle_pwmt_structure(T6963C_BKLGT_PWM_IDX);
+	p = get_sq_pwmt_structure(T6963C_BKLGT_PWM_IDX);
 	if (NULL == p) {
-		printf("socle_lcm_t6963c_test() can't get PWMT structure!!\n");
+		printf("sq_lcm_t6963c_test() can't get PWMT structure!!\n");
 		return -1;
 	}
 
@@ -548,12 +548,12 @@ socle_lcm_t6963c_test(int autotest)
 	p->drv->enable(p, 1);
 	p->drv->output_enable(p, 1);
 
-	release_socle_pwmt_structure(T6963C_BKLGT_PWM_IDX);
+	release_sq_pwmt_structure(T6963C_BKLGT_PWM_IDX);
 
 	// contrast
-	p = get_socle_pwmt_structure(T6963C_CNTRT_PWM_IDX);
+	p = get_sq_pwmt_structure(T6963C_CNTRT_PWM_IDX);
 	if (NULL == p) {
-		printf("socle_lcm_t6963c_test() can't get PWMT structure!!\n");
+		printf("sq_lcm_t6963c_test() can't get PWMT structure!!\n");
 		return -1;
 	}
 
@@ -563,17 +563,17 @@ socle_lcm_t6963c_test(int autotest)
 	p->drv->enable(p, 1);
 	p->drv->output_enable(p, 1);
 
-	release_socle_pwmt_structure(T6963C_CNTRT_PWM_IDX);
+	release_sq_pwmt_structure(T6963C_CNTRT_PWM_IDX);
 
 	// set CS0 chip selection to LCM
-	socle_gpio_set_value_with_mask(PA, 0, SHIFT_MASK(5));				// PA5 = 0
+	sq_gpio_set_value_with_mask(PA, 0, SHIFT_MASK(5));				// PA5 = 0
 #endif
 
-	ret = socle_lcm_t6963c_test_sub();
+	ret = sq_lcm_t6963c_test_sub();
 
 #ifdef CONFIG_PC7210
 	// set CS0 chip selection to NOR
-	socle_gpio_set_value_with_mask(PA, SHIFT_MASK(5), SHIFT_MASK(5));				// PA5 = 1
+	sq_gpio_set_value_with_mask(PA, SHIFT_MASK(5), SHIFT_MASK(5));				// PA5 = 1
 #endif
 
 	return ret;
@@ -588,7 +588,7 @@ static int vol_change = 0;
 static void
 volume_tuner_isr (void *pparam)
 {
-	int clockwise = socle_gpio_get_value_with_mask(PF, 0x20);
+	int clockwise = sq_gpio_get_value_with_mask(PF, 0x20);
 
 	if (clockwise)
 		vol++;
@@ -613,14 +613,14 @@ inr_pc7230_line_in_test(int autotest)
 		return -1;
 	}
 
-	if (socle_request_gpio_irq(SET_GPIO_PIN_NUM(PF, 4), volume_tuner_isr, GPIO_INT_SENSE_EDGE | GPIO_INT_SINGLE_EDGE | GPIO_INT_EVENT_HI, NULL)) {
+	if (sq_request_gpio_irq(SET_GPIO_PIN_NUM(PF, 4), volume_tuner_isr, GPIO_INT_SENSE_EDGE | GPIO_INT_SINGLE_EDGE | GPIO_INT_EVENT_HI, NULL)) {
 		printf("I2STesting(): GPIO pin[%d] is busy!\n", SET_GPIO_PIN_NUM(PF, 4));
 		return -1;
 	}
 
 	// set audio source selection to Line-in
-	socle_gpio_set_value_with_mask(PE, 0x1a, 0x3f);				// PE[1:0] = [10]
-	socle_gpio_set_value_with_mask(PE, 0x1e, 0x3f);				// PE[1:0] = [10], PE2 = 1
+	sq_gpio_set_value_with_mask(PE, 0x1a, 0x3f);				// PE[1:0] = [10]
+	sq_gpio_set_value_with_mask(PE, 0x1e, 0x3f);				// PE[1:0] = [10], PE2 = 1
 
 	while (1) {
 		if (vol_change) {
@@ -639,14 +639,14 @@ inr_pc7230_ipod_ducking_test(int autotest)
 		return -1;
 	}
 
-	if (socle_request_gpio_irq(SET_GPIO_PIN_NUM(PF, 4), volume_tuner_isr, GPIO_INT_SENSE_EDGE | GPIO_INT_SINGLE_EDGE | GPIO_INT_EVENT_HI, NULL)) {
+	if (sq_request_gpio_irq(SET_GPIO_PIN_NUM(PF, 4), volume_tuner_isr, GPIO_INT_SENSE_EDGE | GPIO_INT_SINGLE_EDGE | GPIO_INT_EVENT_HI, NULL)) {
 		printf("I2STesting(): GPIO pin[%d] is busy!\n", SET_GPIO_PIN_NUM(PF, 4));
 		return -1;
 	}
 
 	// set audio source selection to iPod
-	socle_gpio_set_value_with_mask(PE, 0x19, 0x3f);				// PE[1:0] = [01]
-	socle_gpio_set_value_with_mask(PE, 0x39, 0x3f);				// PE[1:0] = [01], PE5 = 1
+	sq_gpio_set_value_with_mask(PE, 0x19, 0x3f);				// PE[1:0] = [01]
+	sq_gpio_set_value_with_mask(PE, 0x39, 0x3f);				// PE[1:0] = [01], PE5 = 1
 
 	while (1) {
 		if (vol_change) {
@@ -660,7 +660,7 @@ inr_pc7230_ipod_ducking_test(int autotest)
 static void
 iPod_detection_isr (void *pparam)
 {
-	int plug = socle_gpio_get_value_with_mask(PA, 0x10);
+	int plug = sq_gpio_get_value_with_mask(PA, 0x10);
 
 	if (plug)
 		printf("iPod plug\n");
@@ -671,7 +671,7 @@ iPod_detection_isr (void *pparam)
 static void
 line_in_detection_isr (void *pparam)
 {
-	int plug = socle_gpio_get_value_with_mask(PF, 0x80);
+	int plug = sq_gpio_get_value_with_mask(PF, 0x80);
 
 	if (plug)
 		printf("Line-in plug\n");
@@ -682,12 +682,12 @@ line_in_detection_isr (void *pparam)
 extern int
 inr_pc7230_ipod_and_line_in_detection_test(int autotest)
 {
-	if (socle_request_gpio_irq(SET_GPIO_PIN_NUM(PA, 4), iPod_detection_isr, GPIO_INT_SENSE_EDGE | GPIO_INT_BOTH_EDGE, NULL)) {
+	if (sq_request_gpio_irq(SET_GPIO_PIN_NUM(PA, 4), iPod_detection_isr, GPIO_INT_SENSE_EDGE | GPIO_INT_BOTH_EDGE, NULL)) {
 		printf("inr_pc7230_ipod_and_line_in_detection_test(): GPIO pin[%d] is busy!\n", SET_GPIO_PIN_NUM(PA, 4));
 		return -1;
 	}
 
-	if (socle_request_gpio_irq(SET_GPIO_PIN_NUM(PF, 7), line_in_detection_isr, GPIO_INT_SENSE_EDGE | GPIO_INT_BOTH_EDGE, NULL)) {
+	if (sq_request_gpio_irq(SET_GPIO_PIN_NUM(PF, 7), line_in_detection_isr, GPIO_INT_SENSE_EDGE | GPIO_INT_BOTH_EDGE, NULL)) {
 		printf("inr_pc7230_ipod_and_line_in_detection_test(): GPIO pin[%d] is busy!\n", SET_GPIO_PIN_NUM(PF, 7));
 		return -1;
 	}

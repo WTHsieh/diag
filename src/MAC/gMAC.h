@@ -4,24 +4,24 @@
 #include <platform.h>
 
 #if (CONFIG_SEDK)
-#define MAC_INT		SOCLE_INTC_MAC1
+#define MAC_INT		SQ_INTC_MAC1
 #endif
 
 
-#ifndef SOCLE_AHB0_MAC0
-#define SOCLE_AHB0_MAC0		SOCLE_AHB0_MAC
+#ifndef SQ_AHB0_MAC0
+#define SQ_AHB0_MAC0		SQ_AHB0_MAC
 #endif
 
-#ifndef SOCLE_INTC_MAC0
-#define SOCLE_INTC_MAC0		SOCLE_INTC_MAC
+#ifndef SQ_INTC_MAC0
+#define SQ_INTC_MAC0		SQ_INTC_MAC
 #endif
 
 #ifndef MAC_REG_BASE
-#define MAC_REG_BASE		SOCLE_AHB0_MAC0
+#define MAC_REG_BASE		SQ_AHB0_MAC0
 #endif
 
 #ifndef MAC_INT
-#define MAC_INT		SOCLE_INTC_MAC0
+#define MAC_INT		SQ_INTC_MAC0
 #endif
 
 
@@ -43,8 +43,8 @@
 //#define DATAB_BYTE_ORDER	F_BIG_ENDIAN
 
 // Addess Define
-//#define MAC_BASE_ADDR		SOCLE_AHB0_MAC0		//AHB direct connect
-//#define MAC_BASE_ADDR           SOCLE_AHB0_ES0  //AHB0
+//#define MAC_BASE_ADDR		SQ_AHB0_MAC0		//AHB direct connect
+//#define MAC_BASE_ADDR           SQ_AHB0_ES0  //AHB0
 //#define MAC_BASE_ADDR		AHB_SLOT0_BASE  //AHB0
 
 // Include EEPROM or not 
@@ -76,6 +76,6 @@
 #define	MAC_RX_POLLSCHEME
 
 // Default MAC Address
-#define DEFAULT_MAC_ADDR	0x534F434C4500	//"SOCLE"-00
+#define DEFAULT_MAC_ADDR	0x534F434C4500	//"SQ"-00
 
 #endif  // _gMAC_h_included_

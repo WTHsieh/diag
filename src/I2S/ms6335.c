@@ -50,7 +50,7 @@ ms6335_dac_initialize(void)
 	int ret;
 
 	printf("ms6335_dac_initialize Line Out initialize\n");
-	i2c_master_initialize(SOCLE_APB0_I2C0, SOCLE_INTC_I2C0);
+	i2c_master_initialize(SQ_APB0_I2C0, SQ_INTC_I2C0);
 	ms6335_client.addr = MS6335_SLAVE_ADDR_DAC;
 	MSDELAY(5);
 	

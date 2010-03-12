@@ -207,8 +207,8 @@ cdk_scu_mem_test(void)
 	unsigned int tmp, test_pattern = 0x55aa55aa;
 	
 	for(i = 0; i < 5; i++) {
-		iowrite32(test_pattern, SOCLE_MM_DDR_SDR_BANK1 + 0x600000);
-		tmp = ioread32(SOCLE_MM_DDR_SDR_BANK1 + 0x600000);
+		iowrite32(test_pattern, SQ_MM_DDR_SDR_BANK1 + 0x600000);
+		tmp = ioread32(SQ_MM_DDR_SDR_BANK1 + 0x600000);
 		if (test_pattern ^ tmp) {	//check test patern
 			printf("Compare error!! test_pattern = 0x%08x, rdata=0x%08x\n", test_pattern);
 			return -1;

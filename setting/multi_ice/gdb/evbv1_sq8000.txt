@@ -1,6 +1,6 @@
-## Socle Technology Corp.
+## Sq Technology Corp.
 ######################################
-echo Socle Panther Development Kit PC9220\n
+echo Sq Panther Development Kit SQ8000\n
 echo GDB initial... \n
 
 ######################################

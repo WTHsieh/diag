@@ -25,14 +25,14 @@ static int eink_database = 0x10000000;
 // define pin
 #ifdef CONFIG_SQ8000
 
-#define EINK_SET_WUP()				socle_gpio_set_value_with_mask(PN, SHIFT_MASK(4), SHIFT_MASK(4))
-#define EINK_CLR_WUP()				socle_gpio_set_value_with_mask(PN, 0, SHIFT_MASK(4))
+#define EINK_SET_WUP()				sq_gpio_set_value_with_mask(PN, SHIFT_MASK(4), SHIFT_MASK(4))
+#define EINK_CLR_WUP()				sq_gpio_set_value_with_mask(PN, 0, SHIFT_MASK(4))
 
-#define EINK_SET_CD_CMD()			socle_gpio_set_value_with_mask(PN, SHIFT_MASK(5), SHIFT_MASK(5)) 
-#define EINK_SET_CD_DAT()			socle_gpio_set_value_with_mask(PN, 0, SHIFT_MASK(5))
+#define EINK_SET_CD_CMD()			sq_gpio_set_value_with_mask(PN, SHIFT_MASK(5), SHIFT_MASK(5)) 
+#define EINK_SET_CD_DAT()			sq_gpio_set_value_with_mask(PN, 0, SHIFT_MASK(5))
 
-#define EINK_SET_RW_WR()			socle_gpio_set_value_with_mask(PN, 0, SHIFT_MASK(7))
-#define EINK_SET_RW_RD()			socle_gpio_set_value_with_mask(PN, SHIFT_MASK(7), SHIFT_MASK(7))
+#define EINK_SET_RW_WR()			sq_gpio_set_value_with_mask(PN, 0, SHIFT_MASK(7))
+#define EINK_SET_RW_RD()			sq_gpio_set_value_with_mask(PN, SHIFT_MASK(7), SHIFT_MASK(7))
 
 
 #else
@@ -40,20 +40,20 @@ static int eink_database = 0x10000000;
 
 #ifdef CONFIG_MP_GPIO
 
-#define EINK_SET_WUP()				socle_mp_gpio_set_port_num_value(PO, 7, 1)
-#define EINK_CLR_WUP()				socle_mp_gpio_set_port_num_value(PO, 7, 0)
+#define EINK_SET_WUP()				sq_mp_gpio_set_port_num_value(PO, 7, 1)
+#define EINK_CLR_WUP()				sq_mp_gpio_set_port_num_value(PO, 7, 0)
 
-#define EINK_SET_CD_CMD()			socle_mp_gpio_set_port_num_value(PP, 1, 1)
-#define EINK_SET_CD_DAT()			socle_mp_gpio_set_port_num_value(PP, 1, 0)
+#define EINK_SET_CD_CMD()			sq_mp_gpio_set_port_num_value(PP, 1, 1)
+#define EINK_SET_CD_DAT()			sq_mp_gpio_set_port_num_value(PP, 1, 0)
 
-#define EINK_SET_DS()				socle_mp_gpio_set_port_num_value(PP, 3, 0)
-#define EINK_CLR_DS()				socle_mp_gpio_set_port_num_value(PP, 3, 1)
+#define EINK_SET_DS()				sq_mp_gpio_set_port_num_value(PP, 3, 0)
+#define EINK_CLR_DS()				sq_mp_gpio_set_port_num_value(PP, 3, 1)
 
-#define EINK_SET_ACK_INPUT()		socle_mp_gpio_set_port_num_direction(PP, 5, 0)
-#define EINK_GET_ACK()				(socle_mp_gpio_get_port_value(PP) & 0x20)
+#define EINK_SET_ACK_INPUT()		sq_mp_gpio_set_port_num_direction(PP, 5, 0)
+#define EINK_GET_ACK()				(sq_mp_gpio_get_port_value(PP) & 0x20)
 
-#define EINK_SET_RW_WR()			socle_mp_gpio_set_port_num_value(PP, 7, 0)
-#define EINK_SET_RW_RD()			socle_mp_gpio_set_port_num_value(PP, 7, 1)
+#define EINK_SET_RW_WR()			sq_mp_gpio_set_port_num_value(PP, 7, 0)
+#define EINK_SET_RW_RD()			sq_mp_gpio_set_port_num_value(PP, 7, 1)
 
 #else
 
@@ -291,12 +291,12 @@ eink_bar_test(int level)
 }
 
 
-extern struct test_item_container socle_eink_main_container;
+extern struct test_item_container sq_eink_main_container;
 
 extern int
-socle_lcm_eink_test(int autotest)
+sq_lcm_eink_test(int autotest)
 {
-	return test_item_ctrl(&socle_eink_main_container, autotest);
+	return test_item_ctrl(&sq_eink_main_container, autotest);
 }
 
 

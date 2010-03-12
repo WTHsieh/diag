@@ -1,5 +1,5 @@
 local_dir	:= src/NAND
-lib_dir		:= $(local_dir)/rscode-1.0_socle
+lib_dir		:= $(local_dir)/rscode-1.0_sq
 lib_name	:= libecc.a
 
 local_lib	:= $(lib_dir)/$(lib_name)

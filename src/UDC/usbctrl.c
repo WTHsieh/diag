@@ -211,23 +211,23 @@ int UDCTesting()
 
 		//20080123 leonid add for USB Upstream 
         #if defined(CONFIG_PC7210) || defined(CONFIG_PDK)
-			socle_scu_usb_tranceiver_upstream();
+			sq_scu_usb_tranceiver_upstream();
         #endif
 	
 	//cyli++ 01/17/07
 	if (IS_16_ENDPT()) {
-		printf("The Socle UDC has 16 end-points\n");
+		printf("The Sq UDC has 16 end-points\n");
 	} else if (IS_10_ENDPT()) {
-		printf("The Socle UDC has 10 end-points\n");
+		printf("The Sq UDC has 10 end-points\n");
 	} else if (IS_4_ENDPT()) {
-		printf("The Socle UDC has 4 end-points\n");
+		printf("The Sq UDC has 4 end-points\n");
 	} else {
 		printf("Error end-point numbers!\n");
 		printf("DEV_INFO = 0x%08x\n", readw(UDC_DEVINFO) & ENDPT_NUM_MASK);
 	}
 
-// CY+ to fix program reload Socle phy hang up problem
-#ifdef	UDC_SOCLE_PHY
+// CY+ to fix program reload Sq phy hang up problem
+#ifdef	UDC_SQ_PHY
 		ASSERT_SOFT_POR();
 #if 0
 		isr_time_value   = 0;
@@ -242,7 +242,7 @@ int UDCTesting()
 		DEASSERT_SOFT_POR();
 #endif
 
-#ifdef	UDC_SOCLE_PHY
+#ifdef	UDC_SQ_PHY
 #if 0
 		isr_time_value   = 0;
 		isr_waiting_time = 8;
@@ -285,7 +285,7 @@ int UDCTesting()
 			printf("\b\b\b\b");
 		}
 
-#ifdef	UDC_SOCLE_PHY
+#ifdef	UDC_SQ_PHY
 		ASSERT_SOFT_POR();
 #if 0
 		isr_time_value   = 0;
@@ -300,7 +300,7 @@ int UDCTesting()
 		DEASSERT_SOFT_POR();
 #endif
 
-#ifdef	UDC_SOCLE_PHY
+#ifdef	UDC_SQ_PHY
 #if 0
 		isr_time_value   = 0;
 		isr_waiting_time = 8;
@@ -357,7 +357,7 @@ int UDCTesting()
 		            	printf("USB initialize...Done\n");
 		            	printf("HandShaking...Done\n");
 				printf("Waiting for Bulk Read/Write test...\n");
-				printf("Remove Socle USB Bulk device Hardware from Windows and USB cable to Exit !!!\n");
+				printf("Remove Sq USB Bulk device Hardware from Windows and USB cable to Exit !!!\n");
 				Continue_test = 0;
 	    		}
 			// check channel group transmit request
@@ -1130,14 +1130,14 @@ void setup_resume_timer()
 	// disable timer 0
 	TMR0_DIS();
 	// set reload reg, PCLK ~= 5MHz, reload reg = 60000, prescaler = 256 ====> ~ 3 sec.
-	writew(60000, SOCLE_TMR0LR);
+	writew(60000, SQ_TMR0LR);
 
 	// set control flag
 	TMR0_PERIOD_MODE();
 	TMR0_PRESCALE(PRESCALE_256);
 
 	// enable interrupt
-	request_irq(SOCLE_INTC_TMR0_0, usb_time_up_for_resume, 0);
+	request_irq(SQ_INTC_TMR0_0, usb_time_up_for_resume, 0);
 
 	// enable TIMER 0
 	TMR0_EN();
@@ -1167,17 +1167,17 @@ void setup_1ms_timer(int tmr_times)
     // disable timer 0
 	TMR1_DIS();
 	// set reload reg, PCLK ~= 5MHz, reload reg = 20, prescaler = 256 ====> ~ 1ms.
-//	writew(20  * tmr_times, SOCLE_TMR1LR);	// for APB clock = 5  MHz
+//	writew(20  * tmr_times, SQ_TMR1LR);	// for APB clock = 5  MHz
 
-	writew(264 * tmr_times, SOCLE_TMR1LR);	// for APB clock = 66 MHz
-//	writew(512 * tmr_times, SOCLE_TMR1LR);	// for APB clock = 66 MHz
+	writew(264 * tmr_times, SQ_TMR1LR);	// for APB clock = 66 MHz
+//	writew(512 * tmr_times, SQ_TMR1LR);	// for APB clock = 66 MHz
 
 	// set control flag
 	TMR1_PERIOD_MODE();
 	TMR1_PRESCALE(PRESCALE_256);
 
 	// enable interrupt
-	request_irq(SOCLE_INTC_TMR0_1, usb_time_up_for_1ms, 0);
+	request_irq(SQ_INTC_TMR0_1, usb_time_up_for_1ms, 0);
 
 	// enable TIMER 1
 	TMR1_EN();

@@ -196,7 +196,7 @@ config CONFIG_SCU
 		SQ System Control Unit Test
 
 #	LCD & PWM
-config CONFIG_SOCLE_LCD
+config CONFIG_SQ_LCD
 	bool "SQ LCD Test"
 	help
 		SQ LCD(CADENCE) Test

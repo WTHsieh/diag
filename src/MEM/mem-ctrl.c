@@ -22,8 +22,8 @@ static u32 mem_pattern[]={
 	MEM_PATTERN7,
 };
 
-static u32	addr_start[SOCLE_MEMORY_BANKS];					
-static u32	bank_size[SOCLE_MEMORY_BANKS];
+static u32	addr_start[SQ_MEMORY_BANKS];					
+static u32	bank_size[SQ_MEMORY_BANKS];
 static u32	mem_start;
 static u32	mem_end;
 static u32	mem_size;	
@@ -37,22 +37,22 @@ MemoryTesting(int autotest)
 {
 	int ret = 0, size;
 
-	size = SOCLE_MEMORY_ADDR_SIZE;
+	size = SQ_MEMORY_ADDR_SIZE;
 
 	#if defined(CONFIG_PDK) || defined(CONFIG_PC7210)
-		if(SOCLE_SCU_SDRAM_BUS_WIDTH_32 == socle_scu_sdram_bus_width_status())
+		if(SQ_SCU_SDRAM_BUS_WIDTH_32 == sq_scu_sdram_bus_width_status())
 			size = size * 2;
 	#endif
 
-	mem_start = (u32)SOCLE_MEMORY_ADDR_START | (u32)_end;
-	mem_end = (u32)SOCLE_MEMORY_ADDR_START + size;
+	mem_start = (u32)SQ_MEMORY_ADDR_START | (u32)_end;
+	mem_end = (u32)SQ_MEMORY_ADDR_START + size;
 	mem_size = (u32)mem_end - (u32)mem_start;
 	
 #ifdef CONFIG_SCDK
 	{
 		extern struct test_item mem_main_test_items[];
 		//read scu to get amba mode
-		if(ioread32(SOCLE_APB0_SCU + 0x28) & SCU_AHB_MODE)
+		if(ioread32(SQ_APB0_SCU + 0x28) & SCU_AHB_MODE)
 			mem_main_test_items[4].enable=1;
 		else 
 			mem_main_test_items[4].enable=0;
@@ -196,7 +196,7 @@ mem_bank_test(int autotest)
 {
 	int count, ret;
 		
-	for(count=0;count<SOCLE_MEMORY_BANKS;count++){
+	for(count=0;count<SQ_MEMORY_BANKS;count++){
 		addr_start[count] = BANK_ADDRESS[count] + 0x200000;
 		bank_size[count] = 0x10000;
 	}
@@ -331,7 +331,7 @@ mem_bank_pattern_test(int burn)
 	int ret, pat, bank;
 	
 	do{
-		for (bank = 0; bank < SOCLE_MEMORY_BANKS; bank++) {                
+		for (bank = 0; bank < SQ_MEMORY_BANKS; bank++) {                
 			printf("Start Test Special Memory Address (%08x), Size(%08x)\n", addr_start[bank], bank_size[bank]);
 			for(pat=0;pat<sizeof(mem_pattern);pat++)
 				printf("    ---- Test Pattern : %08x\n", mem_pattern[pat]);
@@ -389,7 +389,7 @@ msdr_write_test(int autotest)
 {
 	int ret = 0;
 	//register u32	end = mem_end;
-	register u32	end =(u32)SOCLE_MEMORY_ADDR_START+0x400000;
+	register u32	end =(u32)SQ_MEMORY_ADDR_START+0x400000;
 	register u32	*p;
 	
 	p = (u32 *)mem_start;
@@ -410,7 +410,7 @@ msdr_compare_test(int autotest)
 {
 	int ret = 0;
 	//register u32	end = mem_end;
-	register u32	end =(u32)SOCLE_MEMORY_ADDR_START+0x400000;
+	register u32	end =(u32)SQ_MEMORY_ADDR_START+0x400000;
 	register u32	*p;
 	
 	p = (u32 *)mem_start;

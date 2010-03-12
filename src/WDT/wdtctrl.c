@@ -11,14 +11,14 @@ wdt_watching(int autotest)
 	int ret = 0, pseudo_flag = 0;
 
 #if defined(CONFIG_CDK) || defined(CONFIG_PC9002) || defined(CONFIG_SCDK)
-	iowrite32(ioread32(SOCLE_APB0_SCU + 0x28) | (0x1 << 13), SOCLE_APB0_SCU + 0x28);
+	iowrite32(ioread32(SQ_APB0_SCU + 0x28) | (0x1 << 13), SQ_APB0_SCU + 0x28);
 #endif
 #ifdef CONFIG_SQ8000
-	socle_scu_wdt_reset_enable(1);
+	sq_scu_wdt_reset_enable(1);
 #endif 
 
 	// set reload reg, prescaler
-	iowrite32(socle_get_apb_clock() / 60 * 3, SOCLE_WDTLR);
+	iowrite32(sq_get_apb_clock() / 60 * 3, SQ_WDTLR);
 	WDT_PRESCALE(PRESCALE_64);
 
 	printf("WDT: The system will reset now!!\n");
@@ -26,7 +26,7 @@ wdt_watching(int autotest)
 	WDT_RST_EN();
 	WDT_EN();
 
-	if (socle_wait_for_int(&pseudo_flag, 5)) {
+	if (sq_wait_for_int(&pseudo_flag, 5)) {
 		printf("Timeout!! The system does not reset!!\n");
 		ret = -1;
 	}

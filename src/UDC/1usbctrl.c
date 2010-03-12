@@ -207,8 +207,8 @@ int USBTesting()
 		printf("DEV_INFO = 0x%08x", readw(UDC_DEVINFO) & ENDPT_NUM_MASK);
 	}
 
-// CY+ to fix program reload Socle phy hang up problem
-#ifdef	UDC_SOCLE_PHY
+// CY+ to fix program reload Sq phy hang up problem
+#ifdef	UDC_SQ_PHY
 		ASSERT_SOFT_POR();
 #if 0
 		isr_time_value   = 0;
@@ -223,7 +223,7 @@ int USBTesting()
 		DEASSERT_SOFT_POR();
 #endif
 
-#ifdef	UDC_SOCLE_PHY
+#ifdef	UDC_SQ_PHY
 #if 0
 		isr_time_value   = 0;
 		isr_waiting_time = 8;
@@ -271,7 +271,7 @@ int USBTesting()
 			printf("\b\b\b\b");
         	}
 
-#ifdef	UDC_SOCLE_PHY
+#ifdef	UDC_SQ_PHY
 		ASSERT_SOFT_POR();
 #if 0
 		isr_time_value   = 0;
@@ -286,7 +286,7 @@ int USBTesting()
 		DEASSERT_SOFT_POR();
 #endif
 
-#ifdef	UDC_SOCLE_PHY
+#ifdef	UDC_SQ_PHY
 #if 0
 		isr_time_value   = 0;
 		isr_waiting_time = 8;
@@ -343,7 +343,7 @@ int USBTesting()
 		            	printf("USB initialize...Done\n");
 		            	printf("HandShaking...Done\n");
 				printf("Waiting for Bulk Read/Write test...\n");
-				printf("Remove Socle USB Bulk device Hardware from Windows and USB cable to Exit !!!\n");
+				printf("Remove Sq USB Bulk device Hardware from Windows and USB cable to Exit !!!\n");
 				Continue_test = 0;
 	    		}
 			// check channel group transmit request

@@ -1,6 +1,6 @@
-## Socle Technology Corp.
+## Sq Technology Corp.
 ########################################
-echo Socle Panther Development Kit PC72xx 16 bit \n
+echo Sq Panther Development Kit PC72xx 16 bit \n
 echo GDB initial... \n
 
 ##SCU

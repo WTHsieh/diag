@@ -3,9 +3,9 @@
 #include "adc-regs.h"
 #include "dependency.h"
 
-//#define CONFIG_SOCLE_ADC_DEBUG
-#ifdef CONFIG_SOCLE_ADC_DEBUG
-	#define ADC_DBG(fmt, args...) printf("SOCLE_ADC: " fmt, ## args)
+//#define CONFIG_SQ_ADC_DEBUG
+#ifdef CONFIG_SQ_ADC_DEBUG
+	#define ADC_DBG(fmt, args...) printf("SQ_ADC: " fmt, ## args)
 #else
 	#define ADC_DBG(fmt, args...)
 #endif
@@ -13,14 +13,14 @@
 
 int (*adc_wait_for_conversion)(void);
 
-static u32 socle_adc_base = SOCLE_APB0_ADC;;
-static u32 socle_adc_irq = SOCLE_INTC_ADC;
-static int socle_adc_ready;
+static u32 sq_adc_base = SQ_APB0_ADC;;
+static u32 sq_adc_irq = SQ_INTC_ADC;
+static int sq_adc_ready;
 
 static void adc_conversion_isr(void *pparam);
 
-extern void socle_adc_init(void);
-extern int socle_adc_read(int ch);
+extern void sq_adc_init(void);
+extern int sq_adc_read(int ch);
 extern int adc_wait_for_conversion_by_poll(void);
 extern int adc_wait_for_conversion_by_int(void);
 
@@ -46,7 +46,7 @@ adc_write(u32 offset, u32 data, u32 base)
 
 
 extern int
-socle_adc_ch_test_sub(int v_max)
+sq_adc_ch_test_sub(int v_max)
 {
 	int ch, val, sum = 0, bnd_hi, bnd_lo, err;
 
@@ -55,10 +55,10 @@ socle_adc_ch_test_sub(int v_max)
 		return -1;
 	}
 
-	socle_adc_init();
+	sq_adc_init();
 
 	for (ch = 0; ch < SUPT_CH; ch++) {	
-		val = socle_adc_read(ch);
+		val = sq_adc_read(ch);
 		if (-1 == val)
 			return -1;
 			
@@ -91,20 +91,20 @@ socle_adc_ch_test_sub(int v_max)
 }
 
 extern void
-socle_adc_init(void)
+sq_adc_init(void)
 {
 	int data;
 
 #ifndef CONFIG_SQ8000
 	// adc power up and reset
-	adc_read(ADC_CTRL, &data, socle_adc_base);
-	adc_write(ADC_CTRL, ADC_PWR_UP | data, socle_adc_base);
+	adc_read(ADC_CTRL, &data, sq_adc_base);
+	adc_write(ADC_CTRL, ADC_PWR_UP | data, sq_adc_base);
 #endif
 
 }
 
 extern int
-socle_adc_read(int ch)
+sq_adc_read(int ch)
 {
 	int data, val;
 	
@@ -114,9 +114,9 @@ socle_adc_read(int ch)
 	}
 	
 	// start converse
-	adc_read(ADC_CTRL, &data, socle_adc_base);
+	adc_read(ADC_CTRL, &data, sq_adc_base);
 	data = data & ~ADC_CH_MSK;
-	adc_write(ADC_CTRL, ADC_STR_CONV | data | ch , socle_adc_base);
+	adc_write(ADC_CTRL, ADC_STR_CONV | data | ch , sq_adc_base);
 	
 	// wait for conversion
 	val = adc_wait_for_conversion();
@@ -131,13 +131,13 @@ adc_wait_for_conversion_by_poll(void)
 {
 	int val;
 
-	if (socle_wait_by_poll(socle_adc_base + ADC_STAS, ADC_CONV_STAS, ACD_STAS_STOP, 3)) {
+	if (sq_wait_by_poll(sq_adc_base + ADC_STAS, ADC_CONV_STAS, ACD_STAS_STOP, 3)) {
 		printf("Timeout!!\n");
 		return -1;
 	}
 
 	// read value
-	adc_read(ADC_DATA, &val, socle_adc_base);
+	adc_read(ADC_DATA, &val, sq_adc_base);
 
 	return val;
 }
@@ -147,13 +147,13 @@ adc_wait_for_conversion_by_int(void)
 {
 	int val;
 
-	if (socle_wait_for_int(&socle_adc_ready, 3)) {
+	if (sq_wait_for_int(&sq_adc_ready, 3)) {
 		printf("Timeout!!\n");
 		return -1;
 	}
 
 	// read value
-	adc_read(ADC_DATA, &val, socle_adc_base);
+	adc_read(ADC_DATA, &val, sq_adc_base);
 
 	return val;
 }
@@ -163,16 +163,16 @@ adc_init_conversion_by_int(void)
 {
 	int data;
 
-	ADC_DBG("adc irq = %d\n", socle_adc_irq);
+	ADC_DBG("adc irq = %d\n", sq_adc_irq);
 
 	// adc interrupt enable
-	adc_read(ADC_CTRL, &data, socle_adc_base);
-	adc_write(ADC_CTRL, ADC_INT_EN | data, socle_adc_base);
+	adc_read(ADC_CTRL, &data, sq_adc_base);
+	adc_write(ADC_CTRL, ADC_INT_EN | data, sq_adc_base);
 
 	// interrupt enable
-	request_irq(socle_adc_irq, adc_conversion_isr, NULL);
+	request_irq(sq_adc_irq, adc_conversion_isr, NULL);
 
-	socle_adc_ready = 0;
+	sq_adc_ready = 0;
 }
 
 extern void
@@ -181,13 +181,13 @@ adc_release_conversion_by_int(void)
 	int data;
 
 	// adc interrupt disable
-	adc_read(ADC_CTRL, &data, socle_adc_base);
-	adc_write(ADC_CTRL, ~ADC_INT_EN & data, socle_adc_base);
+	adc_read(ADC_CTRL, &data, sq_adc_base);
+	adc_write(ADC_CTRL, ~ADC_INT_EN & data, sq_adc_base);
 
 	// disable interrupt
-	free_irq(socle_adc_irq);
+	free_irq(sq_adc_irq);
 
-	socle_adc_ready = 0;
+	sq_adc_ready = 0;
 }
 
 static void
@@ -198,9 +198,9 @@ adc_conversion_isr(void *pparam)
 	ADC_DBG("adc irs\n");
 
 	// clear isr
-	adc_read(ADC_CTRL, &data, socle_adc_base);
-	adc_write(ADC_CTRL, ~ADC_INT_STAS & data, socle_adc_base);
+	adc_read(ADC_CTRL, &data, sq_adc_base);
+	adc_write(ADC_CTRL, ~ADC_INT_STAS & data, sq_adc_base);
 
-	socle_adc_ready = 1;
+	sq_adc_ready = 1;
 }
 

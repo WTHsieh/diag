@@ -26,7 +26,7 @@
  /*-------------------------------------------------------------------------*/
 /* Operational Register Define */
 /*-------------------------------------------------------------------------*/
-#define  OHCI_BASE 	SOCLE_AHB0_UHC	/*0x180a4000*//*0x1e6e0000*/
+#define  OHCI_BASE 	SQ_AHB0_UHC	/*0x180a4000*//*0x1e6e0000*/
 
 #define   OhciReg							(OHCI_BASE)
 	#define 	HcRevision(base)					(base + 0x00)

@@ -5,7 +5,7 @@ lib_name	:= #??.
 local_lib	:= #$(lib_dir)/$(lib_name)
 
 # compile source
-local_src	:= dma.c panther7-hdma.c socle-a2a.c socle-hdma.c
+local_src	:= dma.c panther7-hdma.c sq-a2a.c sq-hdma.c
 lib_src		:= 
 
 include build/common.mk

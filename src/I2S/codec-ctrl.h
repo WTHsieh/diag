@@ -18,7 +18,7 @@
 #endif
 
 //for pcm play test wih audio codec
-extern int (*socle_audio_control_function)(void);
+extern int (*sq_audio_control_function)(void);
 
 //Audio DAC function
 extern int aduio_get_dac_fs(void);
@@ -33,7 +33,7 @@ extern int audio_dac_mute(bool val);
 //1:enable mute , 0:disable mute
 extern int audio_dac_de_emphasis(u16 val);
 //Audio ADC function
-extern int socle_adc_channel_contrl(u32 ch);
+extern int sq_adc_channel_contrl(u32 ch);
 extern int audio_adc_initialize(void);
 extern int audio_adc_mode(u16 val);
 extern int audio_adc_input_amplifier_gain(u8 reg, u16 val);

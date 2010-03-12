@@ -47,8 +47,8 @@
 
 
 // Mega Alignment
-extern int socle_memory_addr_start;
-#define TEST_PATTERN_START		((((((u32_t)_end) >> 20 )+ 1) << 20) | socle_memory_addr_start)
+extern int sq_memory_addr_start;
+#define TEST_PATTERN_START		((((((u32_t)_end) >> 20 )+ 1) << 20) | sq_memory_addr_start)
 
 
 #define	CLKnS(freqH)			(1000*1000*1000/(freqH))
@@ -83,7 +83,7 @@ extern int cpu_clk_mhz;
  *				sec: wait time (seconds)
  * Output	:	return 0: succeed, -1: timeout
  */
-extern int socle_wait_for_int(volatile int *flag, int sec);
+extern int sq_wait_for_int(volatile int *flag, int sec);
 
 /*
  * Input	:	addr: ip address
@@ -92,6 +92,6 @@ extern int socle_wait_for_int(volatile int *flag, int sec);
  *				sec: wait time (seconds)
  * Output	:	return 0: succeed, -1: timeout
  */
-extern int socle_wait_by_poll(int addr, int mask, int exp_val, int sec);
+extern int sq_wait_by_poll(int addr, int mask, int exp_val, int sec);
 
 #endif  // _global_h_included_

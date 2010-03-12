@@ -6,24 +6,24 @@
 #include "i2c-regs.h"
 #include "i2c.h"
 
-static void socle_i2c_isr(void *data);
-static u32 socle_i2c_calculate_divisor(u32 clk);
-static int socle_i2c_do_transfer(struct i2c_msg *msgs, int num);
-static int socle_i2c_do_address(struct i2c_msg *msgs);
-static int socle_i2c_read_bytes(struct i2c_msg *msgs);
-static int socle_i2c_send_bytes(struct i2c_msg *msgs);
-static void socle_i2c_ack(void);
-static void socle_i2c_nak(void);
-static void socle_i2c_start(void);
-static void socle_i2c_stop(void);
-static void socle_i2c_resume(void);
-static void socle_i2c_master_write_byte(u8 data);
-static int socle_i2c_master_read_byte(void);
-static int socle_i2c_master_check_ack(void);
+static void sq_i2c_isr(void *data);
+static u32 sq_i2c_calculate_divisor(u32 clk);
+static int sq_i2c_do_transfer(struct i2c_msg *msgs, int num);
+static int sq_i2c_do_address(struct i2c_msg *msgs);
+static int sq_i2c_read_bytes(struct i2c_msg *msgs);
+static int sq_i2c_send_bytes(struct i2c_msg *msgs);
+static void sq_i2c_ack(void);
+static void sq_i2c_nak(void);
+static void sq_i2c_start(void);
+static void sq_i2c_stop(void);
+static void sq_i2c_resume(void);
+static void sq_i2c_master_write_byte(u8 data);
+static int sq_i2c_master_read_byte(void);
+static int sq_i2c_master_check_ack(void);
 
-static u32 socle_i2c_base;
-static u8 socle_i2c_slave_buf[2048] = {0};
-static u32 socle_i2c_slave_buf_idx = 0;
+static u32 sq_i2c_base;
+static u8 sq_i2c_slave_buf[2048] = {0};
+static u32 sq_i2c_slave_buf_idx = 0;
 static int int_master_ack_period = 0, int_master_recv_ack = 0;
 
 /*
@@ -35,57 +35,57 @@ i2c_master_initialize(u32 ip_mem_base, u32 ip_irq)
 {
 	u32 i2c_cdvr = 0;
 
-	socle_i2c_base = ip_mem_base;
+	sq_i2c_base = ip_mem_base;
 
-	request_irq(ip_irq, socle_i2c_isr, NULL);
+	request_irq(ip_irq, sq_i2c_isr, NULL);
 
 	/* Enable the I2C controller */
-	socle_i2c_write(SOCLE_I2C_OPR,
-			socle_i2c_read(SOCLE_I2C_OPR, socle_i2c_base) |
-			SOCLE_I2C_CORE_EN,
-			socle_i2c_base);
+	sq_i2c_write(SQ_I2C_OPR,
+			sq_i2c_read(SQ_I2C_OPR, sq_i2c_base) |
+			SQ_I2C_CORE_EN,
+			sq_i2c_base);
 
 	/* Enable the master port */
-	socle_i2c_write(SOCLE_I2C_CONR,
-			socle_i2c_read(SOCLE_I2C_CONR, socle_i2c_base) |
-			SOCLE_I2C_MASTER_PORT_EN,
-			socle_i2c_base);
+	sq_i2c_write(SQ_I2C_CONR,
+			sq_i2c_read(SQ_I2C_CONR, sq_i2c_base) |
+			SQ_I2C_MASTER_PORT_EN,
+			sq_i2c_base);
 
 	/* Reset I2C state machine of both master and slave */
-	socle_i2c_write(SOCLE_I2C_OPR,
-			socle_i2c_read(SOCLE_I2C_OPR, socle_i2c_base) |
-			SOCLE_I2C_RST,
-			socle_i2c_base);
+	sq_i2c_write(SQ_I2C_OPR,
+			sq_i2c_read(SQ_I2C_OPR, sq_i2c_base) |
+			SQ_I2C_RST,
+			sq_i2c_base);
 
 	/* Restore the reset bit to 0  */
-	socle_i2c_write(SOCLE_I2C_OPR,
-			socle_i2c_read(SOCLE_I2C_OPR, socle_i2c_base) &
-			~SOCLE_I2C_RST,
-			socle_i2c_base);
+	sq_i2c_write(SQ_I2C_OPR,
+			sq_i2c_read(SQ_I2C_OPR, sq_i2c_base) &
+			~SQ_I2C_RST,
+			sq_i2c_base);
 
-	i2c_cdvr = socle_i2c_calculate_divisor(400000);
+	i2c_cdvr = sq_i2c_calculate_divisor(400000);
 	
 	/* Set the divisor */
-	socle_i2c_write(SOCLE_I2C_OPR,
-			(socle_i2c_read(SOCLE_I2C_OPR, socle_i2c_base) & 
-			 ~SOCLE_I2C_CLK_DIVISOR(0x3f)) |
-			SOCLE_I2C_CLK_DIVISOR(i2c_cdvr),
-			socle_i2c_base);
+	sq_i2c_write(SQ_I2C_OPR,
+			(sq_i2c_read(SQ_I2C_OPR, sq_i2c_base) & 
+			 ~SQ_I2C_CLK_DIVISOR(0x3f)) |
+			SQ_I2C_CLK_DIVISOR(i2c_cdvr),
+			sq_i2c_base);
 
 	/* Set interrupt generation of I2C controller */
-	socle_i2c_write(SOCLE_I2C_IER,
-			SOCLE_I2C_ARBIT_LOSE_INT_EN |
-			SOCLE_I2C_ABNORMAL_STP_INT_DIS |
-			SOCLE_I2C_BROADCAST_ADDR_INT_DIS |
-			SOCLE_I2C_SLAVE_ADDR_INT_DIS |
-			SOCLE_I2C_SLAVE_ACK_PERIOD_INT_DIS |
-			SOCLE_I2C_SLAVE_RECV_ACK_INT_DIS |
-			SOCLE_I2C_MASTER_ACK_PERIOD_INT_EN |
-			SOCLE_I2C_MASTER_RECV_ACK_INT_EN,
-			socle_i2c_base);
+	sq_i2c_write(SQ_I2C_IER,
+			SQ_I2C_ARBIT_LOSE_INT_EN |
+			SQ_I2C_ABNORMAL_STP_INT_DIS |
+			SQ_I2C_BROADCAST_ADDR_INT_DIS |
+			SQ_I2C_SLAVE_ADDR_INT_DIS |
+			SQ_I2C_SLAVE_ACK_PERIOD_INT_DIS |
+			SQ_I2C_SLAVE_RECV_ACK_INT_DIS |
+			SQ_I2C_MASTER_ACK_PERIOD_INT_EN |
+			SQ_I2C_MASTER_RECV_ACK_INT_EN,
+			sq_i2c_base);
 
 	/* Clear the slave buffer */
-	memset(socle_i2c_slave_buf, 0x00, 2048);
+	memset(sq_i2c_slave_buf, 0x00, 2048);
 }
 
 extern int
@@ -102,17 +102,17 @@ i2c_transfer(struct i2c_msg *msgs, int num)
 #endif
 
 	for (i = 0; i < 5; i++) {
-		ret = socle_i2c_do_transfer(msgs, num);
+		ret = sq_i2c_do_transfer(msgs, num);
 		if (ret == num)
 			return ret;
-		printf("Socle I2C master: Retrying transmission (%d)\n", i);
+		printf("Sq I2C master: Retrying transmission (%d)\n", i);
 		USDELAY(100);
 	}
 	return -1;
 }
 
 static int
-socle_i2c_do_transfer(struct i2c_msg *msgs, int num)
+sq_i2c_do_transfer(struct i2c_msg *msgs, int num)
 {
 	int ret, i, nak_ok;
 	struct i2c_msg *pmsgs;
@@ -123,48 +123,48 @@ socle_i2c_do_transfer(struct i2c_msg *msgs, int num)
 		nak_ok = pmsgs->flags & I2C_M_IGNORE_NAK;
 		if (!(!pmsgs->flags & I2C_M_NOSTART)) {
 			if (0 == i) {
-				bus_stat = socle_i2c_read(SOCLE_I2C_LSR, socle_i2c_base);
-				if (SOCLE_I2C_AFTER_STR_COND_DET == (bus_stat & SOCLE_I2C_AFTER_STR_COND_DET)) {
-					printf("Socle I2C master: bus is busy\n");
+				bus_stat = sq_i2c_read(SQ_I2C_LSR, sq_i2c_base);
+				if (SQ_I2C_AFTER_STR_COND_DET == (bus_stat & SQ_I2C_AFTER_STR_COND_DET)) {
+					printf("Sq I2C master: bus is busy\n");
 					ret = -1;
 					goto out;
 				}
 			}
-			ret = socle_i2c_do_address(pmsgs);
+			ret = sq_i2c_do_address(pmsgs);
 			if ((ret != 0) && !nak_ok) {
-				printf("Socle I2C master: NAK from device address %2.2x msg #%d\n", msgs[i].addr, i);
+				printf("Sq I2C master: NAK from device address %2.2x msg #%d\n", msgs[i].addr, i);
 				ret = -1;
 				goto out;
 			}
 		}
 		if (pmsgs->flags & I2C_M_RD) {
 			/* Change the master to be as the receiver */
-			socle_i2c_write(SOCLE_I2C_CONR,
-					socle_i2c_read(SOCLE_I2C_CONR, socle_i2c_base) &
-					~SOCLE_I2C_MASTER_TRAN_SEL,
-					socle_i2c_base);
+			sq_i2c_write(SQ_I2C_CONR,
+					sq_i2c_read(SQ_I2C_CONR, sq_i2c_base) &
+					~SQ_I2C_MASTER_TRAN_SEL,
+					sq_i2c_base);
 
 			/* Read bytes into buffer */
-			ret = socle_i2c_read_bytes(pmsgs);
+			ret = sq_i2c_read_bytes(pmsgs);
 
 			if (ret < pmsgs->len)
 				goto out;
 		} else {
 			/* Set the master to be the transmitter */
-			socle_i2c_write(SOCLE_I2C_CONR,
-					socle_i2c_read(SOCLE_I2C_CONR, socle_i2c_base) |
-					SOCLE_I2C_MASTER_TRAN_SEL,
-					socle_i2c_base);
+			sq_i2c_write(SQ_I2C_CONR,
+					sq_i2c_read(SQ_I2C_CONR, sq_i2c_base) |
+					SQ_I2C_MASTER_TRAN_SEL,
+					sq_i2c_base);
 
 			/* Write bytes from buffer */
-			ret = socle_i2c_send_bytes(pmsgs);
+			ret = sq_i2c_send_bytes(pmsgs);
 			if (ret < pmsgs->len)
 				goto out;
 		}
 	}
 	ret = num;
 out:
-	socle_i2c_stop();
+	sq_i2c_stop();
 	return ret;
 }
 
@@ -204,7 +204,7 @@ i2c_master_recv(struct i2c_client *client, char *buf, int count)
 }
 
 static int
-socle_i2c_do_address(struct i2c_msg *msgs)
+sq_i2c_do_address(struct i2c_msg *msgs)
 {
 	u16 flags = msgs->flags;
 	u16 nak_ok = msgs->flags & I2C_M_IGNORE_NAK;
@@ -212,34 +212,34 @@ socle_i2c_do_address(struct i2c_msg *msgs)
 	int ret;
 
 	/* Set the master to be the transmitter */
-	socle_i2c_write(SOCLE_I2C_CONR,
-			socle_i2c_read(SOCLE_I2C_CONR, socle_i2c_base) |
-			SOCLE_I2C_MASTER_TRAN_SEL,
-			socle_i2c_base);
+	sq_i2c_write(SQ_I2C_CONR,
+			sq_i2c_read(SQ_I2C_CONR, sq_i2c_base) |
+			SQ_I2C_MASTER_TRAN_SEL,
+			sq_i2c_base);
 
 	if (flags & I2C_M_TEN) { /* A ten bits address */
 		addr = 0xf0 | ((msgs->addr >> 7) & 0x06);
 		
 		/* Try extended address code... */
-		socle_i2c_master_write_byte(addr);
-		socle_i2c_start();
-		ret = socle_i2c_master_check_ack();
+		sq_i2c_master_write_byte(addr);
+		sq_i2c_start();
+		ret = sq_i2c_master_check_ack();
 		if ((ret != 0) && !nak_ok)
 			goto out;
 			
 		/* The remaining 8 bit address */
-		socle_i2c_master_write_byte(msgs->addr & 0x7f);
-		socle_i2c_resume();
-		ret = socle_i2c_master_check_ack();
+		sq_i2c_master_write_byte(msgs->addr & 0x7f);
+		sq_i2c_resume();
+		ret = sq_i2c_master_check_ack();
 		if ((ret != 0) && !nak_ok)
 			goto out;
 
 		if (flags & I2C_M_RD) {
 			/* Okay, now switch into reading mode */
 			addr |= 0x01;
-			socle_i2c_master_write_byte(addr);
-			socle_i2c_start();
-			ret = socle_i2c_master_check_ack();
+			sq_i2c_master_write_byte(addr);
+			sq_i2c_start();
+			ret = sq_i2c_master_check_ack();
 			if ((ret != 0) && !nak_ok)
 				goto out;
 		}
@@ -249,9 +249,9 @@ socle_i2c_do_address(struct i2c_msg *msgs)
 			addr |= 1;
 		if (flags & I2C_M_REV_DIR_ADDR)
 			addr ^= 1;
-		socle_i2c_master_write_byte(addr);
-		socle_i2c_start();
-		ret = socle_i2c_master_check_ack();
+		sq_i2c_master_write_byte(addr);
+		sq_i2c_start();
+		ret = sq_i2c_master_check_ack();
 		if ((ret != 0) && !nak_ok)
 			goto out;
 			
@@ -262,7 +262,7 @@ out:
 }
 
 static int
-socle_i2c_read_bytes(struct i2c_msg *msgs)
+sq_i2c_read_bytes(struct i2c_msg *msgs)
 {
 	int inval;
 	u16 flags = msgs->flags;
@@ -271,8 +271,8 @@ socle_i2c_read_bytes(struct i2c_msg *msgs)
 	int cnt = msgs->len;
 
 	while (cnt > 0) {
-		socle_i2c_resume();
-		inval = socle_i2c_master_read_byte();
+		sq_i2c_resume();
+		inval = sq_i2c_master_read_byte();
 		*tmp = inval;
 		rdcnt++;
 		tmp++;
@@ -280,17 +280,17 @@ socle_i2c_read_bytes(struct i2c_msg *msgs)
 		if (flags & I2C_M_NO_RD_ACK)
 			continue;
 		if (cnt > 0) {
-			socle_i2c_ack();
+			sq_i2c_ack();
 		} else {
 			/* Neg. ack on last byte */
-			socle_i2c_nak();
+			sq_i2c_nak();
 		}
 	}
 	return rdcnt;
 }
 
 static int
-socle_i2c_send_bytes(struct i2c_msg *msgs)
+sq_i2c_send_bytes(struct i2c_msg *msgs)
 {
 	char c;
 	const char *temp = msgs->buf;
@@ -301,12 +301,12 @@ socle_i2c_send_bytes(struct i2c_msg *msgs)
 
 	while (cnt > 0) {
 		c = *temp;
-/* 		printf("Socle I2C master: sending %2.2x\n", c&0xff); */
-		socle_i2c_master_write_byte(c);
-		socle_i2c_resume();
-		ret = socle_i2c_master_check_ack();
+/* 		printf("Sq I2C master: sending %2.2x\n", c&0xff); */
+		sq_i2c_master_write_byte(c);
+		sq_i2c_resume();
+		ret = sq_i2c_master_check_ack();
 		if ((ret != 0) && !nak_ok) {
-			printf("Socle I2C master: error - bailout\n");
+			printf("Sq I2C master: error - bailout\n");
 			return -1;
 		} else {
 			cnt--;
@@ -321,177 +321,177 @@ static int addr_10_bits_str = 0;
 static int gen_call_addr_str = 0;
 
 static void 
-socle_i2c_isr(void *param)
+sq_i2c_isr(void *param)
 {
 	u32 tmp;
 	u8 ack_stat, data;
 
-	tmp = socle_i2c_read(SOCLE_I2C_ISR, socle_i2c_base);
+	tmp = sq_i2c_read(SQ_I2C_ISR, sq_i2c_base);
 
-	if (SOCLE_I2C_ARBIT_LOSE_INT == (SOCLE_I2C_ARBIT_LOSE_INT & tmp)) {
-		printf("Socle I2C master: arbitration lose occurs\n");
+	if (SQ_I2C_ARBIT_LOSE_INT == (SQ_I2C_ARBIT_LOSE_INT & tmp)) {
+		printf("Sq I2C master: arbitration lose occurs\n");
 
 		/* Clear interrupt */
-		socle_i2c_write(SOCLE_I2C_ISR, tmp & (~SOCLE_I2C_ARBIT_LOSE_INT), socle_i2c_base);
+		sq_i2c_write(SQ_I2C_ISR, tmp & (~SQ_I2C_ARBIT_LOSE_INT), sq_i2c_base);
 	}
-	if (SOCLE_I2C_ABNORMAL_STP_INT == (SOCLE_I2C_ABNORMAL_STP_INT & tmp)) {
-		printf("Socle I2C slave: abnormal stop occurs\n");
+	if (SQ_I2C_ABNORMAL_STP_INT == (SQ_I2C_ABNORMAL_STP_INT & tmp)) {
+		printf("Sq I2C slave: abnormal stop occurs\n");
 
 		/* Clear interrupt */
-		socle_i2c_write(SOCLE_I2C_ISR, tmp & (~SOCLE_I2C_ABNORMAL_STP_INT), socle_i2c_base);
+		sq_i2c_write(SQ_I2C_ISR, tmp & (~SQ_I2C_ABNORMAL_STP_INT), sq_i2c_base);
 	}
-	if (SOCLE_I2C_BROADCAST_ADDR_INT == (SOCLE_I2C_BROADCAST_ADDR_INT & tmp)) {
-/* 		printf("Socle I2C slave: broadcast address matches\n"); */
+	if (SQ_I2C_BROADCAST_ADDR_INT == (SQ_I2C_BROADCAST_ADDR_INT & tmp)) {
+/* 		printf("Sq I2C slave: broadcast address matches\n"); */
 
 		/* Clear interrupt */
-		socle_i2c_write(SOCLE_I2C_ISR, tmp & (~SOCLE_I2C_BROADCAST_ADDR_INT), socle_i2c_base);
+		sq_i2c_write(SQ_I2C_ISR, tmp & (~SQ_I2C_BROADCAST_ADDR_INT), sq_i2c_base);
 
 		gen_call_addr_str = 1;
 
 		/* Reply ACK */
-		socle_i2c_ack();
+		sq_i2c_ack();
 
-		socle_i2c_resume();		
+		sq_i2c_resume();		
 	}
-	if (SOCLE_I2C_SLAVE_ADDR_INT == (SOCLE_I2C_SLAVE_ADDR_INT & tmp)) {
+	if (SQ_I2C_SLAVE_ADDR_INT == (SQ_I2C_SLAVE_ADDR_INT & tmp)) {
 		u32 opr;
 
-/* 		printf("Socle I2C slave: slave address matches\n"); */
+/* 		printf("Sq I2C slave: slave address matches\n"); */
 
-		socle_i2c_slave_buf_idx = 0;		
+		sq_i2c_slave_buf_idx = 0;		
 	
 		/* Clear the interrupt */
-		socle_i2c_write(SOCLE_I2C_ISR, tmp & (~SOCLE_I2C_SLAVE_ADDR_INT), socle_i2c_base);
+		sq_i2c_write(SQ_I2C_ISR, tmp & (~SQ_I2C_SLAVE_ADDR_INT), sq_i2c_base);
 
-		data = socle_i2c_read(SOCLE_I2C_SRXR, socle_i2c_base);
-/* 		printf("Socle I2C slave: data is 0x%02x\n", data); */
+		data = sq_i2c_read(SQ_I2C_SRXR, sq_i2c_base);
+/* 		printf("Sq I2C slave: data is 0x%02x\n", data); */
 
-		opr = socle_i2c_read(SOCLE_I2C_OPR, socle_i2c_base);
-		if ((SOCLE_I2C_ADDR_10_BITS == (opr & SOCLE_I2C_ADDR_10_BITS)) && 
+		opr = sq_i2c_read(SQ_I2C_OPR, sq_i2c_base);
+		if ((SQ_I2C_ADDR_10_BITS == (opr & SQ_I2C_ADDR_10_BITS)) && 
 		    !(data & 0x01))
 			addr_10_bits_str = 1;
 
 		if (data & 0x01) {
 			/* Change the slave to be as the transmitter */
-			socle_i2c_write(SOCLE_I2C_CONR,
-					socle_i2c_read(SOCLE_I2C_CONR, socle_i2c_base) |
-					SOCLE_I2C_SLAVE_TRAN_SEL,
-					socle_i2c_base);
+			sq_i2c_write(SQ_I2C_CONR,
+					sq_i2c_read(SQ_I2C_CONR, sq_i2c_base) |
+					SQ_I2C_SLAVE_TRAN_SEL,
+					sq_i2c_base);
 
 			/* Write next data */
-			socle_i2c_write(SOCLE_I2C_STXR, 
-					socle_i2c_slave_buf[socle_i2c_slave_buf_idx++],
-					socle_i2c_base);
+			sq_i2c_write(SQ_I2C_STXR, 
+					sq_i2c_slave_buf[sq_i2c_slave_buf_idx++],
+					sq_i2c_base);
 
-/* 			printf("Socle I2C slave: data is 0x%02x\n", socle_i2c_slave_buf[socle_i2c_slave_buf_idx-1]); */
+/* 			printf("Sq I2C slave: data is 0x%02x\n", sq_i2c_slave_buf[sq_i2c_slave_buf_idx-1]); */
 		}
 
 		/* Reply ACK */
-		socle_i2c_ack();
+		sq_i2c_ack();
 
-		socle_i2c_resume();		
+		sq_i2c_resume();		
 	}
-	if (SOCLE_I2C_SLAVE_ACK_PERIOD_INT == (SOCLE_I2C_SLAVE_ACK_PERIOD_INT & tmp)) {
+	if (SQ_I2C_SLAVE_ACK_PERIOD_INT == (SQ_I2C_SLAVE_ACK_PERIOD_INT & tmp)) {
 		u32 opr;
 
-/* 		printf("Socle I2C slave: ACK period interrupt generation\n"); */
+/* 		printf("Sq I2C slave: ACK period interrupt generation\n"); */
 
 		/* Clear interrupt */
-		socle_i2c_write(SOCLE_I2C_ISR, 
-				tmp & ~SOCLE_I2C_SLAVE_ACK_PERIOD_INT, 
-				socle_i2c_base);
+		sq_i2c_write(SQ_I2C_ISR, 
+				tmp & ~SQ_I2C_SLAVE_ACK_PERIOD_INT, 
+				sq_i2c_base);
 
-		opr = socle_i2c_read(SOCLE_I2C_OPR, socle_i2c_base);
-		if ((SOCLE_I2C_ADDR_10_BITS == (opr & SOCLE_I2C_ADDR_10_BITS)) && 
+		opr = sq_i2c_read(SQ_I2C_OPR, sq_i2c_base);
+		if ((SQ_I2C_ADDR_10_BITS == (opr & SQ_I2C_ADDR_10_BITS)) && 
 		    addr_10_bits_str) {
 			u32 recv_addr;
 			u32 slave_addr;
 
-			recv_addr= socle_i2c_read(SOCLE_I2C_SRXR, socle_i2c_base);
-			slave_addr = socle_i2c_read(SOCLE_I2C_SADDR, socle_i2c_base);
+			recv_addr= sq_i2c_read(SQ_I2C_SRXR, sq_i2c_base);
+			slave_addr = sq_i2c_read(SQ_I2C_SADDR, sq_i2c_base);
 			slave_addr &= 0x7f;
 			if (recv_addr == slave_addr)
 				/* Reply ACK */
-				socle_i2c_ack();
+				sq_i2c_ack();
 			else
 				/* Reply NAK */
-				socle_i2c_nak();
+				sq_i2c_nak();
 			addr_10_bits_str = 0;
 		} else if (gen_call_addr_str) {
 			u32 buf;
 
-			buf = socle_i2c_read(SOCLE_I2C_SRXR, socle_i2c_base);
+			buf = sq_i2c_read(SQ_I2C_SRXR, sq_i2c_base);
 			if (0x06 == buf)
-				printf("Socle I2C slave: Reset and write programmable part of slave address by hardware\n");
+				printf("Sq I2C slave: Reset and write programmable part of slave address by hardware\n");
 			else if (0x04 == buf)
-				printf("Socle I2C slave: write programmable part of slave address by hardware\n");
+				printf("Sq I2C slave: write programmable part of slave address by hardware\n");
 			else if (buf & 0x01)
-				printf("Socle I2C slave: the address of master is 0x%02x\n", (buf>>1)&0x7f);
+				printf("Sq I2C slave: the address of master is 0x%02x\n", (buf>>1)&0x7f);
 			else
-				printf("Socle I2C slave: unknown value 0x%02x\n", buf);
+				printf("Sq I2C slave: unknown value 0x%02x\n", buf);
 			gen_call_addr_str = 0;
 
 			/* Reply ACK */
-			socle_i2c_ack();
+			sq_i2c_ack();
 
 		} else {
-			socle_i2c_slave_buf[socle_i2c_slave_buf_idx++] = socle_i2c_read(SOCLE_I2C_SRXR, socle_i2c_base);
+			sq_i2c_slave_buf[sq_i2c_slave_buf_idx++] = sq_i2c_read(SQ_I2C_SRXR, sq_i2c_base);
 			
 			/* Reply ACK */
-			socle_i2c_ack();
+			sq_i2c_ack();
 		}
 
-/* 		printf("Socle I2C slave: data is 0x%02x\n", socle_i2c_slave_buf[socle_i2c_slave_buf_idx-1]); */
+/* 		printf("Sq I2C slave: data is 0x%02x\n", sq_i2c_slave_buf[sq_i2c_slave_buf_idx-1]); */
 
-		socle_i2c_resume();
+		sq_i2c_resume();
 	}
-	if (SOCLE_I2C_SLAVE_RECV_ACK_INT == (SOCLE_I2C_SLAVE_RECV_ACK_INT & tmp)) {
-/* 		printf("Socle I2C slave: receive ACK interrupt generation\n"); */
+	if (SQ_I2C_SLAVE_RECV_ACK_INT == (SQ_I2C_SLAVE_RECV_ACK_INT & tmp)) {
+/* 		printf("Sq I2C slave: receive ACK interrupt generation\n"); */
 
 		/* Clear interrupt */
-		socle_i2c_write(SOCLE_I2C_ISR, tmp & (~SOCLE_I2C_SLAVE_RECV_ACK_INT), socle_i2c_base);
+		sq_i2c_write(SQ_I2C_ISR, tmp & (~SQ_I2C_SLAVE_RECV_ACK_INT), sq_i2c_base);
 
 		/* Write next data */
-		socle_i2c_write(SOCLE_I2C_STXR, 
-				socle_i2c_slave_buf[socle_i2c_slave_buf_idx++],
-				socle_i2c_base);
+		sq_i2c_write(SQ_I2C_STXR, 
+				sq_i2c_slave_buf[sq_i2c_slave_buf_idx++],
+				sq_i2c_base);
 
-/* 		printf("Socle I2C slave: data is 0x%02x\n", socle_i2c_slave_buf[socle_i2c_slave_buf_idx-1]); */
+/* 		printf("Sq I2C slave: data is 0x%02x\n", sq_i2c_slave_buf[sq_i2c_slave_buf_idx-1]); */
 
 		/* Check ACK status */
-		ack_stat = socle_i2c_read(SOCLE_I2C_LSR, socle_i2c_base);
-		if (SOCLE_I2C_RECV_STAT_NAK == (ack_stat & SOCLE_I2C_RECV_STAT_NAK)) {
-			socle_i2c_slave_buf_idx = 0; /* restore the buffer idx because master terminate the transfer */
+		ack_stat = sq_i2c_read(SQ_I2C_LSR, sq_i2c_base);
+		if (SQ_I2C_RECV_STAT_NAK == (ack_stat & SQ_I2C_RECV_STAT_NAK)) {
+			sq_i2c_slave_buf_idx = 0; /* restore the buffer idx because master terminate the transfer */
 
 			/* Set the slave to be as a receiver */
-			socle_i2c_write(SOCLE_I2C_CONR,
-					socle_i2c_read(SOCLE_I2C_CONR, socle_i2c_base) &
-					~SOCLE_I2C_SLAVE_TRAN_SEL,
-					socle_i2c_base);
+			sq_i2c_write(SQ_I2C_CONR,
+					sq_i2c_read(SQ_I2C_CONR, sq_i2c_base) &
+					~SQ_I2C_SLAVE_TRAN_SEL,
+					sq_i2c_base);
 		}
 
-		socle_i2c_resume();
+		sq_i2c_resume();
 	}
-	if (SOCLE_I2C_MASTER_ACK_PERIOD_INT == (SOCLE_I2C_MASTER_ACK_PERIOD_INT & tmp)) {
-/* 		printf("Socle I2C master: ACK period interrupt generation\n"); */
+	if (SQ_I2C_MASTER_ACK_PERIOD_INT == (SQ_I2C_MASTER_ACK_PERIOD_INT & tmp)) {
+/* 		printf("Sq I2C master: ACK period interrupt generation\n"); */
 
 		/* Clear interrupt */
-		socle_i2c_write(SOCLE_I2C_ISR, tmp & (~SOCLE_I2C_MASTER_ACK_PERIOD_INT), socle_i2c_base);
+		sq_i2c_write(SQ_I2C_ISR, tmp & (~SQ_I2C_MASTER_ACK_PERIOD_INT), sq_i2c_base);
 
 		int_master_ack_period = 1;
 	}
-	if (SOCLE_I2C_MASTER_RECV_ACK_INT == (SOCLE_I2C_MASTER_RECV_ACK_INT & tmp)) {
-/* 		printf("Socle I2C master: receive ACK interrupt generation\n"); */
+	if (SQ_I2C_MASTER_RECV_ACK_INT == (SQ_I2C_MASTER_RECV_ACK_INT & tmp)) {
+/* 		printf("Sq I2C master: receive ACK interrupt generation\n"); */
 
 		/* Clear interrupt */
-		socle_i2c_write(SOCLE_I2C_ISR, tmp & (~SOCLE_I2C_MASTER_RECV_ACK_INT), socle_i2c_base);
+		sq_i2c_write(SQ_I2C_ISR, tmp & (~SQ_I2C_MASTER_RECV_ACK_INT), sq_i2c_base);
 
 		int_master_recv_ack = 1;
 	}
 }
 
 static u32
-socle_i2c_power(u32 base, u32 exp)
+sq_i2c_power(u32 base, u32 exp)
 {
 	u32 i;
 	u32 val = 1;
@@ -506,7 +506,7 @@ socle_i2c_power(u32 base, u32 exp)
 }
 
 static u32
-socle_i2c_calculate_divisor(u32 clk)
+sq_i2c_calculate_divisor(u32 clk)
 {
 	u8 div_high_3 = 0, div_low_3 = 0, i2c_cdvr = 0;
 	u32 sclk_divisor, sclk, pclk, power;
@@ -516,9 +516,9 @@ socle_i2c_calculate_divisor(u32 clk)
 	 *  SCL = PCLK / 5 * SCLK Divisor
 	 *  */
 
-	pclk = socle_get_apb_clock();
+	pclk = sq_get_apb_clock();
 	while (1) {
-		power = socle_i2c_power(2, div_low_3+1);
+		power = sq_i2c_power(2, div_low_3+1);
 		for (div_high_3 = 0; div_high_3 < 8; div_high_3++) {
 			sclk_divisor = (div_high_3 + 1) * power;
 			sclk = pclk / (5 * sclk_divisor);
@@ -534,46 +534,46 @@ out:
 }
 
 static void
-socle_i2c_ack(void)
+sq_i2c_ack(void)
 {
 	u32 tmp;
 
-	tmp = socle_i2c_read(SOCLE_I2C_CONR, socle_i2c_base);
-	tmp &= ~SOCLE_I2C_BUS_ACK_DIS;
-	socle_i2c_write(SOCLE_I2C_CONR, tmp, socle_i2c_base);
+	tmp = sq_i2c_read(SQ_I2C_CONR, sq_i2c_base);
+	tmp &= ~SQ_I2C_BUS_ACK_DIS;
+	sq_i2c_write(SQ_I2C_CONR, tmp, sq_i2c_base);
 }
 
 static void
-socle_i2c_nak(void)
+sq_i2c_nak(void)
 {
 	u32 tmp;
 	
-	tmp = socle_i2c_read(SOCLE_I2C_CONR, socle_i2c_base);
-	tmp |= SOCLE_I2C_BUS_ACK_DIS;
-	socle_i2c_write(SOCLE_I2C_CONR, tmp, socle_i2c_base);
+	tmp = sq_i2c_read(SQ_I2C_CONR, sq_i2c_base);
+	tmp |= SQ_I2C_BUS_ACK_DIS;
+	sq_i2c_write(SQ_I2C_CONR, tmp, sq_i2c_base);
 }
 
 static void
-socle_i2c_master_write_byte(u8 data)
+sq_i2c_master_write_byte(u8 data)
 {
-	socle_i2c_write(SOCLE_I2C_MTXR, data, socle_i2c_base);
+	sq_i2c_write(SQ_I2C_MTXR, data, sq_i2c_base);
 }
 
 static int 
-socle_i2c_master_read_byte(void)
+sq_i2c_master_read_byte(void)
 {
 	int data;
 
 	/* Wait for the master ack period interrupt occuring */
 	while (!int_master_ack_period)
 		/* NOP */;
-	data = socle_i2c_read(SOCLE_I2C_MRXR, socle_i2c_base);
+	data = sq_i2c_read(SQ_I2C_MRXR, sq_i2c_base);
 	int_master_ack_period = 0;
 	return data;
 }
 
 static int
-socle_i2c_master_check_ack(void)
+sq_i2c_master_check_ack(void)
 {
 	u32 ack_stat;
 
@@ -583,41 +583,41 @@ socle_i2c_master_check_ack(void)
 	int_master_recv_ack = 0;
 	
 	/* Check the ack status */
-	ack_stat = socle_i2c_read(SOCLE_I2C_LSR, socle_i2c_base);
-	if (SOCLE_I2C_RECV_STAT_NAK == (ack_stat & SOCLE_I2C_RECV_STAT_NAK))
+	ack_stat = sq_i2c_read(SQ_I2C_LSR, sq_i2c_base);
+	if (SQ_I2C_RECV_STAT_NAK == (ack_stat & SQ_I2C_RECV_STAT_NAK))
 		return -1;
 	else
 		return 0;
 }
 
 static void
-socle_i2c_start(void)
+sq_i2c_start(void)
 {
-	socle_i2c_write(SOCLE_I2C_LCMR,
-			SOCLE_I2C_RESUME_COND_GEN_EN |
-			SOCLE_I2C_STP_COND_GEN_DIS |
-			SOCLE_I2C_STR_COND_GEN_EN,
-			socle_i2c_base);
+	sq_i2c_write(SQ_I2C_LCMR,
+			SQ_I2C_RESUME_COND_GEN_EN |
+			SQ_I2C_STP_COND_GEN_DIS |
+			SQ_I2C_STR_COND_GEN_EN,
+			sq_i2c_base);
 }
 
 static void
-socle_i2c_stop(void)
+sq_i2c_stop(void)
 {
-	socle_i2c_write(SOCLE_I2C_LCMR,
-			SOCLE_I2C_RESUME_COND_GEN_EN |
-			SOCLE_I2C_STP_COND_GEN_EN |
-			SOCLE_I2C_STR_COND_GEN_DIS,
-			socle_i2c_base);
+	sq_i2c_write(SQ_I2C_LCMR,
+			SQ_I2C_RESUME_COND_GEN_EN |
+			SQ_I2C_STP_COND_GEN_EN |
+			SQ_I2C_STR_COND_GEN_DIS,
+			sq_i2c_base);
 }
 
 static void
-socle_i2c_resume(void)
+sq_i2c_resume(void)
 {
-	socle_i2c_write(SOCLE_I2C_LCMR,
-			SOCLE_I2C_RESUME_COND_GEN_EN |
-			SOCLE_I2C_STP_COND_GEN_DIS |
-			SOCLE_I2C_STR_COND_GEN_DIS,
-			socle_i2c_base);
+	sq_i2c_write(SQ_I2C_LCMR,
+			SQ_I2C_RESUME_COND_GEN_EN |
+			SQ_I2C_STP_COND_GEN_DIS |
+			SQ_I2C_STR_COND_GEN_DIS,
+			sq_i2c_base);
 
 }
 

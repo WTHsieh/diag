@@ -138,7 +138,7 @@ ch700x_init(int format)
 {
 	int ret=0,i;
 	u8 buf;
-	i2c_master_initialize(SOCLE_APB0_I2C0, SOCLE_INTC_I2C0);
+	i2c_master_initialize(SQ_APB0_I2C0, SQ_INTC_I2C0);
 	ch700x_client.addr = CH7007A_I2C_CLIENT_ADDR;
 
 	buf=ch700x_read(CH700X_REG_PREFIX|CH700X_VID);

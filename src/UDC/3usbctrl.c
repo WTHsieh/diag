@@ -193,7 +193,7 @@ int USBTesting()
 	UINT	ch;		// channel number
 	UINT	TX_Status;
 	CHAR	*dma_src_addr;
-#ifdef	UDC_SOCLE_PHY
+#ifdef	UDC_SQ_PHY
 		ASSERT_SOFT_POR();
 #if 0
 		isr_time_value   = 0;
@@ -208,7 +208,7 @@ int USBTesting()
 		DEASSERT_SOFT_POR();
 #endif
 
-#ifdef	UDC_SOCLE_PHY
+#ifdef	UDC_SQ_PHY
 #if 0
 		isr_time_value   = 0;
 		isr_waiting_time = 8;
@@ -256,7 +256,7 @@ int USBTesting()
 			printf("\b\b\b\b");
         	}
 
-#ifdef	UDC_SOCLE_PHY
+#ifdef	UDC_SQ_PHY
 		ASSERT_SOFT_POR();
 #if 0
 		isr_time_value   = 0;
@@ -271,7 +271,7 @@ int USBTesting()
 		DEASSERT_SOFT_POR();
 #endif
 
-#ifdef	UDC_SOCLE_PHY
+#ifdef	UDC_SQ_PHY
 #if 0
 		isr_time_value   = 0;
 		isr_waiting_time = 8;

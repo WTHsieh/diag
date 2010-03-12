@@ -1,6 +1,6 @@
-// Socle Technology Corp.
+// Sq Technology Corp.
 /////////////////////////////////////
-// Socle Panther Development Kit PC9002
+// Sq Panther Development Kit PC9002
 // RVDEBUG initial...
 
 /////////////////////////////////////

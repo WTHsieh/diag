@@ -6,7 +6,7 @@
 #include "codec-ctrl.h"
 
 
-int (*socle_audio_control_function)(void);
+int (*sq_audio_control_function)(void);
 
 //Audio DAC function
 extern int 
@@ -152,7 +152,7 @@ audio_adc_initialize(void)
 }
 
 extern int
-socle_adc_channel_contrl(u32 ch)
+sq_adc_channel_contrl(u32 ch)
 {
 	int ret = 0;
 #ifdef CONFIG_UDA1342TS
@@ -224,7 +224,7 @@ audio_mixer_dc_filter(bool val)
 }
 
 static int
-socle_audio_dac_master_volume_increment(void)
+sq_audio_dac_master_volume_increment(void)
 {
 	int i, ret;
 
@@ -252,7 +252,7 @@ socle_audio_dac_master_volume_increment(void)
 }
 
 static int
-socle_audio_dac_master_volume_decrement(void)
+sq_audio_dac_master_volume_decrement(void)
 {
 	int i, ret;
 
@@ -280,7 +280,7 @@ socle_audio_dac_master_volume_decrement(void)
 }
 
 static int
-socle_audio_dac_mixer_volume_increment(void)
+sq_audio_dac_mixer_volume_increment(void)
 {
 	int i, ret;
 
@@ -299,7 +299,7 @@ socle_audio_dac_mixer_volume_increment(void)
 }
 
 static int
-socle_audio_dac_mixer_volume_decrement(void)
+sq_audio_dac_mixer_volume_decrement(void)
 {
 	int i, ret;
 
@@ -318,7 +318,7 @@ socle_audio_dac_mixer_volume_decrement(void)
 }
 
 static int
-socle_audio_dac_bass_boost_increment(void)
+sq_audio_dac_bass_boost_increment(void)
 {
 	int i, ret;
 
@@ -337,7 +337,7 @@ socle_audio_dac_bass_boost_increment(void)
 }
 
 static int
-socle_audio_dac_bass_boost_decrement(void)
+sq_audio_dac_bass_boost_decrement(void)
 {
 	int i, ret;
 
@@ -356,7 +356,7 @@ socle_audio_dac_bass_boost_decrement(void)
 }
 
 static int
-socle_audio_dac_treble_increment(void)
+sq_audio_dac_treble_increment(void)
 {
 	int i, ret;
 
@@ -372,7 +372,7 @@ socle_audio_dac_treble_increment(void)
 }
 
 static int
-socle_audio_dac_treble_decrement(void)
+sq_audio_dac_treble_decrement(void)
 {
 	int i, ret;
 
@@ -388,7 +388,7 @@ socle_audio_dac_treble_decrement(void)
 }
 
 static int
-socle_audio_dac_mute(void)
+sq_audio_dac_mute(void)
 {
 	int ret;
 
@@ -405,7 +405,7 @@ socle_audio_dac_mute(void)
 }
 
 static int
-socle_audio_dac_de_emphasis(void)
+sq_audio_dac_de_emphasis(void)
 {
 	int ret;
 
@@ -418,7 +418,7 @@ socle_audio_dac_de_emphasis(void)
 }
 
 static int
-socle_audio_adc_input_amplifier_gain_increment(void)
+sq_audio_adc_input_amplifier_gain_increment(void)
 {
 	int i, ret;
 
@@ -435,7 +435,7 @@ socle_audio_adc_input_amplifier_gain_increment(void)
 
 
 static int
-socle_audio_adc_mixer_gain_increment(void)
+sq_audio_adc_mixer_gain_increment(void)
 {
 	int i, ret;
 
@@ -454,7 +454,7 @@ socle_audio_adc_mixer_gain_increment(void)
 }
 
 static int
-socle_audio_adc_mixer_gain_decrement(void)
+sq_audio_adc_mixer_gain_decrement(void)
 {
 	int i, ret;
 
@@ -473,7 +473,7 @@ socle_audio_adc_mixer_gain_decrement(void)
 }
 
 static int 
-socle_audio_adc_output_dc_filter(void)
+sq_audio_adc_output_dc_filter(void)
 {
 	int ret;
 
@@ -490,7 +490,7 @@ socle_audio_adc_output_dc_filter(void)
 }
 
 static int 
-socle_audio_adc_mixer_dc_filter(void)
+sq_audio_adc_mixer_dc_filter(void)
 {
 	int ret;
 
@@ -508,21 +508,21 @@ socle_audio_adc_mixer_dc_filter(void)
 
 //DAC Test 
 extern int 
-socle_audio_dac_master_volume_test(int autotest)
+sq_audio_dac_master_volume_test(int autotest)
 {
 	int ret = 0;
 
 	printf("Volume increment\n");
-	socle_audio_control_function = socle_audio_dac_master_volume_increment;
-	ret |= socle_i2s_play_pcm_normal(autotest);
+	sq_audio_control_function = sq_audio_dac_master_volume_increment;
+	ret |= sq_i2s_play_pcm_normal(autotest);
 	printf("Volume decrement\n");
-	socle_audio_control_function = socle_audio_dac_master_volume_decrement;
-	ret |= socle_i2s_play_pcm_normal(autotest);
+	sq_audio_control_function = sq_audio_dac_master_volume_decrement;
+	ret |= sq_i2s_play_pcm_normal(autotest);
 	return ret;
 }
 
 extern int 
-socle_audio_dac_mixer_volume_test(int autotest)
+sq_audio_dac_mixer_volume_test(int autotest)
 {
 	int ret = 0;
 
@@ -531,16 +531,16 @@ socle_audio_dac_mixer_volume_test(int autotest)
 
 
 	printf("Volume increment\n");
-	socle_audio_control_function = socle_audio_dac_mixer_volume_increment;
-	ret |= socle_i2s_play_pcm_normal(autotest);
+	sq_audio_control_function = sq_audio_dac_mixer_volume_increment;
+	ret |= sq_i2s_play_pcm_normal(autotest);
 	printf("Volume decrement\n");
-	socle_audio_control_function = socle_audio_dac_mixer_volume_decrement;
-	ret |= socle_i2s_play_pcm_normal(autotest);
+	sq_audio_control_function = sq_audio_dac_mixer_volume_decrement;
+	ret |= sq_i2s_play_pcm_normal(autotest);
 	return ret;
 }
 
 extern int 
-socle_audio_dac_bass_boost_test(int autotest)
+sq_audio_dac_bass_boost_test(int autotest)
 {
 	int ret = 0;
 
@@ -549,16 +549,16 @@ socle_audio_dac_bass_boost_test(int autotest)
 
 
 	printf("Bass boost increment\n");
-	socle_audio_control_function =  socle_audio_dac_bass_boost_increment;
-	ret |= socle_i2s_play_pcm_normal(autotest);
+	sq_audio_control_function =  sq_audio_dac_bass_boost_increment;
+	ret |= sq_i2s_play_pcm_normal(autotest);
 	printf("Bass boost decrement\n");
-	socle_audio_control_function = socle_audio_dac_bass_boost_decrement;
-	ret |= socle_i2s_play_pcm_normal(autotest);
+	sq_audio_control_function = sq_audio_dac_bass_boost_decrement;
+	ret |= sq_i2s_play_pcm_normal(autotest);
 	return ret;
 }
 
 extern int 
-socle_audio_dac_treble_test(int autotest)
+sq_audio_dac_treble_test(int autotest)
 {
 	int ret = 0;
 
@@ -566,189 +566,189 @@ socle_audio_dac_treble_test(int autotest)
 	audio_dac_mode(UDA1342TS_FUNC_DAC_FEATURES_MAX);
 
 	printf("Treble increment\n");
-	socle_audio_control_function = socle_audio_dac_treble_increment;
-	ret |= socle_i2s_play_pcm_normal(autotest);
+	sq_audio_control_function = sq_audio_dac_treble_increment;
+	ret |= sq_i2s_play_pcm_normal(autotest);
 	printf("Treble decrement\n");
-	socle_audio_control_function = socle_audio_dac_treble_decrement;
-	ret |= socle_i2s_play_pcm_normal(autotest);
+	sq_audio_control_function = sq_audio_dac_treble_decrement;
+	ret |= sq_i2s_play_pcm_normal(autotest);
 	return ret;
 }
 
 extern int 
-socle_audio_dac_mute_test(int autotest)
+sq_audio_dac_mute_test(int autotest)
 {
 	int ret = 0;
 
 	/* Enable the DAC mixer */
 	audio_dac_enable_mixer(true);
 
-	socle_audio_control_function = socle_audio_dac_mute;
-	ret = socle_i2s_play_pcm_normal(autotest);
+	sq_audio_control_function = sq_audio_dac_mute;
+	ret = sq_i2s_play_pcm_normal(autotest);
 	return ret;
 }
 
 extern int 
-socle_audio_dac_de_emphasis_test(int autotest)
+sq_audio_dac_de_emphasis_test(int autotest)
 {
 	int ret = 0;
 
-	socle_audio_control_function = socle_audio_dac_de_emphasis;
-	ret = socle_i2s_play_pcm_normal(autotest);
+	sq_audio_control_function = sq_audio_dac_de_emphasis;
+	ret = sq_i2s_play_pcm_normal(autotest);
 	return ret;
 }
 
 //ADC Test
 
 extern int 
-socle_audio_adc_input_amplifier_gain_test(int autotest)
+sq_audio_adc_input_amplifier_gain_test(int autotest)
 {
 	int ret = 0;
 
 	/* Record */
 
 	printf("Input amplifier gain increment\n");
-	socle_audio_control_function = socle_audio_adc_input_amplifier_gain_increment;
-	ret |= socle_i2s_capture_pcm_normal(autotest);
+	sq_audio_control_function = sq_audio_adc_input_amplifier_gain_increment;
+	ret |= sq_i2s_capture_pcm_normal(autotest);
 
 
 	/* Play */
-	socle_audio_control_function = NULL;
-	ret |= socle_i2s_play_pcm_normal(autotest);
+	sq_audio_control_function = NULL;
+	ret |= sq_i2s_play_pcm_normal(autotest);
 
 
 	return ret;
 }
 
 extern int 
-socle_audio_adc_mixer_gain_test(int autotest)
+sq_audio_adc_mixer_gain_test(int autotest)
 {
 	int ret = 0;
 
 	/* Record */
 
 	printf("Mixer gain increment\n");
-	socle_audio_control_function = socle_audio_adc_mixer_gain_increment;
-	ret |= socle_i2s_capture_pcm_normal(autotest);
+	sq_audio_control_function = sq_audio_adc_mixer_gain_increment;
+	ret |= sq_i2s_capture_pcm_normal(autotest);
 
 	/* Play */
-	socle_audio_control_function = NULL;
-	ret |= socle_i2s_play_pcm_normal(autotest);
+	sq_audio_control_function = NULL;
+	ret |= sq_i2s_play_pcm_normal(autotest);
 
 	/* Record */
 
 
 	printf("Mixer gain decrement\n");
-	socle_audio_control_function = socle_audio_adc_mixer_gain_decrement;
-	ret |= socle_i2s_capture_pcm_normal(autotest);
+	sq_audio_control_function = sq_audio_adc_mixer_gain_decrement;
+	ret |= sq_i2s_capture_pcm_normal(autotest);
 
 
 	/* Play */
-	socle_audio_control_function = NULL;
-	ret |= socle_i2s_play_pcm_normal(autotest);
+	sq_audio_control_function = NULL;
+	ret |= sq_i2s_play_pcm_normal(autotest);
 
 
 	return ret;
 }
 
 extern int 
-socle_audio_adc_output_dc_filter_test(int autotest)
+sq_audio_adc_output_dc_filter_test(int autotest)
 {
 	int ret;
 
 	/* Record */
 
-	socle_audio_control_function = socle_audio_adc_output_dc_filter;
-	ret |= socle_i2s_capture_pcm_normal(autotest);
+	sq_audio_control_function = sq_audio_adc_output_dc_filter;
+	ret |= sq_i2s_capture_pcm_normal(autotest);
 
 
 	/* Play */
-	socle_audio_control_function = NULL;
-	ret |= socle_i2s_play_pcm_normal(autotest);
+	sq_audio_control_function = NULL;
+	ret |= sq_i2s_play_pcm_normal(autotest);
 
 
 	return ret;
 }
 
 extern int 
-socle_audio_adc_mixer_dc_filter_test(int autotest)
+sq_audio_adc_mixer_dc_filter_test(int autotest)
 {
 	int ret;
 
 	/* Record */
 
-	socle_audio_control_function = socle_audio_adc_mixer_dc_filter;
-	ret |= socle_i2s_capture_pcm_normal(autotest);
+	sq_audio_control_function = sq_audio_adc_mixer_dc_filter;
+	ret |= sq_i2s_capture_pcm_normal(autotest);
 
 
 	/* Play */
-	socle_audio_control_function = NULL;
-	ret |= socle_i2s_play_pcm_normal(autotest);
+	sq_audio_control_function = NULL;
+	ret |= sq_i2s_play_pcm_normal(autotest);
 
 
 	return ret;
 }
 
-extern struct test_item_container socle_audio_dac_control_test_container;
+extern struct test_item_container sq_audio_dac_control_test_container;
 
 extern int 
-socle_audio_codec_dac_test(int autotest)
+sq_audio_codec_dac_test(int autotest)
 {
 	int ret;
 
-	ret = test_item_ctrl(&socle_audio_dac_control_test_container, autotest);	
+	ret = test_item_ctrl(&sq_audio_dac_control_test_container, autotest);	
 	return ret;
 
 }
 
-extern struct test_item_container socle_audio_adc_control_test_container;
+extern struct test_item_container sq_audio_adc_control_test_container;
 
 extern int
-socle_audio_adc_input_ch1_test(int autotest)
+sq_audio_adc_input_ch1_test(int autotest)
 {
 	int ret = 0;
-	socle_adc_channel_contrl(1);
-	ret = test_item_ctrl(&socle_audio_adc_control_test_container, autotest);
+	sq_adc_channel_contrl(1);
+	ret = test_item_ctrl(&sq_audio_adc_control_test_container, autotest);
 	return ret;
 }
 
 extern int
-socle_audio_adc_input_ch2_test(int autotest)
+sq_audio_adc_input_ch2_test(int autotest)
 {
 	int ret = 0;
-	socle_adc_channel_contrl(2);	
-	ret = test_item_ctrl(&socle_audio_adc_control_test_container, autotest);
+	sq_adc_channel_contrl(2);	
+	ret = test_item_ctrl(&sq_audio_adc_control_test_container, autotest);
 	return ret;
 }
 
-extern struct test_item_container socle_audio_adc_input_ch_test_container;
+extern struct test_item_container sq_audio_adc_input_ch_test_container;
 
 extern int 
-socle_audio_codec_adc_test(int autotest)
+sq_audio_codec_adc_test(int autotest)
 {
 	int ret;
-	ret = test_item_ctrl(&socle_audio_adc_input_ch_test_container, autotest);	
+	ret = test_item_ctrl(&sq_audio_adc_input_ch_test_container, autotest);	
 	return ret;
 
 }
 
-extern struct test_item_container socle_audio_codec_adc_dac_test_container;	
+extern struct test_item_container sq_audio_codec_adc_dac_test_container;	
 
 extern int 
-socle_audio_codec_uda1342_test(int autotest)
+sq_audio_codec_uda1342_test(int autotest)
 {
 	int ret;
 	
-	ret = test_item_ctrl(&socle_audio_codec_adc_dac_test_container, autotest);	
+	ret = test_item_ctrl(&sq_audio_codec_adc_dac_test_container, autotest);	
 	return ret;
 
 }
 
 extern int 
-socle_audio_codec_ms6335_test(int autotest)
+sq_audio_codec_ms6335_test(int autotest)
 {
 	int ret;
 
-	ret = test_item_ctrl(&socle_audio_codec_adc_dac_test_container, autotest);	
+	ret = test_item_ctrl(&sq_audio_codec_adc_dac_test_container, autotest);	
 	return ret;
 
 }

@@ -13,7 +13,7 @@ struct test_item ohci_test_items[]={
         {"OHCI1 Test",
                 ohci_1_test,
                 1,
-                SOCLE_OHCI1_TEST},
+                SQ_OHCI1_TEST},
 };
 
 struct test_item_container ohci_main_container={

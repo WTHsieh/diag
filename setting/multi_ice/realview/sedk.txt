@@ -1,6 +1,6 @@
-// Socle Technology Corp.
+// Sq Technology Corp.
 /////////////////////////////////////
-// Socle Soc Enable Development Kit
+// Sq Soc Enable Development Kit
 // RVDEBUG initial...
 
 //SCU

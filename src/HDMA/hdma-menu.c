@@ -222,16 +222,16 @@ struct test_item_container hdma_burst_type_container={
 };
 
 /* hdma_data_size_container */
-extern int socle_hdma_software_dma_tranfer(int autotest);
-extern int socle_hdma_show_setting(int autotest);
+extern int sq_hdma_software_dma_tranfer(int autotest);
+extern int sq_hdma_show_setting(int autotest);
 
 struct test_item hdma_running_items[]={
 	{"Running",
-		socle_hdma_software_dma_tranfer,
+		sq_hdma_software_dma_tranfer,
 		1,
 		1},
 	{"Show setting",
-		socle_hdma_show_setting,
+		sq_hdma_show_setting,
 		0,
 		1}
 };

@@ -2,7 +2,7 @@
 #define __CDK_SCU_REG_H
 
 
-#define CDK_SCU_REG_BASE			SOCLE_APB0_SCU
+#define CDK_SCU_REG_BASE			SQ_APB0_SCU
 
 #define CDK_SCU_MPLLCON				0X0000
 #define CDK_SCU_E0PLLCON			0X0004

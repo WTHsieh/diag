@@ -5,7 +5,7 @@ lib_name	:= #??.a
 local_lib	:= #$(lib_dir)/$(lib_name)
 
 # compile source
-local_src	:= macctrl.c mac-menu.c if_socle.c EEP25x.c
+local_src	:= macctrl.c mac-menu.c if_sq.c EEP25x.c
 lib_src		:= 
 
 include build/common.mk

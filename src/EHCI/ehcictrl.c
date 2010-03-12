@@ -17,12 +17,12 @@
 #endif
 #include <test_item.h>
 
-//#define SOCLE_EHCI_DEBUG
+//#define SQ_EHCI_DEBUG
 
-#ifdef SOCLE_EHCI_DEBUG
-#define socle_ehci_show(fmt, args ...)   printf(fmt, __FUNCTION__ , ## args)
+#ifdef SQ_EHCI_DEBUG
+#define sq_ehci_show(fmt, args ...)   printf(fmt, __FUNCTION__ , ## args)
 #else
-#define socle_ehci_show(fmt, args ...)	{}
+#define sq_ehci_show(fmt, args ...)	{}
 #endif
 
 u32 ehci_base;
@@ -40,12 +40,12 @@ EHCITesting(int autotest)
 	int ret=0;
 
         #ifdef CONFIG_PC9002
-                socle_mp_gpio_set_port_num_value(PA,6,0);
+                sq_mp_gpio_set_port_num_value(PA,6,0);
         #endif
 
                 //20080123 leonid add for USB Downstream
         #if defined(CONFIG_PC7210) || defined(CONFIG_PDK)
-                socle_scu_usb_tranceiver_downstream();
+                sq_scu_usb_tranceiver_downstream();
         #endif
 
 	ret = test_item_ctrl(&ehci_main_container,autotest);
@@ -58,8 +58,8 @@ ehci_0_test(int autotest)
 {
         int ret=0;
 
-	ehci_base = SOCLE_AHB0_UHC0;
-        ehci_irq = SOCLE_INTC_UHC0;
+	ehci_base = SQ_AHB0_UHC0;
+        ehci_irq = SQ_INTC_UHC0;
         ret = ehci_test(autotest);
 
         return ret;
@@ -70,8 +70,8 @@ ehci_1_test(int autotest)
 {
         int ret=0;
 
-	ehci_base = SOCLE_AHB0_UHC1;
-        ehci_irq = SOCLE_INTC_UHC1;
+	ehci_base = SQ_AHB0_UHC1;
+        ehci_irq = SQ_INTC_UHC1;
 	ret = ehci_test(autotest);
 
         return ret;
@@ -116,7 +116,7 @@ int EHCI_Halt(void)
 	UsbCmd=readw(USBCMD(ehci_base));
 	UsbCmd=UsbCmd & ~CMD_RUN;
 	writew(UsbCmd,USBCMD(ehci_base));
-	socle_ehci_show(("EHC Halted Successfully"));	
+	sq_ehci_show(("EHC Halted Successfully"));	
 	return 0;
 
 }
@@ -124,7 +124,7 @@ int EHCI_Halt(void)
 int EHCI_Reset(void)
 {//check
 	u32_t	command;
-	socle_ehci_show("Inside EHCI_Resetn");
+	sq_ehci_show("Inside EHCI_Resetn");
 	command = readw (USBCMD(ehci_base));
 	command |= CMD_RESET;
 	writew(command, USBCMD(ehci_base));
@@ -194,13 +194,13 @@ void EHCI_Asynchronous_Enable(BYTE Enable)
 		while(UsbSts & STS_ASS )
 		{
 			UsbSts=readw(USBSTS(ehci_base));
-			socle_ehci_show("the value of usbsts reg is %x\n",UsbSts);
+			sq_ehci_show("the value of usbsts reg is %x\n",UsbSts);
 			if(cnt > 100)
 				printf("the value of usbsts reg is %x & count 100 times\n",UsbSts);
 			cnt ++;
 		}
 	}
-	socle_ehci_show("the value in the usbcmd register is %x\n",readw(USBCMD(ehci_base)));
+	sq_ehci_show("the value in the usbcmd register is %x\n",readw(USBCMD(ehci_base)));
 }
 
 void EHCI_Periodic_Enable(BYTE Enable)
@@ -262,7 +262,7 @@ void EHCI_Start()
 {
 	unsigned int i;
 	PULONG 	FramelistPointer;
-	socle_ehci_show("EHCI_Start\n");	
+	sq_ehci_show("EHCI_Start\n");	
 	FramelistPointer = (PULONG)PERIOD_FRAMELIST_ADDR;
 	for(i=0;i<1024;i++)
 	{
@@ -299,7 +299,7 @@ void EHCI_Start()
 
 void EHCI_Stop()
 {
-	socle_ehci_show("EHCI_Stop\n");	
+	sq_ehci_show("EHCI_Stop\n");	
 	// Disable device
 	EHCI_Intr_Disable();
 	
@@ -322,7 +322,7 @@ void EHCIIntrHandler(void* pparam)
 	ULONG UsbIntr;
 	ULONG PortSc1;
 	
-	socle_ehci_show("\nEHCIIintHandler\n");
+	sq_ehci_show("\nEHCIIintHandler\n");
 	
 	UsbSts=readw(USBSTS(ehci_base));
 	UsbIntr=readw(USBINTR(ehci_base));
@@ -334,37 +334,37 @@ void EHCIIntrHandler(void* pparam)
 		writew(0x00, USBINTR(ehci_base));
 		if(UsbSts & STS_INT)
 		{
-			socle_ehci_show(("USB Transaction Complete Interrupt\n"));
+			sq_ehci_show(("USB Transaction Complete Interrupt\n"));
 			//check asy_addr & periodic_addr
 //			TransactionComplete();
 			TransferComplete = 1;
 			writew(STS_INT,USBSTS(ehci_base));
-			socle_ehci_show(("cleared status register\n"));
-			socle_ehci_show("the value of status register is %x\n",readw(USBSTS(ehci_base)));
+			sq_ehci_show(("cleared status register\n"));
+			sq_ehci_show("the value of status register is %x\n",readw(USBSTS(ehci_base)));
 		}
 		if(UsbSts & STS_ERR)
 		{
-			socle_ehci_show(("USB Error Interrupt\n"));
+			sq_ehci_show(("USB Error Interrupt\n"));
 			ErrorComplete = 1;			
 			writew(STS_ERR,USBSTS(ehci_base));
 		}
 		if(UsbSts & STS_PCD)
 		{
-			socle_ehci_show(("USB Port  Change Detect Interrupt\n"));
+			sq_ehci_show(("USB Port  Change Detect Interrupt\n"));
 			PortSc1=readw(PORTSC(ehci_base));
 
 			if(PortSc1 & PORT_CSC)	//Connect status change
 			{
 				if(PortSc1 & PORT_CONNECT)
 				{
-					socle_ehci_show(("Device Connect on Port1\n"));
+					sq_ehci_show(("Device Connect on Port1\n"));
 					PortSc1=PortSc1|PORT_CSC;
 					writew(PortSc1,PORTSC(ehci_base));
 					portconnect=1;
 				}
 				else
 				{
-					socle_ehci_show(("Device Disconnected From Port1\n"));
+					sq_ehci_show(("Device Disconnected From Port1\n"));
 					PortSc1=PortSc1|PORT_CSC;
 					writew(PortSc1,PORTSC(ehci_base));
 					portconnect=0;
@@ -374,13 +374,13 @@ void EHCIIntrHandler(void* pparam)
 			{
 				if(PortSc1 & 0x00000004)
 				{
-					socle_ehci_show(("Device Enabled on Port1\n"));
+					sq_ehci_show(("Device Enabled on Port1\n"));
 					PortSc1=PortSc1|PORT_PEC;
 					writew(PortSc1,PORTSC(ehci_base));
 				}
 				else
 				{
-					socle_ehci_show(("Device Disabled From Port1\n"));
+					sq_ehci_show(("Device Disabled From Port1\n"));
 					PortSc1=PortSc1|PORT_PEC;
 					writew(PortSc1,PORTSC(ehci_base));
 				}
@@ -390,29 +390,29 @@ void EHCIIntrHandler(void* pparam)
 		}
 		if(UsbSts & STS_FLR)
 		{
-			socle_ehci_show(("Frame List Rollover Interrupt\n"));
+			sq_ehci_show(("Frame List Rollover Interrupt\n"));
 			writew(STS_FLR,USBSTS(ehci_base));
 		}
 		if(UsbSts & STS_FATAL)
 		{
-			socle_ehci_show(("Host System Error Interrupt\n"));
+			sq_ehci_show(("Host System Error Interrupt\n"));
 			writew(STS_FATAL,USBSTS(ehci_base));
 			///4.10.3.1
 			
 		}
 		if(UsbSts & STS_IAA)
 		{
-			socle_ehci_show(("Interrupt on Async Advance\n"));
+			sq_ehci_show(("Interrupt on Async Advance\n"));
 			writew(STS_IAA,USBSTS(ehci_base));
 		}
 		//Reenable PCD,USBERR,USBINT interrupts here
 		writew(0x07,USBINTR(ehci_base));
-		socle_ehci_show(("Renabled interrupts here\n"));
+		sq_ehci_show(("Renabled interrupts here\n"));
 		//return TRUE;
 	}
 	else
 	{
-		socle_ehci_show("Other Device Interrupt\n");
+		sq_ehci_show("Other Device Interrupt\n");
 	}
 }
 
@@ -617,7 +617,7 @@ int EHCI_Intr_Threshold_Ctrl(BYTE Value)
 int EHCI_Intr_Enable(void)
 {
 	ULONG UsbIntr;
-	socle_ehci_show("inside EHCI_Intr_Enable\n");
+	sq_ehci_show("inside EHCI_Intr_Enable\n");
 	
 	//Enable Portchangedetect,UsbErrint,UsbInt interrupts are enabled here
 	UsbIntr=readw(USBINTR(ehci_base)) | 0x00000007;
@@ -628,7 +628,7 @@ int EHCI_Intr_Enable(void)
 int EHCI_Intr_Disable(void)
 {
 	ULONG UsbIntr;
-	socle_ehci_show("inside EHCI_Intr_Disable\n");
+	sq_ehci_show("inside EHCI_Intr_Disable\n");
 	
 	//Disable all interrupts here
 	UsbIntr=readw(USBINTR(ehci_base)) & 0x00000000;
@@ -693,7 +693,7 @@ int HostCtrlReset()
 int ResetDevice()
 {
 	ULONG UsbCmd,UsbSts,PortSc1;
-	socle_ehci_show(("Inside ResetDevice\n"));
+	sq_ehci_show(("Inside ResetDevice\n"));
 
 	//Check whether the HC is halted,if yes set the RUN bit 
 	UsbSts=readw(USBSTS(ehci_base));
@@ -719,24 +719,24 @@ int ResetDevice()
 #endif
 	//Give Reset
 	PortSc1=readw(PORTSC(ehci_base));
-	socle_ehci_show(("setting port reset bit \n"));
+	sq_ehci_show(("setting port reset bit \n"));
 	PortSc1=PortSc1|PORT_RESET;
 	writew(PortSc1,PORTSC(ehci_base));		// setting the port reset bit
 	MSDELAY(20);
 	PortSc1=readw(PORTSC(ehci_base));
-	socle_ehci_show(("clearing port reset bit"));
+	sq_ehci_show(("clearing port reset bit"));
 	PortSc1 = PortSc1 & (~PORT_RESET);
 	writew(PortSc1,PORTSC(ehci_base));		// clearing the port reset bit
 	MSDELAY(2);
 	PortSc1=readw(PORTSC(ehci_base));
-	socle_ehci_show("the value of portsc register after reset clearing is %x\n",PortSc1);
+	sq_ehci_show("the value of portsc register after reset clearing is %x\n",PortSc1);
 	if(PortSc1 & PORT_PE)			// checking the port enable bit
 	{
-		socle_ehci_show(("Port enabled in high speed\n"));
+		sq_ehci_show(("Port enabled in high speed\n"));
 	}
 	else
 	{
-		socle_ehci_show(("port settled in full speed after reset\n"));
+		sq_ehci_show(("port settled in full speed after reset\n"));
 	}
 	MpsKnown = 0;
 	ehci_status.DevAddress = 0;
@@ -827,14 +827,14 @@ int SetAddress(BYTE DevAddress)
 	pQTD2->QTDBuffPrt2=0x00000000;
 	pQTD2->QTDBuffPrt3=0x00000000;
 	pQTD2->QTDBuffPrt4=0x00000000;
-	socle_ehci_show("the value of pqtd2.NextQTD is %x\n",pQTD2->NextQTD);
-	socle_ehci_show("the value of pQTD2->AltQTD is %x\n",pQTD2->AltQTD);
-	socle_ehci_show("the value of pQTD2->QTDChar is %x\n",pQTD2->QTDChar);
-	socle_ehci_show("the value of pQTD2->QTDBuffPrt0 is %x\n",pQTD2->QTDBuffPrt0);
-	socle_ehci_show("the value of pQTD2->QTDBuffPrt1 is %x\n",pQTD2->QTDBuffPrt1);
-	socle_ehci_show("the value of pQTD2->QTDBuffPrt2 is %x\n",pQTD2->QTDBuffPrt2);
-	socle_ehci_show("the value of pQTD2->QTDBuffPrt3 is %x\n",pQTD2->QTDBuffPrt3);
-	socle_ehci_show("the value of pQTD2->QTDBuffPrt4 is %x\n",pQTD2->QTDBuffPrt4);
+	sq_ehci_show("the value of pqtd2.NextQTD is %x\n",pQTD2->NextQTD);
+	sq_ehci_show("the value of pQTD2->AltQTD is %x\n",pQTD2->AltQTD);
+	sq_ehci_show("the value of pQTD2->QTDChar is %x\n",pQTD2->QTDChar);
+	sq_ehci_show("the value of pQTD2->QTDBuffPrt0 is %x\n",pQTD2->QTDBuffPrt0);
+	sq_ehci_show("the value of pQTD2->QTDBuffPrt1 is %x\n",pQTD2->QTDBuffPrt1);
+	sq_ehci_show("the value of pQTD2->QTDBuffPrt2 is %x\n",pQTD2->QTDBuffPrt2);
+	sq_ehci_show("the value of pQTD2->QTDBuffPrt3 is %x\n",pQTD2->QTDBuffPrt3);
+	sq_ehci_show("the value of pQTD2->QTDBuffPrt4 is %x\n",pQTD2->QTDBuffPrt4);
 	
 	//Form QTD1 for Setup Stage of SetAddress==========================
 	//Data0
@@ -851,14 +851,14 @@ int SetAddress(BYTE DevAddress)
 	pQTD1->QTDBuffPrt2=0x00000000;
 	pQTD1->QTDBuffPrt3=0x00000000;
 	pQTD1->QTDBuffPrt4=0x00000000;
-	socle_ehci_show("the value of pqtd1.NextQTD is %x\n",pQTD1->NextQTD);
-	socle_ehci_show("the value of pQTD1->AltQTD is %x\n",pQTD1->AltQTD);
-	socle_ehci_show("the value of pQTD1->QTDChar is %x\n",pQTD1->QTDChar);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt0 is %x\n",pQTD1->QTDBuffPrt0);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt1 is %x\n",pQTD1->QTDBuffPrt1);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt2 is %x\n",pQTD1->QTDBuffPrt2);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt3 is %x\n",pQTD1->QTDBuffPrt3);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt4 is %x\n",pQTD1->QTDBuffPrt4);
+	sq_ehci_show("the value of pqtd1.NextQTD is %x\n",pQTD1->NextQTD);
+	sq_ehci_show("the value of pQTD1->AltQTD is %x\n",pQTD1->AltQTD);
+	sq_ehci_show("the value of pQTD1->QTDChar is %x\n",pQTD1->QTDChar);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt0 is %x\n",pQTD1->QTDBuffPrt0);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt1 is %x\n",pQTD1->QTDBuffPrt1);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt2 is %x\n",pQTD1->QTDBuffPrt2);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt3 is %x\n",pQTD1->QTDBuffPrt3);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt4 is %x\n",pQTD1->QTDBuffPrt4);
 	
 	//Form QHEAD==========================================
 	pQHEAD1 = Get_Free_QH();
@@ -888,19 +888,19 @@ int SetAddress(BYTE DevAddress)
 	pQHEAD1->QHEADBuffPtr2=0x00000000;
 	pQHEAD1->QHEADBuffPtr3=0x00000000;
 	pQHEAD1->QHEADBuffPtr4=0x00000000;
-	socle_ehci_show("the value of pQHEAD1->QHEADLinkPtr is %x\n",pQHEAD1->QHEADLinkPtr);
-	socle_ehci_show("the value of pQHEAD1->EpChar is %x\n",pQHEAD1->EpChar);
-	socle_ehci_show("the value of pQHEAD1->EpCap is %x\n",pQHEAD1->EpCap);
-	socle_ehci_show("the value of pQHEAD1->CurrQTD is %x\n",pQHEAD1->CurrQTD);
-	socle_ehci_show("the value of pQHEAD1->NextQTD is %x\n",pQHEAD1->NextQTD);
-	socle_ehci_show("the value of pQHEAD1->AltQTd is %x\n",pQHEAD1->AltQTd);
+	sq_ehci_show("the value of pQHEAD1->QHEADLinkPtr is %x\n",pQHEAD1->QHEADLinkPtr);
+	sq_ehci_show("the value of pQHEAD1->EpChar is %x\n",pQHEAD1->EpChar);
+	sq_ehci_show("the value of pQHEAD1->EpCap is %x\n",pQHEAD1->EpCap);
+	sq_ehci_show("the value of pQHEAD1->CurrQTD is %x\n",pQHEAD1->CurrQTD);
+	sq_ehci_show("the value of pQHEAD1->NextQTD is %x\n",pQHEAD1->NextQTD);
+	sq_ehci_show("the value of pQHEAD1->AltQTd is %x\n",pQHEAD1->AltQTd);
 
-	socle_ehci_show("the value  of PhyQHEAD is %x\n",PhyQHEAD1);
+	sq_ehci_show("the value  of PhyQHEAD is %x\n",PhyQHEAD1);
 	//Write the physical address into ASYNCICLISTADDR(ehci_base) Register
 	
 	writew((ULONG)PhyQHEAD1,ASYNCICLISTADDR(ehci_base));
 	
-	socle_ehci_show("the value in Aynclistaddr is %x\n",readw(ASYNCICLISTADDR(ehci_base)));
+	sq_ehci_show("the value in Aynclistaddr is %x\n",readw(ASYNCICLISTADDR(ehci_base)));
 	
 	//Enable Asynchronous list
 	EHCI_Asynchronous_Enable(1);		
@@ -909,8 +909,8 @@ int SetAddress(BYTE DevAddress)
 	}
 	if(TransferComplete)
 	{
-		socle_ehci_show("the value of qtd1 char is %x\n",pQTD1->QTDChar);
-		socle_ehci_show("the value of qtd2 char is %x\n",pQTD2->QTDChar);
+		sq_ehci_show("the value of qtd1 char is %x\n",pQTD1->QTDChar);
+		sq_ehci_show("the value of qtd2 char is %x\n",pQTD2->QTDChar);
 		if(Success(pQTD2->QTDChar))		// checking the status of the completion
 		{
 			if(UnderHub)
@@ -921,18 +921,18 @@ int SetAddress(BYTE DevAddress)
 			{
 				ehci_status.DevAddress=DevAddress;
 			}
-			socle_ehci_show("Set Address Passed in Driver\n");
+			sq_ehci_show("Set Address Passed in Driver\n");
 		}
 		else
 		{
-			socle_ehci_show("some other error\n");
+			sq_ehci_show("some other error\n");
 		}
 	}
 	else if(ErrorComplete)
 	{
-		socle_ehci_show("Transfer failed\n");
-		socle_ehci_show("the value of qtd1 char is %x\n",pQTD1->QTDChar);
-		socle_ehci_show("the value of qtd2 char is %x\n",pQTD2->QTDChar);
+		sq_ehci_show("Transfer failed\n");
+		sq_ehci_show("the value of qtd1 char is %x\n",pQTD1->QTDChar);
+		sq_ehci_show("the value of qtd2 char is %x\n",pQTD2->QTDChar);
 	}
 	TransferComplete = 0;
 	ErrorComplete = 0;
@@ -1003,14 +1003,14 @@ int GetDescriptor(BYTE DevDescType,BYTE DevDescIndex,int DevDescLength)
 	pQTD3->QTDBuffPrt2=0x00000000;
 	pQTD3->QTDBuffPrt3=0x00000000;
 	pQTD3->QTDBuffPrt4=0x00000000;
-	socle_ehci_show("the value of pqtd3.NextQTD is %x\n",pQTD3->NextQTD);
-	socle_ehci_show("the value of pQTD3->AltQTD is %x\n",pQTD3->AltQTD);
-	socle_ehci_show("the value of pQTD3->QTDChar is %x\n",pQTD3->QTDChar);
-	socle_ehci_show("the value of pQTD3->QTDBuffPrt0 is %x\n",pQTD3->QTDBuffPrt0);
-	socle_ehci_show("the value of pQTD3->QTDBuffPrt1 is %x\n",pQTD3->QTDBuffPrt1);
-	socle_ehci_show("the value of pQTD3->QTDBuffPrt2 is %x\n",pQTD3->QTDBuffPrt2);
-	socle_ehci_show("the value of pQTD3->QTDBuffPrt3 is %x\n",pQTD3->QTDBuffPrt3);
-	socle_ehci_show("the value of pQTD3->QTDBuffPrt4 is %x\n",pQTD3->QTDBuffPrt4);
+	sq_ehci_show("the value of pqtd3.NextQTD is %x\n",pQTD3->NextQTD);
+	sq_ehci_show("the value of pQTD3->AltQTD is %x\n",pQTD3->AltQTD);
+	sq_ehci_show("the value of pQTD3->QTDChar is %x\n",pQTD3->QTDChar);
+	sq_ehci_show("the value of pQTD3->QTDBuffPrt0 is %x\n",pQTD3->QTDBuffPrt0);
+	sq_ehci_show("the value of pQTD3->QTDBuffPrt1 is %x\n",pQTD3->QTDBuffPrt1);
+	sq_ehci_show("the value of pQTD3->QTDBuffPrt2 is %x\n",pQTD3->QTDBuffPrt2);
+	sq_ehci_show("the value of pQTD3->QTDBuffPrt3 is %x\n",pQTD3->QTDBuffPrt3);
+	sq_ehci_show("the value of pQTD3->QTDBuffPrt4 is %x\n",pQTD3->QTDBuffPrt4);
 
 	//Form QTD2 for Data Stage of GetDescriptor===============================
 	pQTD2 = Get_Free_QTD();
@@ -1029,14 +1029,14 @@ int GetDescriptor(BYTE DevDescType,BYTE DevDescIndex,int DevDescLength)
 	pQTD2->QTDBuffPrt3=0x00000000;
 	pQTD2->QTDBuffPrt4=0x00000000;
 	InitialTransferLength = (pQTD2->QTDChar & 0x7FFF0000)>> 16;
-	socle_ehci_show("the value of pqtd2.NextQTD is %x\n",pQTD2->NextQTD);
-	socle_ehci_show("the value of pQTD2->AltQTD is %x\n",pQTD2->AltQTD);
-	socle_ehci_show("the value of pQTD2->QTDChar is %x\n",pQTD2->QTDChar);
-	socle_ehci_show("the value of pQTD2->QTDBuffPrt0 is %x\n",pQTD2->QTDBuffPrt0);
-	socle_ehci_show("the value of pQTD2->QTDBuffPrt1 is %x\n",pQTD2->QTDBuffPrt1);
-	socle_ehci_show("the value of pQTD2->QTDBuffPrt2 is %x\n",pQTD2->QTDBuffPrt2);
-	socle_ehci_show("the value of pQTD2->QTDBuffPrt3 is %x\n",pQTD2->QTDBuffPrt3);
-	socle_ehci_show("the value of pQTD2->QTDBuffPrt4 is %x\n",pQTD2->QTDBuffPrt4);
+	sq_ehci_show("the value of pqtd2.NextQTD is %x\n",pQTD2->NextQTD);
+	sq_ehci_show("the value of pQTD2->AltQTD is %x\n",pQTD2->AltQTD);
+	sq_ehci_show("the value of pQTD2->QTDChar is %x\n",pQTD2->QTDChar);
+	sq_ehci_show("the value of pQTD2->QTDBuffPrt0 is %x\n",pQTD2->QTDBuffPrt0);
+	sq_ehci_show("the value of pQTD2->QTDBuffPrt1 is %x\n",pQTD2->QTDBuffPrt1);
+	sq_ehci_show("the value of pQTD2->QTDBuffPrt2 is %x\n",pQTD2->QTDBuffPrt2);
+	sq_ehci_show("the value of pQTD2->QTDBuffPrt3 is %x\n",pQTD2->QTDBuffPrt3);
+	sq_ehci_show("the value of pQTD2->QTDBuffPrt4 is %x\n",pQTD2->QTDBuffPrt4);
 	
 	//Form QTD1 for Setup Stage of GetDescriptor==============================
 	pQTD1 = Get_Free_QTD();
@@ -1054,14 +1054,14 @@ int GetDescriptor(BYTE DevDescType,BYTE DevDescIndex,int DevDescLength)
 	pQTD1->QTDBuffPrt2=0x00000000;
 	pQTD1->QTDBuffPrt3=0x00000000;
 	pQTD1->QTDBuffPrt4=0x00000000;
-	socle_ehci_show("the value of pqtd1.NextQTD is %x\n",pQTD1->NextQTD);
-	socle_ehci_show("the value of pQTD1->AltQTD is %x\n",pQTD1->AltQTD);
-	socle_ehci_show("the value of pQTD1->QTDChar is %x\n",pQTD1->QTDChar);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt0 is %x\n",pQTD1->QTDBuffPrt0);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt1 is %x\n",pQTD1->QTDBuffPrt1);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt2 is %x\n",pQTD1->QTDBuffPrt2);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt3 is %x\n",pQTD1->QTDBuffPrt3);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt4 is %x\n",pQTD1->QTDBuffPrt4);
+	sq_ehci_show("the value of pqtd1.NextQTD is %x\n",pQTD1->NextQTD);
+	sq_ehci_show("the value of pQTD1->AltQTD is %x\n",pQTD1->AltQTD);
+	sq_ehci_show("the value of pQTD1->QTDChar is %x\n",pQTD1->QTDChar);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt0 is %x\n",pQTD1->QTDBuffPrt0);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt1 is %x\n",pQTD1->QTDBuffPrt1);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt2 is %x\n",pQTD1->QTDBuffPrt2);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt3 is %x\n",pQTD1->QTDBuffPrt3);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt4 is %x\n",pQTD1->QTDBuffPrt4);
 	
 	//Form QHEAD====================================================
 	pQHEAD1 = Get_Free_QH();
@@ -1107,29 +1107,29 @@ int GetDescriptor(BYTE DevDescType,BYTE DevDescIndex,int DevDescLength)
 	pQHEAD1->QHEADBuffPtr3=0x00000000;
 	pQHEAD1->QHEADBuffPtr4=0x00000000;
 	
-	socle_ehci_show("the value of pQHEAD1->QHEADLinkPtr is %x\n",pQHEAD1->QHEADLinkPtr);
-	socle_ehci_show("the value of pQHEAD1->EpChar is %x\n",pQHEAD1->EpChar);
-	socle_ehci_show("the value of pQHEAD1->EpCap is %x\n",pQHEAD1->EpCap);
-	socle_ehci_show("the value of pQHEAD1->CurrQTD is %x\n",pQHEAD1->CurrQTD);
-	socle_ehci_show("the value of pQHEAD1->NextQTD is %x\n",pQHEAD1->NextQTD);
-	socle_ehci_show("the value of pQHEAD1->AltQTd is %x\n",pQHEAD1->AltQTd);
+	sq_ehci_show("the value of pQHEAD1->QHEADLinkPtr is %x\n",pQHEAD1->QHEADLinkPtr);
+	sq_ehci_show("the value of pQHEAD1->EpChar is %x\n",pQHEAD1->EpChar);
+	sq_ehci_show("the value of pQHEAD1->EpCap is %x\n",pQHEAD1->EpCap);
+	sq_ehci_show("the value of pQHEAD1->CurrQTD is %x\n",pQHEAD1->CurrQTD);
+	sq_ehci_show("the value of pQHEAD1->NextQTD is %x\n",pQHEAD1->NextQTD);
+	sq_ehci_show("the value of pQHEAD1->AltQTd is %x\n",pQHEAD1->AltQTd);
 	writew((ULONG)PhyQHEAD1,ASYNCICLISTADDR(ehci_base));
 	
 	EHCI_Asynchronous_Enable(1);
 	//Enable Asynchronous list
-	socle_ehci_show("the value of Asynclistbase addr register is %x\n",readw(ASYNCICLISTADDR(ehci_base)));
+	sq_ehci_show("the value of Asynclistbase addr register is %x\n",readw(ASYNCICLISTADDR(ehci_base)));
 	
 	while(!(TransferComplete | ErrorComplete))
 	{
 	}
 	if(TransferComplete)
 	{
-		socle_ehci_show("the value of qtd1 char is %x\n",pQTD1->QTDChar);
-		socle_ehci_show("the value of qtd2 char is %x\n",pQTD2->QTDChar);
-		socle_ehci_show("the value of qtd3 char is %x\n",pQTD3->QTDChar);
+		sq_ehci_show("the value of qtd1 char is %x\n",pQTD1->QTDChar);
+		sq_ehci_show("the value of qtd2 char is %x\n",pQTD2->QTDChar);
+		sq_ehci_show("the value of qtd3 char is %x\n",pQTD3->QTDChar);
 		if(Success(pQTD3->QTDChar)) 	// checking the status of the completion
 		{
-			socle_ehci_show("Get Descriptor Passed in Driver");
+			sq_ehci_show("Get Descriptor Passed in Driver");
 			if(DevDescType == 1)
 			{
 				ehci_status.CepMps = *(VirBuffAddr1 + 7);
@@ -1137,28 +1137,28 @@ int GetDescriptor(BYTE DevDescType,BYTE DevDescIndex,int DevDescLength)
 				if(UnderHub)
 				{
 					ehci_status.CepMps_Hub= *(VirBuffAddr1 + 7);
-					socle_ehci_show("the value of control endpoint mps is %x\n",ehci_status.CepMps_Hub);
+					sq_ehci_show("the value of control endpoint mps is %x\n",ehci_status.CepMps_Hub);
 				}
-				socle_ehci_show("the value of control endpoint mps is %x\n",ehci_status.CepMps);
+				sq_ehci_show("the value of control endpoint mps is %x\n",ehci_status.CepMps);
 			}
 			BytesTransferred = InitialTransferLength - ((pQTD2->QTDChar & 0x7FFF0000)>> 16);
-			socle_ehci_show("Total bytes transferred is %d\n",BytesTransferred);
+			sq_ehci_show("Total bytes transferred is %d\n",BytesTransferred);
 			for(i=0;i<BytesTransferred;i++)
 			{
-				socle_ehci_show("the value of %d byte is %x\n",i,*(VirBuffAddr1+i));
+				sq_ehci_show("the value of %d byte is %x\n",i,*(VirBuffAddr1+i));
 				if(i == 4)
 				{
 					if(*(VirBuffAddr1+i) == 0x09)	// Hub class
 					{
-						socle_ehci_show("Connected device is a hub class device\n");
+						sq_ehci_show("Connected device is a hub class device\n");
 						if(*(VirBuffAddr1+6) == 1 )
 						{
-							socle_ehci_show("single TT\n");
+							sq_ehci_show("single TT\n");
 							MultipleTT = 0;
 						}
 						else
 						{
-							socle_ehci_show("Mulitiple TT \n");
+							sq_ehci_show("Mulitiple TT \n");
 							MultipleTT = 1;
 						}
 					}
@@ -1167,53 +1167,53 @@ int GetDescriptor(BYTE DevDescType,BYTE DevDescIndex,int DevDescLength)
 		}
 		else
 		{
-			socle_ehci_show("some other error\n");
+			sq_ehci_show("some other error\n");
 		}
 	}
 	else if(ErrorComplete)
 	{
-		socle_ehci_show("Transfer failed\n");
-		socle_ehci_show("the value of qtd1 char is %x\n",pQTD1->QTDChar);
-		socle_ehci_show("the value of qtd2 char is %x\n",pQTD2->QTDChar);
-		socle_ehci_show("the value of qtd3 char is %x\n",pQTD3->QTDChar);
+		sq_ehci_show("Transfer failed\n");
+		sq_ehci_show("the value of qtd1 char is %x\n",pQTD1->QTDChar);
+		sq_ehci_show("the value of qtd2 char is %x\n",pQTD2->QTDChar);
+		sq_ehci_show("the value of qtd3 char is %x\n",pQTD3->QTDChar);
 	}
-	socle_ehci_show("the value of pQHEAD1->QHEADLinkPtr is %x\n",pQHEAD1->QHEADLinkPtr);
-	socle_ehci_show("the value of pQHEAD1->EpChar is %x\n",pQHEAD1->EpChar);
-	socle_ehci_show("the value of pQHEAD1->EpCap is %x\n",pQHEAD1->EpCap);
-	socle_ehci_show("the value of pQHEAD1->CurrQTD is %x\n",pQHEAD1->CurrQTD);
-	socle_ehci_show("the value of pQHEAD1->NextQTD is %x\n",pQHEAD1->NextQTD);
-	socle_ehci_show("the value of pQHEAD1->AltQTd is %x\n",pQHEAD1->AltQTd);
-	socle_ehci_show("the value of pQHEAD1->QtdChar is %x\n",pQHEAD1->QTDChar);
-	socle_ehci_show("the value of pQHEAD1->Buffptr1 is %x\n",pQHEAD1->QHEADBuffPtr0);
-	socle_ehci_show("the value of pQHEAD1->Buffptr2 is %x\n",pQHEAD1->QHEADBuffPtr1);
-	socle_ehci_show("the value of pQHEAD1->Buffptr3 is %x\n",pQHEAD1->QHEADBuffPtr2);
-	socle_ehci_show("the value of pQHEAD1->Buffptr4 is %x\n",pQHEAD1->QHEADBuffPtr3);
-	socle_ehci_show("the value of pQHEAD1->Buffptr5 is %x\n",pQHEAD1->QHEADBuffPtr4);
-	socle_ehci_show("the value of pqtd1.NextQTD is %x\n",pQTD1->NextQTD);
-	socle_ehci_show("the value of pQTD1->AltQTD is %x\n",pQTD1->AltQTD);
-	socle_ehci_show("the value of pQTD1->QTDChar is %x\n",pQTD1->QTDChar);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt0 is %x\n",pQTD1->QTDBuffPrt0);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt1 is %x\n",pQTD1->QTDBuffPrt1);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt2 is %x\n",pQTD1->QTDBuffPrt2);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt3 is %x\n",pQTD1->QTDBuffPrt3);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt4 is %x\n",pQTD1->QTDBuffPrt4);
-	socle_ehci_show("the value of pqtd2.NextQTD is %x\n",pQTD2->NextQTD);
-	socle_ehci_show("the value of pQTD2->AltQTD is %x\n",pQTD2->AltQTD);
-	socle_ehci_show("the value of pQTD2->QTDChar is %x\n",pQTD2->QTDChar);
-	socle_ehci_show("the value of pQTD2->QTDBuffPrt0 is %x\n",pQTD2->QTDBuffPrt0);
-	socle_ehci_show("the value of pQTD2->QTDBuffPrt1 is %x\n",pQTD2->QTDBuffPrt1);
-	socle_ehci_show("the value of pQTD2->QTDBuffPrt2 is %x\n",pQTD2->QTDBuffPrt2);
-	socle_ehci_show("the value of pQTD2->QTDBuffPrt3 is %x\n",pQTD2->QTDBuffPrt3);
-	socle_ehci_show("the value of pQTD2->QTDBuffPrt4 is %x\n",pQTD2->QTDBuffPrt4);
-	socle_ehci_show("the value of pqtd3.NextQTD is %x\n",pQTD3->NextQTD);
-	socle_ehci_show("the value of pQTD3->AltQTD is %x\n",pQTD3->AltQTD);
-	socle_ehci_show("the value of pQTD3->QTDChar is %x\n",pQTD3->QTDChar);
-	socle_ehci_show("the value of pQTD3->QTDBuffPrt0 is %x\n",pQTD3->QTDBuffPrt0);
-	socle_ehci_show("the value of pQTD3->QTDBuffPrt1 is %x\n",pQTD3->QTDBuffPrt1);
-	socle_ehci_show("the value of pQTD3->QTDBuffPrt2 is %x\n",pQTD3->QTDBuffPrt2);
-	socle_ehci_show("the value of pQTD3->QTDBuffPrt3 is %x\n",pQTD3->QTDBuffPrt3);
-	socle_ehci_show("the value of pQTD3->QTDBuffPrt4 is %x\n",pQTD3->QTDBuffPrt4);
-	socle_ehci_show("the value of Asynclistbase addr register is %x\n",readw(ASYNCICLISTADDR(ehci_base)));
+	sq_ehci_show("the value of pQHEAD1->QHEADLinkPtr is %x\n",pQHEAD1->QHEADLinkPtr);
+	sq_ehci_show("the value of pQHEAD1->EpChar is %x\n",pQHEAD1->EpChar);
+	sq_ehci_show("the value of pQHEAD1->EpCap is %x\n",pQHEAD1->EpCap);
+	sq_ehci_show("the value of pQHEAD1->CurrQTD is %x\n",pQHEAD1->CurrQTD);
+	sq_ehci_show("the value of pQHEAD1->NextQTD is %x\n",pQHEAD1->NextQTD);
+	sq_ehci_show("the value of pQHEAD1->AltQTd is %x\n",pQHEAD1->AltQTd);
+	sq_ehci_show("the value of pQHEAD1->QtdChar is %x\n",pQHEAD1->QTDChar);
+	sq_ehci_show("the value of pQHEAD1->Buffptr1 is %x\n",pQHEAD1->QHEADBuffPtr0);
+	sq_ehci_show("the value of pQHEAD1->Buffptr2 is %x\n",pQHEAD1->QHEADBuffPtr1);
+	sq_ehci_show("the value of pQHEAD1->Buffptr3 is %x\n",pQHEAD1->QHEADBuffPtr2);
+	sq_ehci_show("the value of pQHEAD1->Buffptr4 is %x\n",pQHEAD1->QHEADBuffPtr3);
+	sq_ehci_show("the value of pQHEAD1->Buffptr5 is %x\n",pQHEAD1->QHEADBuffPtr4);
+	sq_ehci_show("the value of pqtd1.NextQTD is %x\n",pQTD1->NextQTD);
+	sq_ehci_show("the value of pQTD1->AltQTD is %x\n",pQTD1->AltQTD);
+	sq_ehci_show("the value of pQTD1->QTDChar is %x\n",pQTD1->QTDChar);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt0 is %x\n",pQTD1->QTDBuffPrt0);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt1 is %x\n",pQTD1->QTDBuffPrt1);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt2 is %x\n",pQTD1->QTDBuffPrt2);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt3 is %x\n",pQTD1->QTDBuffPrt3);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt4 is %x\n",pQTD1->QTDBuffPrt4);
+	sq_ehci_show("the value of pqtd2.NextQTD is %x\n",pQTD2->NextQTD);
+	sq_ehci_show("the value of pQTD2->AltQTD is %x\n",pQTD2->AltQTD);
+	sq_ehci_show("the value of pQTD2->QTDChar is %x\n",pQTD2->QTDChar);
+	sq_ehci_show("the value of pQTD2->QTDBuffPrt0 is %x\n",pQTD2->QTDBuffPrt0);
+	sq_ehci_show("the value of pQTD2->QTDBuffPrt1 is %x\n",pQTD2->QTDBuffPrt1);
+	sq_ehci_show("the value of pQTD2->QTDBuffPrt2 is %x\n",pQTD2->QTDBuffPrt2);
+	sq_ehci_show("the value of pQTD2->QTDBuffPrt3 is %x\n",pQTD2->QTDBuffPrt3);
+	sq_ehci_show("the value of pQTD2->QTDBuffPrt4 is %x\n",pQTD2->QTDBuffPrt4);
+	sq_ehci_show("the value of pqtd3.NextQTD is %x\n",pQTD3->NextQTD);
+	sq_ehci_show("the value of pQTD3->AltQTD is %x\n",pQTD3->AltQTD);
+	sq_ehci_show("the value of pQTD3->QTDChar is %x\n",pQTD3->QTDChar);
+	sq_ehci_show("the value of pQTD3->QTDBuffPrt0 is %x\n",pQTD3->QTDBuffPrt0);
+	sq_ehci_show("the value of pQTD3->QTDBuffPrt1 is %x\n",pQTD3->QTDBuffPrt1);
+	sq_ehci_show("the value of pQTD3->QTDBuffPrt2 is %x\n",pQTD3->QTDBuffPrt2);
+	sq_ehci_show("the value of pQTD3->QTDBuffPrt3 is %x\n",pQTD3->QTDBuffPrt3);
+	sq_ehci_show("the value of pQTD3->QTDBuffPrt4 is %x\n",pQTD3->QTDBuffPrt4);
+	sq_ehci_show("the value of Asynclistbase addr register is %x\n",readw(ASYNCICLISTADDR(ehci_base)));
 	
 	TransferComplete = 0;
 	ErrorComplete = 0;
@@ -1337,22 +1337,22 @@ int SetConfiguration(BYTE DevConfig)
 	}
 	if(TransferComplete)
 	{
-		socle_ehci_show("the value of qtd1 char is %x\n",pQTD1->QTDChar);
-		socle_ehci_show("the value of qtd2 char is %x\n",pQTD2->QTDChar);
+		sq_ehci_show("the value of qtd1 char is %x\n",pQTD1->QTDChar);
+		sq_ehci_show("the value of qtd2 char is %x\n",pQTD2->QTDChar);
 		if(Success(pQTD2->QTDChar)) 	// checking the status of the completion
 		{
-			socle_ehci_show("Set Configuration Passed in Driver");
+			sq_ehci_show("Set Configuration Passed in Driver");
 		}
 		else
 		{
-			socle_ehci_show("some other error\n");
+			sq_ehci_show("some other error\n");
 		}
 	}
 	else if(ErrorComplete)
 	{
-		socle_ehci_show("Transfer failed\n");
-		socle_ehci_show("the value of qtd1 char is %x\n",pQTD1->QTDChar);
-		socle_ehci_show("the value of qtd2 char is %x\n",pQTD2->QTDChar);
+		sq_ehci_show("Transfer failed\n");
+		sq_ehci_show("the value of qtd1 char is %x\n",pQTD1->QTDChar);
+		sq_ehci_show("the value of qtd2 char is %x\n",pQTD2->QTDChar);
 	}
 	TransferComplete = 0;
 	ErrorComplete = 0;
@@ -2565,7 +2565,7 @@ int BulkLoopData(int Mps,BYTE EpOutNum,BYTE EpInNum,int Length,PUCHAR DataOutBuf
 	for(i=1;i<NoPages;i++)
 	{
 		PhyOutDataBufPointer[i] =(ULONG)((PUCHAR)PhyOutDataBufPointer[i-1] + 4096);
-		socle_ehci_show("the value of PhyOutDataBufPointer[%d] is %x\n",i,PhyOutDataBufPointer[i]);
+		sq_ehci_show("the value of PhyOutDataBufPointer[%d] is %x\n",i,PhyOutDataBufPointer[i]);
 	}
 	if(Length % 4096)
 	{
@@ -2583,14 +2583,14 @@ int BulkLoopData(int Mps,BYTE EpOutNum,BYTE EpInNum,int Length,PUCHAR DataOutBuf
 	pQTD1->QTDBuffPrt2=PhyOutDataBufPointer[2];
 	pQTD1->QTDBuffPrt3=PhyOutDataBufPointer[3];
 	pQTD1->QTDBuffPrt4=PhyOutDataBufPointer[4];
-	socle_ehci_show("the value of pqtd1.NextQTD is %x\n",pQTD1->NextQTD);
-	socle_ehci_show("the value of pQTD1->AltQTD is %x\n",pQTD1->AltQTD);
-	socle_ehci_show("the value of pQTD1->QTDChar is %x\n",pQTD1->QTDChar);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt0 is %x\n",pQTD1->QTDBuffPrt0);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt1 is %x\n",pQTD1->QTDBuffPrt1);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt2 is %x\n",pQTD1->QTDBuffPrt2);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt3 is %x\n",pQTD1->QTDBuffPrt3);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt4 is %x\n",pQTD1->QTDBuffPrt4);
+	sq_ehci_show("the value of pqtd1.NextQTD is %x\n",pQTD1->NextQTD);
+	sq_ehci_show("the value of pQTD1->AltQTD is %x\n",pQTD1->AltQTD);
+	sq_ehci_show("the value of pQTD1->QTDChar is %x\n",pQTD1->QTDChar);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt0 is %x\n",pQTD1->QTDBuffPrt0);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt1 is %x\n",pQTD1->QTDBuffPrt1);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt2 is %x\n",pQTD1->QTDBuffPrt2);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt3 is %x\n",pQTD1->QTDBuffPrt3);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt4 is %x\n",pQTD1->QTDBuffPrt4);
 	//Form QHEAD=====================================================
 	pQHEAD1 = Get_Free_QH();
 	PhyQHEAD1=virt_to_phy((u32_t)pQHEAD1);
@@ -2617,12 +2617,12 @@ int BulkLoopData(int Mps,BYTE EpOutNum,BYTE EpInNum,int Length,PUCHAR DataOutBuf
 	pQHEAD1->QHEADBuffPtr2=0x00000000;
 	pQHEAD1->QHEADBuffPtr3=0x00000000;
 	pQHEAD1->QHEADBuffPtr4=0x00000000;
-	socle_ehci_show("the value of pQHEAD1->QHEADLinkPtr is %x\n",pQHEAD1->QHEADLinkPtr);
-	socle_ehci_show("the value of pQHEAD1->EpChar is %x\n",pQHEAD1->EpChar);
-	socle_ehci_show("the value of pQHEAD1->EpCap is %x\n",pQHEAD1->EpCap);
-	socle_ehci_show("the value of pQHEAD1->CurrQTD is %x\n",pQHEAD1->CurrQTD);
-	socle_ehci_show("the value of pQHEAD1->NextQTD is %x\n",pQHEAD1->NextQTD);
-	socle_ehci_show("the value of pQHEAD1->AltQTd is %x\n",pQHEAD1->AltQTd);
+	sq_ehci_show("the value of pQHEAD1->QHEADLinkPtr is %x\n",pQHEAD1->QHEADLinkPtr);
+	sq_ehci_show("the value of pQHEAD1->EpChar is %x\n",pQHEAD1->EpChar);
+	sq_ehci_show("the value of pQHEAD1->EpCap is %x\n",pQHEAD1->EpCap);
+	sq_ehci_show("the value of pQHEAD1->CurrQTD is %x\n",pQHEAD1->CurrQTD);
+	sq_ehci_show("the value of pQHEAD1->NextQTD is %x\n",pQHEAD1->NextQTD);
+	sq_ehci_show("the value of pQHEAD1->AltQTd is %x\n",pQHEAD1->AltQTd);
 	
 	//Form QTD1 for Data Stage of SendBulkData================================
 	InDataBuffer = (PUCHAR)DataInBuf;
@@ -2631,7 +2631,7 @@ int BulkLoopData(int Mps,BYTE EpOutNum,BYTE EpInNum,int Length,PUCHAR DataOutBuf
 	for(i=1;i<NoPages;i++)
 	{
 		PhyInDataBufPointer[i] =(ULONG)((PUCHAR)PhyInDataBufPointer[i-1] + 4096);
-		socle_ehci_show("the value of PhyInDataBufPointer[%d] is %x\n",i,PhyInDataBufPointer[i]);
+		sq_ehci_show("the value of PhyInDataBufPointer[%d] is %x\n",i,PhyInDataBufPointer[i]);
 	}
 	if(Length % 4096)
 	{
@@ -2648,14 +2648,14 @@ int BulkLoopData(int Mps,BYTE EpOutNum,BYTE EpInNum,int Length,PUCHAR DataOutBuf
 	pQTD2->QTDBuffPrt2=PhyInDataBufPointer[2];
 	pQTD2->QTDBuffPrt3=PhyInDataBufPointer[3];
 	pQTD2->QTDBuffPrt4=PhyInDataBufPointer[4];
-	socle_ehci_show("the value of pqtd1.NextQTD is %x\n",pQTD2->NextQTD);
-	socle_ehci_show("the value of pQTD1->AltQTD is %x\n",pQTD2->AltQTD);
-	socle_ehci_show("the value of pQTD1->QTDChar is %x\n",pQTD2->QTDChar);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt0 is %x\n",pQTD2->QTDBuffPrt0);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt1 is %x\n",pQTD2->QTDBuffPrt1);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt2 is %x\n",pQTD2->QTDBuffPrt2);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt3 is %x\n",pQTD2->QTDBuffPrt3);
-	socle_ehci_show("the value of pQTD1->QTDBuffPrt4 is %x\n",pQTD2->QTDBuffPrt4);
+	sq_ehci_show("the value of pqtd1.NextQTD is %x\n",pQTD2->NextQTD);
+	sq_ehci_show("the value of pQTD1->AltQTD is %x\n",pQTD2->AltQTD);
+	sq_ehci_show("the value of pQTD1->QTDChar is %x\n",pQTD2->QTDChar);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt0 is %x\n",pQTD2->QTDBuffPrt0);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt1 is %x\n",pQTD2->QTDBuffPrt1);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt2 is %x\n",pQTD2->QTDBuffPrt2);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt3 is %x\n",pQTD2->QTDBuffPrt3);
+	sq_ehci_show("the value of pQTD1->QTDBuffPrt4 is %x\n",pQTD2->QTDBuffPrt4);
 	//Form QHEAD=====================================================
 	pQHEAD2 = Get_Free_QH();
 	PhyQHEAD2=virt_to_phy((u32_t)pQHEAD2);
@@ -2682,19 +2682,19 @@ int BulkLoopData(int Mps,BYTE EpOutNum,BYTE EpInNum,int Length,PUCHAR DataOutBuf
 	pQHEAD2->QHEADBuffPtr2=0x00000000;
 	pQHEAD2->QHEADBuffPtr3=0x00000000;
 	pQHEAD2->QHEADBuffPtr4=0x00000000;
-	socle_ehci_show("the value of pQHEAD1->QHEADLinkPtr is %x\n",pQHEAD2->QHEADLinkPtr);
-	socle_ehci_show("the value of pQHEAD1->EpChar is %x\n",pQHEAD2->EpChar);
-	socle_ehci_show("the value of pQHEAD1->EpCap is %x\n",pQHEAD2->EpCap);
-	socle_ehci_show("the value of pQHEAD1->CurrQTD is %x\n",pQHEAD2->CurrQTD);
-	socle_ehci_show("the value of pQHEAD1->NextQTD is %x\n",pQHEAD2->NextQTD);
-	socle_ehci_show("the value of pQHEAD1->AltQTd is %x\n",pQHEAD2->AltQTd);
+	sq_ehci_show("the value of pQHEAD1->QHEADLinkPtr is %x\n",pQHEAD2->QHEADLinkPtr);
+	sq_ehci_show("the value of pQHEAD1->EpChar is %x\n",pQHEAD2->EpChar);
+	sq_ehci_show("the value of pQHEAD1->EpCap is %x\n",pQHEAD2->EpCap);
+	sq_ehci_show("the value of pQHEAD1->CurrQTD is %x\n",pQHEAD2->CurrQTD);
+	sq_ehci_show("the value of pQHEAD1->NextQTD is %x\n",pQHEAD2->NextQTD);
+	sq_ehci_show("the value of pQHEAD1->AltQTd is %x\n",pQHEAD2->AltQTd);
 	pQHEAD1->QHEADLinkPtr=(ULONG)(((ULONG)PhyQHEAD2)|0x2);
-	socle_ehci_show("the value  of PhyQHEAD is %x\n",PhyQHEAD1);
+	sq_ehci_show("the value  of PhyQHEAD is %x\n",PhyQHEAD1);
 	//Write the physical address into ASYNCICLISTADDR(ehci_base) Register
 	
 	writew((ULONG)PhyQHEAD1,ASYNCICLISTADDR(ehci_base));
 	
-	socle_ehci_show("the value in Aynclistaddr is %x\n",readw(ASYNCICLISTADDR(ehci_base)));
+	sq_ehci_show("the value in Aynclistaddr is %x\n",readw(ASYNCICLISTADDR(ehci_base)));
 	
 	//Enable Asynchronous list
 	EHCI_Asynchronous_Enable(1);		
@@ -2705,30 +2705,30 @@ int BulkLoopData(int Mps,BYTE EpOutNum,BYTE EpInNum,int Length,PUCHAR DataOutBuf
 	{
 		if(Success(pQTD1->QTDChar))		// checking the status of the completion
 		{
-			socle_ehci_show("the value of qtd1 char is %x\n",pQTD1->QTDChar);
-			socle_ehci_show("Bulk Out  Successfull in Driver\n");
+			sq_ehci_show("the value of qtd1 char is %x\n",pQTD1->QTDChar);
+			sq_ehci_show("Bulk Out  Successfull in Driver\n");
 		}
 		else
 		{
-			socle_ehci_show("some other error\n");
+			sq_ehci_show("some other error\n");
 			Error = 1;
 		}
 		if(Success(pQTD2->QTDChar))		// checking the status of the completion
 		{
-			socle_ehci_show("the value of qtd2 char is %x\n",pQTD2->QTDChar);
-			socle_ehci_show("Bulk In  Successfull in Driver\n");
+			sq_ehci_show("the value of qtd2 char is %x\n",pQTD2->QTDChar);
+			sq_ehci_show("Bulk In  Successfull in Driver\n");
 		}
 		else
 		{
-			socle_ehci_show("some other error\n");
+			sq_ehci_show("some other error\n");
 			Error = 1;
 		}
 	}
 	else if(ErrorComplete)
 	{
-		socle_ehci_show("Transfer failed\n");
-		socle_ehci_show("the value of qtd1 char is %x\n",pQTD1->QTDChar);
-		socle_ehci_show("the value of qtd2 char is %x\n",pQTD2->QTDChar);
+		sq_ehci_show("Transfer failed\n");
+		sq_ehci_show("the value of qtd1 char is %x\n",pQTD1->QTDChar);
+		sq_ehci_show("the value of qtd2 char is %x\n",pQTD2->QTDChar);
 		Error = 1;
 	}
 	if(pQTD1->QTDChar & 0x80000000)
@@ -6241,7 +6241,7 @@ int EHCI_Ctrl_TestItem(void)
 	unsigned long PortSc1,Usbsts;
 
 		if(autorun != 1)
-			socle_ehci_show("=============Ctrl TEST ================\n");
+			sq_ehci_show("=============Ctrl TEST ================\n");
 
 	PortSc1=readw(PORTSC(ehci_base));
 	Usbsts = readw(USBSTS(ehci_base)/*0x180a4124*/);
@@ -6626,7 +6626,7 @@ int EHCI_Bulk_TestItem()
 						}
 						else
 						{
-							socle_ehci_show("This loopback passed\n");
+							sq_ehci_show("This loopback passed\n");
 							for(j=0;j<Length;j++)
 							{
 								if(*(DataInBuf+j) == *(DataOutBuf+j))
@@ -6636,9 +6636,9 @@ int EHCI_Bulk_TestItem()
 								else
 								{
 									MemNequal = 1;
-									socle_ehci_show("the value of DatainBuf is %x\n",*(DataInBuf+j));
-									socle_ehci_show("the value of DataoutBuf is %x\n",*(DataOutBuf+j));
-									socle_ehci_show("the value of j is %x\n",j);
+									sq_ehci_show("the value of DatainBuf is %x\n",*(DataInBuf+j));
+									sq_ehci_show("the value of DataoutBuf is %x\n",*(DataOutBuf+j));
+									sq_ehci_show("the value of j is %x\n",j);
 									break;
 								}
 							}
@@ -6650,14 +6650,14 @@ int EHCI_Bulk_TestItem()
 							}
 							else
 							{
-								socle_ehci_show("Memory matches correctly\n");
+								sq_ehci_show("Memory matches correctly\n");
 								TdBufLength = 0;
 							}
 						}
 					}
 					for(i=0;i<NoPac;i++)
 					{
-						socle_ehci_show("the value of i is %d\n",i);
+						sq_ehci_show("the value of i is %d\n",i);
 						Error = BulkLoopData(Mps,EpOutNum,EpInNum,TdMaxbufLength,DataOutBuf,DataInBuf,UnderHub);
 						if(!Error)
 						{
@@ -6667,7 +6667,7 @@ int EHCI_Bulk_TestItem()
 						}
 						else
 						{
-							socle_ehci_show("This loopback passed\n");
+							sq_ehci_show("This loopback passed\n");
 							for(j=0;j<20480;j++)
 							{
 								if(*(DataInBuf+j) == *(DataOutBuf+j))
@@ -6676,9 +6676,9 @@ int EHCI_Bulk_TestItem()
 								}
 								else
 								{
-									socle_ehci_show("the value of DatainBuf is %x\n",*(DataInBuf+j));
-									socle_ehci_show("the value of DataoutBuf is %x\n",*(DataOutBuf+j));
-									socle_ehci_show("the value of j is %x\n",j);
+									sq_ehci_show("the value of DatainBuf is %x\n",*(DataInBuf+j));
+									sq_ehci_show("the value of DataoutBuf is %x\n",*(DataOutBuf+j));
+									sq_ehci_show("the value of j is %x\n",j);
 									MemNequal = 1;
 									break;
 								}
@@ -6691,7 +6691,7 @@ int EHCI_Bulk_TestItem()
 							}
 							else
 							{
-								socle_ehci_show("memory matches correctly\n");
+								sq_ehci_show("memory matches correctly\n");
 								TdBufLength = TdBufLength - 20480;
 								DataInBuf = (PUCHAR)((PUCHAR)DataInBuf + 20480);
 								DataOutBuf = (PUCHAR)((PUCHAR)DataOutBuf + 20480);
@@ -6708,7 +6708,7 @@ int EHCI_Bulk_TestItem()
 						}
 						else
 						{
-							socle_ehci_show("This loopback passed\n");
+							sq_ehci_show("This loopback passed\n");
 							for(j=0;j<TdBufLength;j++)
 							{
 								if(*(DataInBuf+j) == *(DataOutBuf+j))
@@ -6718,9 +6718,9 @@ int EHCI_Bulk_TestItem()
 								else
 								{
 									MemNequal = 1;
-									socle_ehci_show("the value of DatainBuf is %x\n",*(DataInBuf+j));
-									socle_ehci_show("the value of DataoutBuf is %x\n",*(DataOutBuf+j));
-									socle_ehci_show("the value of j is %x\n",j);
+									sq_ehci_show("the value of DatainBuf is %x\n",*(DataInBuf+j));
+									sq_ehci_show("the value of DataoutBuf is %x\n",*(DataOutBuf+j));
+									sq_ehci_show("the value of j is %x\n",j);
 									break;
 								}
 							}
@@ -6731,7 +6731,7 @@ int EHCI_Bulk_TestItem()
 							}
 							else
 							{
-								socle_ehci_show("memory matches correctly\n");
+								sq_ehci_show("memory matches correctly\n");
 								TdBufLength = 0;
 							}
 						}

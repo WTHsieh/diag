@@ -18,7 +18,7 @@ tps62353_set_type(int type)
 }
 
 
-extern struct test_item_container socle_tps62353_main_container;
+extern struct test_item_container sq_tps62353_main_container;
 
 extern int
 tps62353_test(int autotest)
@@ -33,17 +33,17 @@ tps62353_test(int autotest)
 		return -1;
 	}
 	
-	ret = test_item_ctrl(&socle_tps62353_main_container, autotest);	
+	ret = test_item_ctrl(&sq_tps62353_main_container, autotest);	
 	
 	return ret;
 }
 
 
-extern struct test_item_container socle_tps62353_voltage_container;
-extern struct test_item_container socle_tps62353_regs_container;
+extern struct test_item_container sq_tps62353_voltage_container;
+extern struct test_item_container sq_tps62353_regs_container;
 
 extern int 
-socle_voltage_test(int autotest)
+sq_voltage_test(int autotest)
 {
 	int ret=0;
 	
@@ -55,24 +55,24 @@ socle_voltage_test(int autotest)
 		tps62353_vsm_get = tps62353_vsm1_get;
 	}
 
-	ret = test_item_ctrl(&socle_tps62353_voltage_container, autotest);
+	ret = test_item_ctrl(&sq_tps62353_voltage_container, autotest);
 
 	return ret;
 }
 
 extern int 
-socle_other_test(int autotest)
+sq_other_test(int autotest)
 {
 	int ret=0;
 
-	ret = test_item_ctrl(&socle_tps62353_regs_container, autotest);
+	ret = test_item_ctrl(&sq_tps62353_regs_container, autotest);
 
 	return ret;	
 
 }
 
 extern int 
-socle_voltage_increase (int autotest)
+sq_voltage_increase (int autotest)
 {
 	int ret, tmp1, tmp2;
 	
@@ -96,7 +96,7 @@ socle_voltage_increase (int autotest)
 }
 
 extern int 
-socle_voltage_decrease (int autotest)
+sq_voltage_decrease (int autotest)
 {
 	int ret, tmp1, tmp2;
 
@@ -120,7 +120,7 @@ socle_voltage_decrease (int autotest)
 }
 
 extern int 
-socle_voltage_set (int autotest)
+sq_voltage_set (int autotest)
 {
 	int ret, tmp;
 
@@ -147,7 +147,7 @@ socle_voltage_set (int autotest)
 }
 
 extern int
-socle_voltage_show (int autotest)
+sq_voltage_show (int autotest)
 {
         int tmp;
 
@@ -163,7 +163,7 @@ socle_voltage_show (int autotest)
 
 
 extern int 
-socle_regs_vsel0_set (int autotest)
+sq_regs_vsel0_set (int autotest)
 {
 	int ret;
 	u32 tmp;
@@ -182,7 +182,7 @@ socle_regs_vsel0_set (int autotest)
 }
 
 extern int 
-socle_regs_vsel1_set (int autotest)
+sq_regs_vsel1_set (int autotest)
 {
 	int ret;
 	u32 tmp;
@@ -201,7 +201,7 @@ socle_regs_vsel1_set (int autotest)
 }
 
 extern int 
-socle_regs_ctrl1_set (int autotest)
+sq_regs_ctrl1_set (int autotest)
 {
 	int ret;
 	u32 tmp;
@@ -220,7 +220,7 @@ socle_regs_ctrl1_set (int autotest)
 }
 
 extern int 
-socle_regs_ctrl2_set (int autotest)
+sq_regs_ctrl2_set (int autotest)
 {
 	int ret;
 	u32 tmp;

@@ -2,16 +2,16 @@
 #include <irqs.h>
 #include <type.h>
 
-#ifdef SOCLE_NOR_FLASH_BANK0
-#define SOCLE_NOR_BASE0	SOCLE_NOR_FLASH_BANK0;
+#ifdef SQ_NOR_FLASH_BANK0
+#define SQ_NOR_BASE0	SQ_NOR_FLASH_BANK0;
 #else 
 #error ¡§we don¡¦t define IP address¡¨ 
 #endif
 
-#if defined SOCLE_NOR_FLASH_BANK1
-	#define SOCLE_NOR_BASE1	SOCLE_NOR_FLASH_BANK1
+#if defined SQ_NOR_FLASH_BANK1
+	#define SQ_NOR_BASE1	SQ_NOR_FLASH_BANK1
 #else
-	#define SOCLE_NOR_BASE1	-1
+	#define SQ_NOR_BASE1	-1
 #endif
 
 #define FLASH_TOTAL_SEC_NUM       71
@@ -20,11 +20,11 @@
 #define FLASH_SECTOR_SIZE  0x10000
 
 #if defined (CONFIG_PC9002) || (CONFIG_SQ8000)
- 	#define MODE_BASE (SOCLE_AHB0_SDRSTMC+0x8020)
+ 	#define MODE_BASE (SQ_AHB0_SDRSTMC+0x8020)
 #endif
 
 #if defined(CONFIG_PDK) || defined(CONFIG_PC7210)
- 	#define MODE_BASE (SOCLE_AHB0_DDRMC+0x220)
+ 	#define MODE_BASE (SQ_AHB0_DDRMC+0x220)
 #endif
 
 /*define errror code*/

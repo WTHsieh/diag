@@ -1,6 +1,6 @@
-// Socle Technology Corp.
+// Sq Technology Corp.
 /////////////////////////////////////
-// Socle PDK-PC9220
+// Sq PDK-SQ8000
 // RVDEBUG initial...
 
 /////////////////////////////////////

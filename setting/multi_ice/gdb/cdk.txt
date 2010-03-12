@@ -1,6 +1,6 @@
-## Socle Technology Corp.
+## Sq Technology Corp.
 #####################################
-echo Socle Cheetah Development Kit \n
+echo Sq Cheetah Development Kit \n
 echo GDB initial... \n
 
 #####################################

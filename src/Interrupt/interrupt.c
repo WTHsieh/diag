@@ -41,13 +41,13 @@ irq_test_mode_test(int autotest)
 	struct _isr_data	isrdata;
 
 	// disable all interrupt
-	iowrite32(0, SOCLE_INTC_IRQ_IECR(INTC_REG_BASE));
+	iowrite32(0, SQ_INTC_IRQ_IECR(INTC_REG_BASE));
 
 	// clear all interrupt
-	iowrite32(0xFFFFFFFF, SOCLE_INTC_IRQ_ICCR(INTC_REG_BASE));
+	iowrite32(0xFFFFFFFF, SQ_INTC_IRQ_ICCR(INTC_REG_BASE));
 	
 	// set interrupt controller into test mode
-	iowrite32(1, SOCLE_INTC_IRQ_TEST(INTC_REG_BASE));
+	iowrite32(1, SQ_INTC_IRQ_TEST(INTC_REG_BASE));
 
 	printf("Vector Test ---\n");
 
@@ -63,13 +63,13 @@ irq_test_mode_test(int autotest)
 		request_irq(num, testISR, &isrdata);
 
 		// s/w trigger interrupt
-		iowrite32(0x1 << num, SOCLE_INTC_IRQ_ISCR(INTC_REG_BASE));
+		iowrite32(0x1 << num, SQ_INTC_IRQ_ISCR(INTC_REG_BASE));
 
-		if (socle_wait_for_int(&event, 1)) {
+		if (sq_wait_for_int(&event, 1)) {
 			printf(" --- Error Termination\n");
 			
 			// s/w trigger interrupt clear
-			iowrite32(0, SOCLE_INTC_IRQ_ISCR(INTC_REG_BASE));
+			iowrite32(0, SQ_INTC_IRQ_ISCR(INTC_REG_BASE));
 			
 			// disable interrupt
 			free_irq(num);
@@ -79,7 +79,7 @@ irq_test_mode_test(int autotest)
 		}
 		
 		// s/w trigger interrupt clear
-		iowrite32(0, SOCLE_INTC_IRQ_ISCR(INTC_REG_BASE));
+		iowrite32(0, SQ_INTC_IRQ_ISCR(INTC_REG_BASE));
 
 		// disable interrupt
 		free_irq(num);
@@ -88,13 +88,13 @@ irq_test_mode_test(int autotest)
 		printf(" --- Finish\n");
 
 	// reset interrupt controller into normal mode
-	iowrite32(0, SOCLE_INTC_IRQ_TEST(INTC_REG_BASE));
+	iowrite32(0, SQ_INTC_IRQ_TEST(INTC_REG_BASE));
 	
 	// disable all interrupt
-	iowrite32(0, SOCLE_INTC_IRQ_IECR(INTC_REG_BASE));
+	iowrite32(0, SQ_INTC_IRQ_IECR(INTC_REG_BASE));
 
 	// clear all interrupt
-	iowrite32(0xFFFFFFFF, SOCLE_INTC_IRQ_ICCR(INTC_REG_BASE));
+	iowrite32(0xFFFFFFFF, SQ_INTC_IRQ_ICCR(INTC_REG_BASE));
 
 	return result;
 }
@@ -109,13 +109,13 @@ fiq_test_mode_test(int autotest)
 	struct _isr_data	isrdata;
 
 	// disable all interrupt
-	iowrite32(0, SOCLE_INTC_FIQ_IECR(INTC_REG_BASE));
+	iowrite32(0, SQ_INTC_FIQ_IECR(INTC_REG_BASE));
 
 	// clear all interrupt
-	iowrite32(0xFFFFFFFF, SOCLE_INTC_FIQ_ICCR(INTC_REG_BASE));
+	iowrite32(0xFFFFFFFF, SQ_INTC_FIQ_ICCR(INTC_REG_BASE));
 	
 	// set interrupt controller into test mode
-	iowrite32(1, SOCLE_INTC_FIQ_TEST(INTC_REG_BASE));
+	iowrite32(1, SQ_INTC_FIQ_TEST(INTC_REG_BASE));
 
 	printf("Vector Test ---\n");
 
@@ -131,13 +131,13 @@ fiq_test_mode_test(int autotest)
 		request_fiq(num, testISR, &isrdata);
 
 		// s/w trigger interrupt
-		iowrite32(0x1 << num, SOCLE_INTC_FIQ_ISCR(INTC_REG_BASE));
+		iowrite32(0x1 << num, SQ_INTC_FIQ_ISCR(INTC_REG_BASE));
 
-		if (socle_wait_for_int(&event, 1)) {
+		if (sq_wait_for_int(&event, 1)) {
 			printf(" --- Error Termination\n");
 			
 			// s/w trigger interrupt clear
-			iowrite32(0, SOCLE_INTC_FIQ_ISCR(INTC_REG_BASE));
+			iowrite32(0, SQ_INTC_FIQ_ISCR(INTC_REG_BASE));
 			
 			// disable interrupt
 			free_fiq(num);
@@ -147,7 +147,7 @@ fiq_test_mode_test(int autotest)
 		}
 		
 		// s/w trigger interrupt clear
-		iowrite32(0, SOCLE_INTC_FIQ_ISCR(INTC_REG_BASE));
+		iowrite32(0, SQ_INTC_FIQ_ISCR(INTC_REG_BASE));
 
 		// disable interrupt
 		free_fiq(num);
@@ -156,13 +156,13 @@ fiq_test_mode_test(int autotest)
 		printf(" --- Finish\n");
 
 	// reset interrupt controller into normal mode
-	iowrite32(0, SOCLE_INTC_FIQ_TEST(INTC_REG_BASE));
+	iowrite32(0, SQ_INTC_FIQ_TEST(INTC_REG_BASE));
 	
 	// disable all interrupt
-	iowrite32(0, SOCLE_INTC_FIQ_IECR(INTC_REG_BASE));
+	iowrite32(0, SQ_INTC_FIQ_IECR(INTC_REG_BASE));
 
 	// clear all interrupt
-	iowrite32(0xFFFFFFFF, SOCLE_INTC_FIQ_ICCR(INTC_REG_BASE));
+	iowrite32(0xFFFFFFFF, SQ_INTC_FIQ_ICCR(INTC_REG_BASE));
 
 	return result;
 }
@@ -178,13 +178,13 @@ int0_side_test(int autotest)
 	printf("\nARM9 Side...\n");
 	
 	// enable interrupt
-	request_irq(SOCLE_INTC_INTC1, int0_handler, (void*)&int_num);
+	request_irq(SQ_INTC_INTC1, int0_handler, (void*)&int_num);
 
 	printf("Waiting for interrupt...\n");
 	while(int_num < INTC_MAX_IRQ);
 
 	// disable interrupt
-	free_irq(SOCLE_INTC_INTC1);
+	free_irq(SQ_INTC_INTC1);
 	
 	return 0;
 }
@@ -197,7 +197,7 @@ int0_handler (void* pparam)
 	//cyli fix but not test
 	//*int_num = readw(INTC1_ISR);
 	//printf("Receive Interrupt[%d]!\n", *int_num);
-	//printf("cyli Receive Interrupt[%d]!\n", ioread32(SOCLE_INTC_IRQ_ISR(SOCLE_AHB1_INTC)));
+	//printf("cyli Receive Interrupt[%d]!\n", ioread32(SQ_INTC_IRQ_ISR(SQ_AHB1_INTC)));
 	
 	printf("Receive Interrupt[%d]!\n", (*int_num)++);
 	*int_flag = 1;
@@ -214,13 +214,13 @@ int1_side_test(int autotest)
 	printf("\nARM7 Side...\n");
 	
 	// disable all interrupt
-	iowrite32(0, SOCLE_INTC_IRQ_IECR(INTC_REG_BASE));
+	iowrite32(0, SQ_INTC_IRQ_IECR(INTC_REG_BASE));
 
 	// clear all interrupt
-	iowrite32(0xFFFFFFFF, SOCLE_INTC_IRQ_ICCR(INTC_REG_BASE));
+	iowrite32(0xFFFFFFFF, SQ_INTC_IRQ_ICCR(INTC_REG_BASE));
 	
 	// set interrupt controller into test mode
-	iowrite32(1, SOCLE_INTC_IRQ_TEST(INTC_REG_BASE));
+	iowrite32(1, SQ_INTC_IRQ_TEST(INTC_REG_BASE));
 
 	printf("Vector Test ---\n");
 
@@ -231,20 +231,20 @@ int1_side_test(int autotest)
 		
 		// enable interrupt
 		// irq enable
-		iowrite32(ioread32(SOCLE_INTC_IRQ_IECR(INTC_REG_BASE)) | (0x1 << num),
-					SOCLE_INTC_IRQ_IECR(INTC_REG_BASE));
+		iowrite32(ioread32(SQ_INTC_IRQ_IECR(INTC_REG_BASE)) | (0x1 << num),
+					SQ_INTC_IRQ_IECR(INTC_REG_BASE));
 		// irq set mask
-		iowrite32(ioread32(SOCLE_INTC_IRQ_IMR(INTC_REG_BASE)) | (0x1 << num),
-					SOCLE_INTC_IRQ_IMR(INTC_REG_BASE));
+		iowrite32(ioread32(SQ_INTC_IRQ_IMR(INTC_REG_BASE)) | (0x1 << num),
+					SQ_INTC_IRQ_IMR(INTC_REG_BASE));
 
 		// s/w trigger interrupt
-		iowrite32(0x1 << num, SOCLE_INTC_IRQ_ISCR(INTC_REG_BASE));
+		iowrite32(0x1 << num, SQ_INTC_IRQ_ISCR(INTC_REG_BASE));
 
 		//wait to trigger another interrupt
 		while(!(*int_flag));
 
 		// s/w trigger interrupt clear
-		iowrite32(0, SOCLE_INTC_IRQ_ISCR(INTC_REG_BASE));
+		iowrite32(0, SQ_INTC_IRQ_ISCR(INTC_REG_BASE));
 
 		// disable interrupt
 		free_irq(num);
@@ -252,13 +252,13 @@ int1_side_test(int autotest)
 	printf(" --- Finish\n");
 
 	// reset interrupt controller into normal mode
-	iowrite32(0, SOCLE_INTC_IRQ_TEST(INTC_REG_BASE));
+	iowrite32(0, SQ_INTC_IRQ_TEST(INTC_REG_BASE));
 	
 	// disable all interrupt
-	iowrite32(0, SOCLE_INTC_IRQ_IECR(INTC_REG_BASE));
+	iowrite32(0, SQ_INTC_IRQ_IECR(INTC_REG_BASE));
 
 	// clear all interrupt
-	iowrite32(0xFFFFFFFF, SOCLE_INTC_IRQ_ICCR(INTC_REG_BASE));
+	iowrite32(0xFFFFFFFF, SQ_INTC_IRQ_ICCR(INTC_REG_BASE));
 
 	return result;
 }

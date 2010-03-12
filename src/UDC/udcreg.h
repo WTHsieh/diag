@@ -4,23 +4,23 @@
 #include "type.h"
 
 #ifdef	UDC_GAIN_PHY
-#undef		UDC_SOCLE_PHY
+#undef		UDC_SQ_PHY
 #else
-#define		UDC_SOCLE_PHY
+#define		UDC_SQ_PHY
 #endif
 
 /* UDC Registers Offset Define */
 
 // for FPGA
-//#define UDC_REG_BASE		SOCLE_AHB0_ES0
-//#define UDC_INT				SOCLE_INTC_EXTERNAL0
+//#define UDC_REG_BASE		SQ_AHB0_ES0
+//#define UDC_INT				SQ_INTC_EXTERNAL0
 
 #ifndef UDC_REG_BASE
-#define UDC_REG_BASE		SOCLE_AHB0_UDC
+#define UDC_REG_BASE		SQ_AHB0_UDC
 #endif
 
 #ifndef UDC_INT
-#define UDC_INT		SOCLE_INTC_UDC
+#define UDC_INT		SQ_INTC_UDC
 #endif
 
 
@@ -169,10 +169,10 @@
 #define	INT_DMALM_IADDR(x)	(x + 0x34)				/* Intr_IN DMA Local Memory Address Register */
 
 /* PHY_TEST_EN */
-#define	PHY_TEST_CLK_EN		(1<<0)	/* For Socle's PHY Test	clock enable */
-#define	PHY_TEST_CLK		(1<<1)	/* Enable Socle's PHY analog_test pin  */
+#define	PHY_TEST_CLK_EN		(1<<0)	/* For Sq's PHY Test	clock enable */
+#define	PHY_TEST_CLK		(1<<1)	/* Enable Sq's PHY analog_test pin  */
 
-/* PHY_TEST	*/				/* For Socle's PHY Test	mode use */
+/* PHY_TEST	*/				/* For Sq's PHY Test	mode use */
 #define	PHY_TEST_ADDR		0x00
 #define	PHY_TEST_DATA_IN	0x04
 

@@ -48,12 +48,12 @@ extern int OHCITesting(int autotest)
         int     ret = 0;
 
         #ifdef CONFIG_PC9002
-                socle_mp_gpio_set_port_num_value(PA,6,0);
+                sq_mp_gpio_set_port_num_value(PA,6,0);
         #endif
 
                 //20080123 leonid add for USB Downstream
         #if defined(CONFIG_PC7210) || defined(CONFIG_PDK)
-                socle_scu_usb_tranceiver_downstream();
+                sq_scu_usb_tranceiver_downstream();
         #endif
 
 	ret = test_item_ctrl(&ohci_main_container,autotest);
@@ -66,8 +66,8 @@ ohci_0_test(int autotest)
 {
         int ret=0;
 
-        ohci_base = SOCLE_AHB0_UHC0;
-        ohci_irq = SOCLE_INTC_UHC0;
+        ohci_base = SQ_AHB0_UHC0;
+        ohci_irq = SQ_INTC_UHC0;
         ret = ohci_test(autotest);
 
         return ret;
@@ -78,8 +78,8 @@ ohci_1_test(int autotest)
 {
         int ret=0;
 
-        ohci_base = SOCLE_AHB0_UHC1;
-        ohci_irq = SOCLE_INTC_UHC1;
+        ohci_base = SQ_AHB0_UHC1;
+        ohci_irq = SQ_INTC_UHC1;
         ret = ohci_test(autotest);
 
         return ret;

@@ -131,7 +131,7 @@ ifeq "y" "$(CONFIG_LCD_PWM)"
 sinclude src/LCD_PWM/IP.mk
 endif
 
-ifeq "y" "$(CONFIG_SOCLE_LCD)"
+ifeq "y" "$(CONFIG_SQ_LCD)"
 sinclude src/LCD/IP.mk
 endif
 

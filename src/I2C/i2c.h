@@ -50,14 +50,14 @@ extern int i2c_master_recv(struct i2c_client *client, char *buf, int count);
 extern int i2c_transfer(struct i2c_msg *msgs, int num);
 
 static void inline
-socle_i2c_write(u32 reg, u32 val, u32 base)
+sq_i2c_write(u32 reg, u32 val, u32 base)
 {
 	base += reg;
 	iowrite32(val, base);
 }
 
 static u32 inline
-socle_i2c_read(u32 reg, u32 base)
+sq_i2c_read(u32 reg, u32 base)
 {
 	u32 val;
 

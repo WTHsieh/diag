@@ -967,7 +967,7 @@ int main(int ac, char **av)
 	if (stat == 0) {
 		conf_write(NULL);
 		printf("\n\n"
-			"*** End of SOCLE diagnostic program configuration.\n");
+			"*** End of SQ diagnostic program configuration.\n");
 		printf("*** Execute 'make' to build the diagnostic program or try 'make help'.\n\n");
 	} else
 		printf("\n\nYour diagnostic program configuration changes were NOT saved.\n\n");

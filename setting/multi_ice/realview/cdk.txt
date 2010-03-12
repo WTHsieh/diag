@@ -1,6 +1,6 @@
-// Socle Technology Corp.
+// Sq Technology Corp.
 /////////////////////////////////////
-// Socle Cheetah Development Kit
+// Sq Cheetah Development Kit
 // RVDEBUG initial...
 
 /////////////////////////////////////

@@ -145,7 +145,7 @@ extern int bpp16_lumg_test(int autotest);
 extern int bpp16_lumb_test(int autotest);
 extern int bpp16_lumrgb_test(int autotest);
 
-struct test_item socle_lcd_16bpp_lum_test_items[] = {
+struct test_item sq_lcd_16bpp_lum_test_items[] = {
 	{"LUM 0", 
 	 bpp16_lum0_test,
 	 1,
@@ -169,11 +169,11 @@ struct test_item socle_lcd_16bpp_lum_test_items[] = {
 	 
 };
 
-struct test_item_container socle_lcd_16bpp_lum_test_container = {
+struct test_item_container sq_lcd_16bpp_lum_test_container = {
 	.menu_name = "16bpp lum",
 	.shell_name = "16bpp lum",
-	.items = socle_lcd_16bpp_lum_test_items,
-	.test_item_size = sizeof(socle_lcd_16bpp_lum_test_items)
+	.items = sq_lcd_16bpp_lum_test_items,
+	.test_item_size = sizeof(sq_lcd_16bpp_lum_test_items)
 };
 
 extern int bpp16_red_test(int autotest);
@@ -181,7 +181,7 @@ extern int bpp16_green_test(int autotest);
 extern int bpp16_blue_test(int autotest);
 extern int bpp16_lum_test(int autotest);
 
-struct test_item socle_lcd_16bpp_test_items[] = {
+struct test_item sq_lcd_16bpp_test_items[] = {
 	{"Red Mode", 
 	 bpp16_red_test,
 	 1,
@@ -200,17 +200,17 @@ struct test_item socle_lcd_16bpp_test_items[] = {
 	 1},
 };
 
-struct test_item_container socle_lcd_controller_16bpp_test_container = {
-	.menu_name = "SOCLE LCD 16 BPP Ctrl Menu",
-	.shell_name = "socle_bpp16",
-	.items = socle_lcd_16bpp_test_items,
-	.test_item_size = sizeof(socle_lcd_16bpp_test_items)
+struct test_item_container sq_lcd_controller_16bpp_test_container = {
+	.menu_name = "SQ LCD 16 BPP Ctrl Menu",
+	.shell_name = "sq_bpp16",
+	.items = sq_lcd_16bpp_test_items,
+	.test_item_size = sizeof(sq_lcd_16bpp_test_items)
 };
 
 extern int yuv_single_frame_test(int autotest);
 extern int yuv_double_frame_test(int autotest);
 
-struct test_item socle_lcd_yuv_frame_items[] = {
+struct test_item sq_lcd_yuv_frame_items[] = {
 	{"YUV Single Frame", 
 	 yuv_single_frame_test,
 	 1,
@@ -221,17 +221,17 @@ struct test_item socle_lcd_yuv_frame_items[] = {
 	 1},
 };
 
-struct test_item_container socle_lcd_yuv_frame_test_container = {
-	.menu_name = "SOCLE LCD YUV Frame",
-	.shell_name = "socle_lcd",
-	.items = socle_lcd_yuv_frame_items,
-	.test_item_size = sizeof(socle_lcd_yuv_frame_items)
+struct test_item_container sq_lcd_yuv_frame_test_container = {
+	.menu_name = "SQ LCD YUV Frame",
+	.shell_name = "sq_lcd",
+	.items = sq_lcd_yuv_frame_items,
+	.test_item_size = sizeof(sq_lcd_yuv_frame_items)
 };
 
 extern int single_frame_test(int autotest);
 extern int double_frame_test(int autotest);
 
-struct test_item socle_lcd_test_items[] = {
+struct test_item sq_lcd_test_items[] = {
 	{"Single Frame", 
 	 single_frame_test,
 	 1,
@@ -242,18 +242,18 @@ struct test_item socle_lcd_test_items[] = {
 	 1},
 };
 
-struct test_item_container socle_lcd_controller_test_container = {
-	.menu_name = "SOCLE LCD Ctrl Menu",
-	.shell_name = "socle_lcd",
-	.items = socle_lcd_test_items,
-	.test_item_size = sizeof(socle_lcd_test_items)
+struct test_item_container sq_lcd_controller_test_container = {
+	.menu_name = "SQ LCD Ctrl Menu",
+	.shell_name = "sq_lcd",
+	.items = sq_lcd_test_items,
+	.test_item_size = sizeof(sq_lcd_test_items)
 };
 
 extern int tft_lut_test(int autotest);
 extern int tft_16bpp_test(int autotest);
 extern int tft_24bpp_test(int autotest);
 
-struct test_item socle_lcd_bpp_items[] = {
+struct test_item sq_lcd_bpp_items[] = {
 	{"TFT LUT", 
 	 tft_lut_test,
 	 1,
@@ -268,17 +268,17 @@ struct test_item socle_lcd_bpp_items[] = {
 	 1},
 };
 
-struct test_item_container socle_lcd_controller_bpp_container = {
-	.menu_name = "SOCLE LCD Bpp Menu",
-	.shell_name = "socle_lcd_bpp",
-	.items = socle_lcd_bpp_items,
-	.test_item_size = sizeof(socle_lcd_bpp_items)
+struct test_item_container sq_lcd_controller_bpp_container = {
+	.menu_name = "SQ LCD Bpp Menu",
+	.shell_name = "sq_lcd_bpp",
+	.items = sq_lcd_bpp_items,
+	.test_item_size = sizeof(sq_lcd_bpp_items)
 };
 
 extern int lcd_yuv420_mode_test(int autotest);
 extern int lcd_yuv422_mode_test(int autotest);
 
-struct test_item socle_lcd_yuv_items[] = {
+struct test_item sq_lcd_yuv_items[] = {
 	{"LCD YUV420 format display", 
 	 lcd_yuv420_mode_test,
 	 1,
@@ -289,18 +289,18 @@ struct test_item socle_lcd_yuv_items[] = {
 	 1},
 };
 
-struct test_item_container socle_lcd_controller_yuv_container = {
-	.menu_name = "SOCLE LCD YUV Menu",
-	.shell_name = "socle_lcd_yuv format",
-	.items = socle_lcd_yuv_items,
-	.test_item_size = sizeof(socle_lcd_yuv_items)
+struct test_item_container sq_lcd_controller_yuv_container = {
+	.menu_name = "SQ LCD YUV Menu",
+	.shell_name = "sq_lcd_yuv format",
+	.items = sq_lcd_yuv_items,
+	.test_item_size = sizeof(sq_lcd_yuv_items)
 };
 
 
 extern int lcd_rgb_mode_test(int autotest);
 extern int lcd_yuv_mode_test(int autotest);
 
-struct test_item socle_lcd_format_items[] = {
+struct test_item sq_lcd_format_items[] = {
 	{"LCD RGB format display", 
 	 lcd_rgb_mode_test,
 	 1,
@@ -311,11 +311,11 @@ struct test_item socle_lcd_format_items[] = {
 	 LCD_YUV_MODE_TEST},
 };
 
-struct test_item_container socle_lcd_controller_format_container = {
-	.menu_name = "SOCLE LCD Bpp Menu",
-	.shell_name = "socle_lcd_bpp",
-	.items = socle_lcd_format_items,
-	.test_item_size = sizeof(socle_lcd_format_items)
+struct test_item_container sq_lcd_controller_format_container = {
+	.menu_name = "SQ LCD Bpp Menu",
+	.shell_name = "sq_lcd_bpp",
+	.items = sq_lcd_format_items,
+	.test_item_size = sizeof(sq_lcd_format_items)
 };
 
 

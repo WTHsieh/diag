@@ -32,28 +32,28 @@ extern "C" {
 #ifndef SYS_INT_ENABLE
 #define	SYS_INT_ENABLE(pDrvCtrl)                                        \
     {                                                                   \
- 	iowrite32(ioread32(SOCLE_INTC_IRQ_IECR(INTC_REG_BASE)) | (0x1 << pDrvCtrl->ilevel),		\
- 				SOCLE_INTC_IRQ_IECR(INTC_REG_BASE));					\
- 	iowrite32(ioread32(SOCLE_INTC_IRQ_IMR(INTC_REG_BASE)) | (0x1 << pDrvCtrl->ilevel),		\
- 				SOCLE_INTC_IRQ_IMR(INTC_REG_BASE));						\
+ 	iowrite32(ioread32(SQ_INTC_IRQ_IECR(INTC_REG_BASE)) | (0x1 << pDrvCtrl->ilevel),		\
+ 				SQ_INTC_IRQ_IECR(INTC_REG_BASE));					\
+ 	iowrite32(ioread32(SQ_INTC_IRQ_IMR(INTC_REG_BASE)) | (0x1 << pDrvCtrl->ilevel),		\
+ 				SQ_INTC_IRQ_IMR(INTC_REG_BASE));						\
     }
 #endif /* SYS_INT_ENABLE */
 
 #ifndef SYS_INT_DISABLE
 #define SYS_INT_DISABLE(pDrvCtrl)                                       \
     {                                                                   \
- 	iowrite32(ioread32(SOCLE_INTC_IRQ_IECR(INTC_REG_BASE)) & ~(0x1 << pDrvCtrl->ilevel),	\
- 				SOCLE_INTC_IRQ_IECR(INTC_REG_BASE));					\
- 	iowrite32(ioread32(SOCLE_INTC_IRQ_IMR(INTC_REG_BASE)) & ~(0x1 << pDrvCtrl->ilevel),		\
- 				SOCLE_INTC_IRQ_IMR(INTC_REG_BASE));						\
+ 	iowrite32(ioread32(SQ_INTC_IRQ_IECR(INTC_REG_BASE)) & ~(0x1 << pDrvCtrl->ilevel),	\
+ 				SQ_INTC_IRQ_IECR(INTC_REG_BASE));					\
+ 	iowrite32(ioread32(SQ_INTC_IRQ_IMR(INTC_REG_BASE)) & ~(0x1 << pDrvCtrl->ilevel),		\
+ 				SQ_INTC_IRQ_IMR(INTC_REG_BASE));						\
     }
 #endif /* SYS_INT_DISABLE */
 
 #ifndef SYS_INT_SET_TYPE
 #define SYS_INT_SET_TYPE(pDrvCtrl,type)									\
 	{																	\
- 	iowrite32((ioread32(SOCLE_INTC_IRQ_SCR(INTC_REG_BASE, pDrvCtrl->ilevel)) & ~SRCTYPE_MASK) | type ,		\
- 				SOCLE_INTC_IRQ_SCR(INTC_REG_BASE, pDrvCtrl->ilevel));		\
+ 	iowrite32((ioread32(SQ_INTC_IRQ_SCR(INTC_REG_BASE, pDrvCtrl->ilevel)) & ~SRCTYPE_MASK) | type ,		\
+ 				SQ_INTC_IRQ_SCR(INTC_REG_BASE, pDrvCtrl->ilevel));		\
 	}
 #endif /* SYS_INT_SET_TYPE */
 

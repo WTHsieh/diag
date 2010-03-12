@@ -28,7 +28,7 @@ NOR_MXIC_Test (int autotest)
 #ifdef CONFIG_INR_PC7230
 #include <GPIO/gpio.h>
 	// set CS0 chip selection to NOR
-	socle_gpio_set_value_with_mask(PA, SHIFT_MASK(5), SHIFT_MASK(5));				// PA5 = 1
+	sq_gpio_set_value_with_mask(PA, SHIFT_MASK(5), SHIFT_MASK(5));				// PA5 = 1
 #endif
 
 	mode=ioread32(MODE_BASE)&0x1;
@@ -51,7 +51,7 @@ nor_mxic_test_0 (int autotest)
 {
 	int ret=0;
 			
-	flash_start_addr = SOCLE_NOR_BASE0;
+	flash_start_addr = SQ_NOR_BASE0;
 	
 	ret=test_item_ctrl(&nor_mxic_test_container,autotest);
 	return ret;
@@ -62,7 +62,7 @@ nor_mxic_test_1 (int autotest)
 {
 	int ret=0;
 	
-	flash_start_addr = SOCLE_NOR_BASE1;
+	flash_start_addr = SQ_NOR_BASE1;
 
 	ret=test_item_ctrl(&nor_mxic_test_container,autotest);
 	return ret;

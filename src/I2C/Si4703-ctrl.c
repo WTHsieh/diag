@@ -247,16 +247,16 @@ si4703_seek_channel(int seekup)
 }
 
 
-extern struct test_item_container socle_si4703_test_container;
+extern struct test_item_container sq_si4703_test_container;
 
 extern int
-socle_i2c_si4703_tuner_test(int autotest)
+sq_i2c_si4703_tuner_test(int autotest)
 {
 	int ret;
 
 #ifdef CONFIG_PC7210
 	// set audio source selection to FM
-	socle_gpio_set_value_with_mask(PE, 0x18, 0x3f);				// PE[1:0] = [00]
+	sq_gpio_set_value_with_mask(PE, 0x18, 0x3f);				// PE[1:0] = [00]
 #endif
 
 #ifdef CONFIG_I2S
@@ -266,7 +266,7 @@ socle_i2c_si4703_tuner_test(int autotest)
 	}
 #endif
 
-	i2c_master_initialize(SOCLE_APB0_I2C0, SOCLE_INTC_I2C0);
+	i2c_master_initialize(SQ_APB0_I2C0, SQ_INTC_I2C0);
 
 	si4703_client.addr = SI4703_SLAVE_ADDR;
 	si4703_client.flags = 0;
@@ -276,13 +276,13 @@ socle_i2c_si4703_tuner_test(int autotest)
 		return -1;
 	}
 
-	ret = test_item_ctrl(&socle_si4703_test_container, autotest);
+	ret = test_item_ctrl(&sq_si4703_test_container, autotest);
 
 	return 0;
 }
 
 extern int
-socle_si4703_device_id_and_chip_id_test(int autotest)
+sq_si4703_device_id_and_chip_id_test(int autotest)
 {
 	u16 val;
 
@@ -308,7 +308,7 @@ socle_si4703_device_id_and_chip_id_test(int autotest)
 }
 
 extern int
-socle_si4703_tune_to_selected_frequency_test(int autotest)
+sq_si4703_tune_to_selected_frequency_test(int autotest)
 {
 	if (autotest) {
 //		si4703_chan = (int)((100.1 - 87.5) / 0.05) + 1;
@@ -324,27 +324,27 @@ socle_si4703_tune_to_selected_frequency_test(int autotest)
 }
 
 extern int
-socle_si4703_increase_channel_test(int autotest)
+sq_si4703_increase_channel_test(int autotest)
 {
 	si4703_chan++;
 	return si4703_tune_frequency(si4703_chan);
 }
 
 extern int
-socle_si4703_decrease_channel_test(int autotest)
+sq_si4703_decrease_channel_test(int autotest)
 {
 	si4703_chan--;
 	return si4703_tune_frequency(si4703_chan);
 }
 
 extern int
-socle_si4703_seek_up_test(int autotest)
+sq_si4703_seek_up_test(int autotest)
 {
 	return si4703_seek_channel(1);
 }
 
 extern int
-socle_si4703_seek_down_test(int autotest)
+sq_si4703_seek_down_test(int autotest)
 {
 	return si4703_seek_channel(0);
 }

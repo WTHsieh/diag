@@ -1,6 +1,6 @@
-# Makefile for Socle Diagnostic Program
+# Makefile for Sq Diagnostic Program
 #
-# Copyright (C) 2003-2007 Socle Technology Corp.
+# Copyright (C) 2003-2007 Sq Technology Corp.
 #
 
 Q		= @

@@ -74,205 +74,205 @@ unsigned char colorpatternCr[] = {
 };
 //.................................
 static int format,size,output422,test_flag;
-static int socle_vip_to_vop_run(void);
-static int socle_vop_to_vip_run(void);
-static int socle_vip_to_lcd_run(void);
-static int socle_vop_color_display_run(void);
-static void socle_init_color_bar(int frame_size,int type);
-static void socle_init_color(int frame_size,int color_num);
-extern struct test_item_container socle_vip_vop_main_container;
+static int sq_vip_to_vop_run(void);
+static int sq_vop_to_vip_run(void);
+static int sq_vip_to_lcd_run(void);
+static int sq_vop_color_display_run(void);
+static void sq_init_color_bar(int frame_size,int type);
+static void sq_init_color(int frame_size,int color_num);
+extern struct test_item_container sq_vip_vop_main_container;
 
 extern int
 VIP_VOP_Testing(int autotest)
 {
 	int ret = 0;
 #ifdef CONFIG_SQ8000
-	socle_scu_dev_enable(SOCLE_DEVCON_I2C);
-	socle_scu_dev_enable(SOCLE_DEVCON_LCDC_VOP);
+	sq_scu_dev_enable(SQ_DEVCON_I2C);
+	sq_scu_dev_enable(SQ_DEVCON_LCDC_VOP);
 #endif
-	ret = test_item_ctrl(&socle_vip_vop_main_container, autotest);
+	ret = test_item_ctrl(&sq_vip_vop_main_container, autotest);
 #ifdef CONFIG_SQ8000
-	socle_scu_dev_disable(SOCLE_DEVCON_I2C);
-	socle_scu_dev_disable(SOCLE_DEVCON_LCDC_VOP);
+	sq_scu_dev_disable(SQ_DEVCON_I2C);
+	sq_scu_dev_disable(SQ_DEVCON_LCDC_VOP);
 #endif
 	return ret;
 }
 
-extern struct test_item_container socle_viop_format_container;
+extern struct test_item_container sq_viop_format_container;
 
 extern int
-socle_vip_to_vop_test(int autotest)
+sq_vip_to_vop_test(int autotest)
 {
 	int ret = 0;
 	test_flag=VIP_TO_VOP;
-	ret = test_item_ctrl(&socle_viop_format_container, autotest);
+	ret = test_item_ctrl(&sq_viop_format_container, autotest);
 	return ret;
 }
 
 extern int
-socle_vop_to_vip_test(int autotest)
+sq_vop_to_vip_test(int autotest)
 {
 	int ret = 0;
 	test_flag=VOP_TO_VIP;
-	ret = test_item_ctrl(&socle_viop_format_container, autotest);
+	ret = test_item_ctrl(&sq_viop_format_container, autotest);
 	return ret;
 }
 
 extern int
-socle_vip_to_lcd_test(int autotest)
+sq_vip_to_lcd_test(int autotest)
 {
 	int ret = 0;
 	test_flag=VIP_TO_LCD;
-	extern struct test_item socle_viop_size_test_items[];	
-	socle_viop_size_test_items[0].enable = 0;
-	socle_viop_size_test_items[1].enable = 1;
-	socle_viop_size_test_items[2].enable = 0;
-	socle_viop_size_test_items[3].enable = 0;
-	ret = test_item_ctrl(&socle_viop_format_container, autotest);
-	socle_viop_size_test_items[0].enable = 1;
-	socle_viop_size_test_items[1].enable = 1;
-	socle_viop_size_test_items[2].enable = 1;
-	socle_viop_size_test_items[3].enable = 1;
+	extern struct test_item sq_viop_size_test_items[];	
+	sq_viop_size_test_items[0].enable = 0;
+	sq_viop_size_test_items[1].enable = 1;
+	sq_viop_size_test_items[2].enable = 0;
+	sq_viop_size_test_items[3].enable = 0;
+	ret = test_item_ctrl(&sq_viop_format_container, autotest);
+	sq_viop_size_test_items[0].enable = 1;
+	sq_viop_size_test_items[1].enable = 1;
+	sq_viop_size_test_items[2].enable = 1;
+	sq_viop_size_test_items[3].enable = 1;
 	return ret;
 }
 
 extern int
-socle_vop_color_display_test(int autotest)
+sq_vop_color_display_test(int autotest)
 {
 	int ret = 0;
 	test_flag=VOP_COLOR_DISPLAY;
-	ret = test_item_ctrl(&socle_viop_format_container, autotest);
+	ret = test_item_ctrl(&sq_viop_format_container, autotest);
 	return ret;
 }
 
-extern struct test_item_container socle_viop_size_container;
+extern struct test_item_container sq_viop_size_container;
 
 extern int
-socle_viop_ntsc_test(int autotest)
+sq_viop_ntsc_test(int autotest)
 {
 	int ret = 0;
 	format=FORMAT_NTSC;
-	ret = test_item_ctrl(&socle_viop_size_container, autotest);
+	ret = test_item_ctrl(&sq_viop_size_container, autotest);
 	return ret;
 }
 
 extern int
-socle_viop_pal_test(int autotest)
+sq_viop_pal_test(int autotest)
 {
 	int ret = 0;
 	format=FORMAT_PAL;
-	ret = test_item_ctrl(&socle_viop_size_container, autotest);
+	ret = test_item_ctrl(&sq_viop_size_container, autotest);
 	return ret;
 }
 
-extern struct test_item_container socle_vip_42x_container;
+extern struct test_item_container sq_vip_42x_container;
 extern int
-socle_viop_cif_test(int autotest)
+sq_viop_cif_test(int autotest)
 {
 	int ret = 0;
 	size=FRAMESIZE_CIF;
 	switch(test_flag) {
 		case VIP_TO_VOP:
-			ret=socle_vip_to_vop_run();
+			ret=sq_vip_to_vop_run();
 			break;
 		case VOP_TO_VIP:
-			ret=socle_vop_to_vip_run();
+			ret=sq_vop_to_vip_run();
 			break;
 		case VIP_TO_LCD:
-			ret=test_item_ctrl(&socle_vip_42x_container, autotest);
+			ret=test_item_ctrl(&sq_vip_42x_container, autotest);
 			break;
 		case VOP_COLOR_DISPLAY:
-			ret=socle_vop_color_display_run();
+			ret=sq_vop_color_display_run();
 			break;
 	}
 	return ret;
 }
 
 extern int
-socle_viop_qvga_test(int autotest)
+sq_viop_qvga_test(int autotest)
 {
 	int ret = 0;
 	size=FRAMESIZE_QVGA;
 	switch(test_flag) {
 		case VIP_TO_VOP:
-			ret=socle_vip_to_vop_run();
+			ret=sq_vip_to_vop_run();
 			break;
 		case VOP_TO_VIP:
-			ret=socle_vop_to_vip_run();
+			ret=sq_vop_to_vip_run();
 			break;
 		case VIP_TO_LCD:
-			ret=test_item_ctrl(&socle_vip_42x_container, autotest);
+			ret=test_item_ctrl(&sq_vip_42x_container, autotest);
 			break;
 		case VOP_COLOR_DISPLAY:
-			ret=socle_vop_color_display_run();
+			ret=sq_vop_color_display_run();
 			break;
 	}
 	return ret;
 }
 
 extern int
-socle_viop_vga_test(int autotest)
+sq_viop_vga_test(int autotest)
 {
 	int ret = 0;
 	size=FRAMESIZE_VGA;
 	switch(test_flag) {
 		case VIP_TO_VOP:
-			ret=socle_vip_to_vop_run();
+			ret=sq_vip_to_vop_run();
 			break;
 		case VOP_TO_VIP:
-			ret=socle_vop_to_vip_run();
+			ret=sq_vop_to_vip_run();
 			break;
 		case VIP_TO_LCD:
-			ret=test_item_ctrl(&socle_vip_42x_container, autotest);
+			ret=test_item_ctrl(&sq_vip_42x_container, autotest);
 			break;
 		case VOP_COLOR_DISPLAY:
-			ret=socle_vop_color_display_run();
+			ret=sq_vop_color_display_run();
 			break;
 	}
 	return ret;
 }
 
 extern int
-socle_viop_d1_test(int autotest)
+sq_viop_d1_test(int autotest)
 {
 	int ret = 0;
 	size=FRAMESIZE_D1;
 	switch(test_flag) {
 		case VIP_TO_VOP:
-			ret=socle_vip_to_vop_run();
+			ret=sq_vip_to_vop_run();
 			break;
 		case VOP_TO_VIP:
-			ret=socle_vop_to_vip_run();
+			ret=sq_vop_to_vip_run();
 			break;
 		case VIP_TO_LCD:
-			ret=test_item_ctrl(&socle_vip_42x_container, autotest);
+			ret=test_item_ctrl(&sq_vip_42x_container, autotest);
 			break;
 		case VOP_COLOR_DISPLAY:
-			ret=socle_vop_color_display_run();
+			ret=sq_vop_color_display_run();
 			break;
 	}
 	return ret;
 }
 
-extern int socle_vip_422_test(int autotest)
+extern int sq_vip_422_test(int autotest)
 {
 	int ret = 0;
 	output422=1;
-	ret |= socle_vip_to_lcd_run();
+	ret |= sq_vip_to_lcd_run();
 	return ret;
 	
 }
 
-extern int socle_vip_420_test(int autotest)
+extern int sq_vip_420_test(int autotest)
 {
 	int ret = 0;
 	output422=0;
-	ret |= socle_vip_to_lcd_run();
+	ret |= sq_vip_to_lcd_run();
 	return ret;
 }
 
 static int
-socle_vip_to_vop_run(void)
+sq_vip_to_vop_run(void)
 {
 	int ret=0;
 	u8 buf;
@@ -307,10 +307,10 @@ socle_vip_to_vop_run(void)
 }
 
 static int
-socle_vop_to_vip_run(void)
+sq_vop_to_vip_run(void)
 {
 	int ret=0;
-	socle_init_color(size,3);
+	sq_init_color(size,3);
 	ret |= tvp5145I2C_init();
 	ret |= ch700x_init(format);
 
@@ -339,7 +339,7 @@ socle_vop_to_vip_run(void)
 }
 
 static int
-socle_vip_to_lcd_run(void)
+sq_vip_to_lcd_run(void)
 {
 	int ret=0;
 	u8 buf;
@@ -354,7 +354,7 @@ socle_vip_to_lcd_run(void)
 	if(ret)
 		return -1;
 	//init lcd
-	Socle_vip_lcd_initial(output422);
+	Sq_vip_lcd_initial(output422);
 	
 	vipStart();
 	printf("=================\n");
@@ -363,18 +363,18 @@ socle_vip_to_lcd_run(void)
 	scanf("%c",&buf);
 	if(buf){
 		vipStop();
-		Socle_vip_lcd_stop();
+		Sq_vip_lcd_stop();
 	}
 	return ret;
 }
 
 static int
-socle_vop_color_display_run(void)
+sq_vop_color_display_run(void)
 {
 	int ret=0;
 	u8 buf;
 	
-	socle_init_color_bar(size,COLOR_BAR_G);
+	sq_init_color_bar(size,COLOR_BAR_G);
 	vopReset();
 	ret |= ch700x_init(format);
 	
@@ -396,7 +396,7 @@ socle_vop_color_display_run(void)
 }
 
 static void
-socle_init_color_bar(int frame_size,int type)
+sq_init_color_bar(int frame_size,int type)
 {
 	  u8 *pt_Y1=(u8 *)FRAME1_ADDR_Y;
    	u8 *pt_Cb1=(u8 *)FRAME1_ADDR_CB;
@@ -471,7 +471,7 @@ socle_init_color_bar(int frame_size,int type)
 }
 
 static void
-socle_init_color(int frame_size,int color_num)
+sq_init_color(int frame_size,int color_num)
 {
 	u8 *pt_Y1=(u8 *)FRAME1_ADDR_Y;
   u8 *pt_Cb1=(u8 *)FRAME1_ADDR_CB;

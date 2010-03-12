@@ -2,7 +2,7 @@
 
 //Test entry for all IPs
 extern int gpio_test(int autotest);
-extern int socle_mp_gpio_test(int autotest);
+extern int sq_mp_gpio_test(int autotest);
 extern int MemoryTesting(int autotest);
 extern int CacheTesting(int autotest);
 extern int INTRTesting(int autotest);
@@ -33,7 +33,7 @@ extern int MailboxTesting(int autotest);
 extern int I2STesting(int autotest);
 extern int scu_test(int autotest);
 extern int LCD_PWM_Testing(int autotest);
-extern int SOCLE_LCD_Testing (int autotest);
+extern int SQ_LCD_Testing (int autotest);
 extern int pwm_adc_test(int autotest);
 extern int VIP_VOP_Testing(int autotest);
 extern int lcm_test(int autotest);
@@ -58,7 +58,7 @@ struct test_item main_test_items [] = {
 #ifdef CONFIG_MP_GPIO
 	{
 		"MP GPIO Testing",
-		socle_mp_gpio_test,
+		sq_mp_gpio_test,
 		1,
 		1
 	},
@@ -326,10 +326,10 @@ struct test_item main_test_items [] = {
 	},
 #endif
 
-#ifdef CONFIG_SOCLE_LCD
+#ifdef CONFIG_SQ_LCD
         {
-                "SOCLE LCD Testing",
-                SOCLE_LCD_Testing,
+                "SQ LCD Testing",
+                SQ_LCD_Testing,
                 1,
                 1
         },

@@ -1,6 +1,6 @@
-// Socle Technology Corp.
+// Sq Technology Corp.
 /////////////////////////////////////
-// Socle Leopard Development Kit III V2.1
+// Sq Leopard Development Kit III V2.1
 // RVDEBUG initial...
 
 /////////////////////////////////////

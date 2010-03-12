@@ -1,6 +1,6 @@
-## Socle Technology Corp.
+## Sq Technology Corp.
 #####################################
-echo Socle Leopard Development Kit V \n
+echo Sq Leopard Development Kit V \n
 echo GDB initial... \n
 
 #####################################

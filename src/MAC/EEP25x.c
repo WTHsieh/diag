@@ -1,6 +1,6 @@
-/* EEP25x.c - SOCLE EEPROM 25xxx series Access Libary */
+/* EEP25x.c - SQ EEPROM 25xxx series Access Libary */
 
-/* Copyright SOCLE-Tech. */
+/* Copyright SQ-Tech. */
 
 /*
 modification history

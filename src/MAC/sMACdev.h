@@ -1,7 +1,7 @@
 #ifndef _sMACdev_h_included_
 #define _sMACdev_h_included_
 
-#include "if_socle.h"
+#include "if_sq.h"
 
 #ifdef MAC_INCLUDE_EEPROM
 #include "EEP25x.h"

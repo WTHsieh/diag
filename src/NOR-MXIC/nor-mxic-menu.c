@@ -2,7 +2,7 @@
 #include <test_item.h>
 
 /*	NOR dependence	*/
-#if defined SOCLE_NOR_FLASH_BANK1
+#if defined SQ_NOR_FLASH_BANK1
 	#define nor_1_auto 1
 	#define nor_1_en 1
 #else

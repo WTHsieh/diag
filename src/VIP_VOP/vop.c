@@ -10,50 +10,50 @@ static void vopTwoFrameIsr(void *pparam);
 static u32 int_sts;	
 static u32 frame_sts;
 static inline void
-socle_vop_write(u32 val, u32 reg)
+sq_vop_write(u32 val, u32 reg)
 {
-	iowrite32(val, SOCLE_VOP_BASE+reg);
+	iowrite32(val, SQ_VOP_BASE+reg);
 }
 
 static inline u32
-socle_vop_read(u32 reg)
+sq_vop_read(u32 reg)
 {
-	return ioread32(SOCLE_VOP_BASE+reg);
+	return ioread32(SQ_VOP_BASE+reg);
 }
 
 
 extern void
 vopReset()
 {
-	socle_vop_write(VOP_CTRL_RESET | VOP_CTRL_DISPLAY_DIS, SOCLE_VOP_CTRL);
+	sq_vop_write(VOP_CTRL_RESET | VOP_CTRL_DISPLAY_DIS, SQ_VOP_CTRL);
 	MSDELAY(260);
-	socle_vop_write(VOP_INT_DISABLE, SOCLE_VOP_INTE);
-	socle_vop_write(VOP_CTRL_NO_RESET | VOP_CTRL_DISPLAY_DIS, SOCLE_VOP_CTRL);
+	sq_vop_write(VOP_INT_DISABLE, SQ_VOP_INTE);
+	sq_vop_write(VOP_CTRL_NO_RESET | VOP_CTRL_DISPLAY_DIS, SQ_VOP_CTRL);
 }
 
 extern void
 vopStart()
 {
-	socle_vop_write(VOP_AHBR_CTRL_INCR16, SOCLE_VOP_AHBR_CTRL);	
-	socle_vop_write(VOP_INTE_BUFFER_UNDERRUN | VOP_INTE_DISPLAY_COMPLETE, SOCLE_VOP_INTE);
-	socle_vop_write(socle_vop_read(SOCLE_VOP_CTRL) | VOP_CTRL_DISPLAY_EN, SOCLE_VOP_CTRL);
+	sq_vop_write(VOP_AHBR_CTRL_INCR16, SQ_VOP_AHBR_CTRL);	
+	sq_vop_write(VOP_INTE_BUFFER_UNDERRUN | VOP_INTE_DISPLAY_COMPLETE, SQ_VOP_INTE);
+	sq_vop_write(sq_vop_read(SQ_VOP_CTRL) | VOP_CTRL_DISPLAY_EN, SQ_VOP_CTRL);
 }
 
 void
 vopStop ()
 {  
-  socle_vop_write(VOP_INT_DISABLE, SOCLE_VOP_INTE);
-  socle_vop_write(VOP_CTRL_DISPLAY_DIS, SOCLE_VOP_CTRL);
-  free_irq(SOCLE_INTC_VOP);
+  sq_vop_write(VOP_INT_DISABLE, SQ_VOP_INTE);
+  sq_vop_write(VOP_CTRL_DISPLAY_DIS, SQ_VOP_CTRL);
+  free_irq(SQ_INTC_VOP);
 }
 
 extern int
 vopSetOutFormat(int format)
 {
 	if(format==FORMAT_NTSC)
-		socle_vop_write(socle_vop_read(SOCLE_VOP_CTRL) & ~VOP_CTRL_FORMAT_PAL, SOCLE_VOP_CTRL);
+		sq_vop_write(sq_vop_read(SQ_VOP_CTRL) & ~VOP_CTRL_FORMAT_PAL, SQ_VOP_CTRL);
 	else if(format==FORMAT_PAL)
-		socle_vop_write(socle_vop_read(SOCLE_VOP_CTRL) | VOP_CTRL_FORMAT_PAL, SOCLE_VOP_CTRL);
+		sq_vop_write(sq_vop_read(SQ_VOP_CTRL) | VOP_CTRL_FORMAT_PAL, SQ_VOP_CTRL);
 	else {
 		printf("VOP : Error Output Format!!\n");
 		return -1;
@@ -86,7 +86,7 @@ vopSetFrameSize(int framesize)
     	printf("VOP : Error Frame Size!!\n");
     	return -1;
 	}
-	socle_vop_write(size, SOCLE_VOP_FSS);
+	sq_vop_write(size, SQ_VOP_FSS);
 	return 0;
 }
 
@@ -94,16 +94,16 @@ extern int
 vopSetFrameDisplayAddr(int frameNum, u32 Y_pt, u32 Cb_pt, u32 Cr_pt)
 {
 	if(frameNum==FRAME1) {
-		socle_vop_write(Y_pt, SOCLE_VOP_DRF1SAY);
-		socle_vop_write(Cb_pt, SOCLE_VOP_DRF1SACB);
-		socle_vop_write(Cr_pt, SOCLE_VOP_DRF1SACR);
-		socle_vop_write(VOP_FBS_FRAME1_USE_BY_HW, SOCLE_VOP_FBS);
+		sq_vop_write(Y_pt, SQ_VOP_DRF1SAY);
+		sq_vop_write(Cb_pt, SQ_VOP_DRF1SACB);
+		sq_vop_write(Cr_pt, SQ_VOP_DRF1SACR);
+		sq_vop_write(VOP_FBS_FRAME1_USE_BY_HW, SQ_VOP_FBS);
 	}
 	else if(frameNum==FRAME2) {
-		socle_vop_write(Y_pt, SOCLE_VOP_DRF2SAY);
-		socle_vop_write(Cb_pt, SOCLE_VOP_DRF2SACB);
-		socle_vop_write(Cr_pt, SOCLE_VOP_DRF2SACR);
-		socle_vop_write(VOP_FBS_FRAME2_USE_BY_HW, SOCLE_VOP_FBS);
+		sq_vop_write(Y_pt, SQ_VOP_DRF2SAY);
+		sq_vop_write(Cb_pt, SQ_VOP_DRF2SACB);
+		sq_vop_write(Cr_pt, SQ_VOP_DRF2SACR);
+		sq_vop_write(VOP_FBS_FRAME2_USE_BY_HW, SQ_VOP_FBS);
 	}
 	else {
 		printf("Error Frame Number!!\n");
@@ -117,9 +117,9 @@ extern int
 vopSetFrameMode(int frame_mode)
 {
 	if(frame_mode==ONE_FRAME)
-		request_irq(SOCLE_INTC_VOP, vopOneFrameIsr, NULL);
+		request_irq(SQ_INTC_VOP, vopOneFrameIsr, NULL);
 	else if(frame_mode==TWO_FRAME)
-		request_irq(SOCLE_INTC_VOP, vopTwoFrameIsr, NULL);
+		request_irq(SQ_INTC_VOP, vopTwoFrameIsr, NULL);
 	else {
 		printf("Error Frame Mode!!\n");
     return -1;
@@ -131,12 +131,12 @@ vopSetFrameMode(int frame_mode)
 static void
 vopOneFrameIsr(void *pparam)
 {
-  int_sts = socle_vop_read(SOCLE_VOP_INT_STS);
-  frame_sts = socle_vop_read(SOCLE_VOP_FBS);
+  int_sts = sq_vop_read(SQ_VOP_INT_STS);
+  frame_sts = sq_vop_read(SQ_VOP_FBS);
   
 	if (int_sts & VOP_INT_STS_DISPLAY_COMPLETE) {    
   	if ((frame_sts & VOP_FBS_FRAME1_USE_BY_HW) == 0) 
-	  	socle_vop_write(VOP_FBS_FRAME1_USE_BY_HW, SOCLE_VOP_FBS);
+	  	sq_vop_write(VOP_FBS_FRAME1_USE_BY_HW, SQ_VOP_FBS);
   }
   
   if (int_sts & VOP_INT_STS_BUFFER_UNDERUN) {
@@ -149,14 +149,14 @@ vopOneFrameIsr(void *pparam)
 static void
 vopTwoFrameIsr(void *pparam)
 {
-  int_sts = socle_vop_read(SOCLE_VOP_INT_STS);
-  frame_sts = socle_vop_read(SOCLE_VOP_FBS);
+  int_sts = sq_vop_read(SQ_VOP_INT_STS);
+  frame_sts = sq_vop_read(SQ_VOP_FBS);
   
 	if (int_sts & VOP_INT_STS_DISPLAY_COMPLETE) {    
   	if ((frame_sts & VOP_FBS_FRAME1_USE_BY_HW) == 0)
-	  	socle_vop_write(VOP_FBS_FRAME1_USE_BY_HW, SOCLE_VOP_FBS);
+	  	sq_vop_write(VOP_FBS_FRAME1_USE_BY_HW, SQ_VOP_FBS);
   	if ((frame_sts & VOP_FBS_FRAME2_USE_BY_HW) == 0)
-	  	socle_vop_write(VOP_FBS_FRAME2_USE_BY_HW, SOCLE_VOP_FBS);
+	  	sq_vop_write(VOP_FBS_FRAME2_USE_BY_HW, SQ_VOP_FBS);
   }
   
   if (int_sts & VOP_INT_STS_BUFFER_UNDERUN) {

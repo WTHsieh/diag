@@ -322,7 +322,7 @@ int conf_write(const char *name)
 	/* busybox`s code */
 // cyli+
 	if (out_h) {
-		fprintf(out_h, "#ifndef __SOCLE_DIAG_CONFIG_H\n#define __SOCLE_DIAG_CONFIG_H\n");
+		fprintf(out_h, "#ifndef __SQ_DIAG_CONFIG_H\n#define __SQ_DIAG_CONFIG_H\n");
 		fprintf(out_h, "/*\n"
 			     " * Automatically generated header file: don't edit\n"
 			     " */\n\n");
@@ -465,7 +465,7 @@ next:
 	}
 	fclose(out);
 	if (out_h) {
-		fprintf(out_h, "#endif /* __SOCLE_DIAG_CONFIG_H */\n");   /* busybox`s code */
+		fprintf(out_h, "#endif /* __SQ_DIAG_CONFIG_H */\n");   /* busybox`s code */
 		fclose(out_h);
 		rename(".tmpconfig.h", "include/diag_config.h");  /* busybox`s config name */
 		file_write_dep(NULL);

@@ -1,9 +1,9 @@
 #include <platform.h>
 
 #ifdef CONFIG_SQ8000
-#define SOCLE_VOP_BASE SOCLE_AHB0_VOP
+#define SQ_VOP_BASE SQ_AHB0_VOP
 #else
-#define SOCLE_VOP_BASE 0xB8080000
+#define SQ_VOP_BASE 0xB8080000
 #endif
 
 #define FRAMESIZE_QCIF 0   //176x144
