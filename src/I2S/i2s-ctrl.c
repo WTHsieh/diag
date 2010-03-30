@@ -507,7 +507,7 @@ sq_i2s_hwdma_panther7_hdma_direct(int autotest)
         sq_i2s_rx_dma_ext_hdreq = RX_DMA_EXT_HDREQ;
 
 #ifdef I2S_DEBUG_ON
-		printf("sq_i2s_hwdma_panther7_hdma_direct Start\n");
+		printf("sq_i2s_hwdma_p7_hdma_direct Start\n");
 #endif 
 
 
@@ -649,7 +649,7 @@ sq_i2s_hwdma_panther7_hdma_direct(int autotest)
 	sq_free_dma(sq_i2s_tx_dma_ch_num);
 	sq_free_dma(sq_i2s_rx_dma_ch_num);
 #ifdef I2S_DEBUG_ON
-	printf("sq_i2s_hwdma_panther7_hdma_direct Finish\n");
+	printf("sq_i2s_hwdma_p7_hdma_direct Finish\n");
 #endif 
 
 	if ((-1 == sq_i2s_tx_complete_flag) ||

@@ -40,7 +40,7 @@ struct test_item sq_uart_type_test_items[] = {
 	 sq_uart_normal_test,
 	 1,
 	 1},
-	{"Hardware Dma with Panther7 HDMA Test",
+	{"Hardware Dma with HDMA Test",
 	 sq_uart_hwdma_panther7_hdma_test,
 	 1,
 	 SQ_UART_HWDMA_PANTHER7_HDMA_TEST}
