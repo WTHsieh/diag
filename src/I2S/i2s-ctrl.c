@@ -12,6 +12,8 @@
 #include "../../platform/arch/scu-reg.h"
 #endif
 
+#define I2S_DEBUG_ON
+
 static u32 sq_i2s_base = SQ_I2S_BASE;
 static u32 sq_i2s_irq = SQ_I2S_IRQ;
 
@@ -34,7 +36,7 @@ sq_i2s_read(u32 reg)
 #ifdef CONFIG_UDA1342TS
 static u32 frequecy_setting = SQ_I2S_OVERSAMPLING_RATE_64 | SQ_I2S_RATIO(12);
 #else	//mosa 6335
-static u32 frequecy_setting = SQ_I2S_OVERSAMPLING_RATE_64 | SQ_I2S_RATIO(6);
+static u32 frequecy_setting = SQ_I2S_OVERSAMPLING_RATE_32 | SQ_I2S_RATIO(12);
 #endif
 
 static int sq_i2s_capture_mode_test = 0;
@@ -233,7 +235,7 @@ static void sq_i2s_access_ring_buffer(u32 buf_pos, int dir);
 #define PATTERN_BUF_ADDR 0x00a00000
 #define PATTERN_BUF_SIZE 2048
 #define PCM_BUF_ADDR 0x00800000
-#define PCM_BUF_SIZE (5 * 1024 * 1024) /* 5MB */
+#define PCM_BUF_SIZE (1 * 1024 * 1024) /* 1MB */
 #define DMA_BUF_SIZE (320 * 1024) /* 320K */
 #define RING_BUF_ADDR 0x00700000
 #define RING_BUF_SIZE (64 * 1024) /* 64K */
@@ -361,18 +363,19 @@ sq_i2s_normal_internal_loopback(autotest)
 {
 	u32 tmp;
 
-	request_irq(sq_i2s_irq , sq_i2s_loopback_isr, NULL);	
+	request_irq(sq_i2s_irq , sq_i2s_loopback_isr, NULL);	//set iirg enable & mask 
+	
 	
 	/* Initialize the operation stop register */
-	sq_i2s_conf = SQ_I2S_TX_N_RST |
-		SQ_I2S_RX_N_RST |
-		SQ_I2S_HDMA_REQ_1_DIS |
-		SQ_I2S_HDMA_REQ_2_DIS |
-		SQ_I2S_HDMA_IF_1_TX |
-		SQ_I2S_HDMA_IF_2_RX |
-		SQ_I2S_OP_LOOPBACK |
-		SQ_I2S_TX_OP_STP |
-		SQ_I2S_RX_OP_STP;
+	sq_i2s_conf = SQ_I2S_TX_N_RST |           // don't reset Tx logic
+		SQ_I2S_RX_N_RST |                     // don't reset Rx logic
+		SQ_I2S_HDMA_REQ_1_DIS |               // disable HDMA req1     
+		SQ_I2S_HDMA_REQ_2_DIS |               // disable HDMA req2         
+		SQ_I2S_HDMA_IF_1_TX |                 // HDMA req1 ch used for TX FIFO
+		SQ_I2S_HDMA_IF_2_RX |                 // HDMA req2 ch used for RX FIFO
+		SQ_I2S_OP_LOOPBACK |                  // set Loop-Back mode  
+		SQ_I2S_TX_OP_STP |                    // set tansmitter Stop
+		SQ_I2S_RX_OP_STP;                     // set receiver Stop 
 		
 	/* Stop the tx and rx operation */
 	sq_i2s_write(sq_i2s_conf, SQ_I2S_OPR);
@@ -380,8 +383,8 @@ sq_i2s_normal_internal_loopback(autotest)
 	/* Reset the Tx and Rx logic and FSM */
 	sq_i2s_write( 
 			sq_i2s_conf |
-			SQ_I2S_TX_RST |
-			SQ_I2S_RX_RST,
+			SQ_I2S_TX_RST |                  // Reset Tx logic 
+			SQ_I2S_RX_RST,                   // Reset Rx logic 
 			SQ_I2S_OPR);
 
 	/* Clear Rx fifo first */
@@ -394,12 +397,12 @@ sq_i2s_normal_internal_loopback(autotest)
 
 	/* Set the transmitter */
 	sq_i2s_write(
-			SQ_I2S_TX_DEV_SEL_0 |
-			sq_i2s_oversample_rate |
-			SQ_I2S_RATIO(255) |
-			sq_i2s_sample_res |
-			SQ_I2S_STEREO |
-			sq_i2s_bus_if |
+			SQ_I2S_TX_DEV_SEL_0 |             // Select Tx Device 0
+			sq_i2s_oversample_rate |          // set Oversampling Rate
+			SQ_I2S_RATIO(255) |               // set I2S Ratio
+			sq_i2s_sample_res |               // set sample resolution 
+			SQ_I2S_STEREO | 
+			sq_i2s_bus_if |                   // set bus interface I2S or Right Left Justified  
 			sq_i2s_tx_mode_sel,
 			SQ_I2S_TXCTL);
 
@@ -424,7 +427,7 @@ sq_i2s_normal_internal_loopback(autotest)
 	sq_i2s_write(
 			SQ_I2S_TX_FIFO_TRIG_INT_EN |
 			SQ_I2S_RX_FIFO_TRIG_INT_EN |
-			SQ_I2S_RX_FIFO_OVR_INT_EN,
+			SQ_I2S_RX_FIFO_OVR_INT_EN,                // set Rx Over-run int enable   
 			SQ_I2S_IER);
 
 	/* Clear pattern buffer and compare buffer */
@@ -502,6 +505,11 @@ sq_i2s_hwdma_panther7_hdma_direct(int autotest)
         sq_i2s_rx_dma_ch_num = PANTHER7_HDMA_CH_1;
         sq_i2s_tx_dma_ext_hdreq = TX_DMA_EXT_HDREQ;
         sq_i2s_rx_dma_ext_hdreq = RX_DMA_EXT_HDREQ;
+
+#ifdef I2S_DEBUG_ON
+		printf("sq_i2s_hwdma_panther7_hdma_direct Start\n");
+#endif 
+
 
 	sq_request_dma(sq_i2s_tx_dma_ch_num, &sq_i2s_tx_dma_notifier);
 	sq_request_dma(sq_i2s_rx_dma_ch_num, &sq_i2s_rx_dma_notifier);
@@ -590,10 +598,12 @@ sq_i2s_hwdma_panther7_hdma_direct(int autotest)
 	sq_set_dma_source_direction(sq_i2s_tx_dma_ch_num, SQ_DMA_DIR_INCR);
 	sq_set_dma_destination_direction(sq_i2s_tx_dma_ch_num, SQ_DMA_DIR_FIXED);
 	sq_set_dma_data_size(sq_i2s_tx_dma_ch_num, SQ_DMA_DATA_WORD);
-	sq_set_dma_transfer_count(sq_i2s_tx_dma_ch_num, PERIOD_SIZE);
-	sq_set_dma_slice_count(sq_i2s_tx_dma_ch_num, FIFO_DEPTH>>1);
-	sq_set_dma_page_number(sq_i2s_tx_dma_ch_num, 20);
-	sq_set_dma_buffer_size(sq_i2s_tx_dma_ch_num, DMA_BUF_SIZE);
+	sq_set_dma_transfer_count(sq_i2s_tx_dma_ch_num, PERIOD_SIZE);   // tx_cnt = 16 * 1024
+	sq_set_dma_slice_count(sq_i2s_tx_dma_ch_num, FIFO_DEPTH>>1);    // FIFO = 8
+	sq_set_dma_page_number(sq_i2s_tx_dma_ch_num, 20);               // set page number = 20
+	sq_set_dma_buffer_size(sq_i2s_tx_dma_ch_num, DMA_BUF_SIZE);     // 320 * 1024   = total transfer size = 16k * 20 (page number) 
+		// please check [sq_i2s_tx_dma_play_complete] 
+		// Transmit one page every page interrupt  
 
 	/* Configure the hardware dma settng of HDMA for rx channels */
 	sq_disable_dma(sq_i2s_rx_dma_ch_num);
@@ -626,8 +636,8 @@ sq_i2s_hwdma_panther7_hdma_direct(int autotest)
 
 	/* Wait for the transimission to be complete */
 	/*20080114 JS Modify 30s to 60s */
-	if (sq_wait_for_int(&sq_i2s_rx_complete_flag, 60)) {
-		printf("Sq I2S host: transimission is timeout\n");
+	if (sq_wait_for_int(&sq_i2s_rx_complete_flag, 60)) {     // before  sq_i2s_rx_complete_flag =1
+		printf("Sq I2S host: transimission is timeout\n");   // Tx will transmit one page 
 		return -1;
 	}
 
@@ -638,6 +648,9 @@ sq_i2s_hwdma_panther7_hdma_direct(int autotest)
 	sq_disable_dma(sq_i2s_rx_dma_ch_num);
 	sq_free_dma(sq_i2s_tx_dma_ch_num);
 	sq_free_dma(sq_i2s_rx_dma_ch_num);
+#ifdef I2S_DEBUG_ON
+	printf("sq_i2s_hwdma_panther7_hdma_direct Finish\n");
+#endif 
 
 	if ((-1 == sq_i2s_tx_complete_flag) ||
 	    (-1 == sq_i2s_rx_complete_flag)) {
@@ -817,7 +830,9 @@ sq_i2s_play_pcm_normal(int autotest)
 	
 	printf("\nPlaying PCM data from memory 0x%x for 0x%x bytes. \n", PCM_BUF_ADDR, PCM_BUF_SIZE);	
 	request_irq(sq_i2s_irq, sq_i2s_play_pcm_isr, NULL);
-
+#ifdef I2S_DEBUG_ON
+	printf("sq_i2s_play_pcm_normal start \n");
+#endif
 	/* Initialize the operation start register */
 	sq_i2s_conf = SQ_I2S_TX_N_RST |
 		SQ_I2S_RX_N_RST |
@@ -874,6 +889,9 @@ sq_i2s_play_pcm_normal(int autotest)
 
 	sq_i2s_isr_tx_buf_32 = (u32 *)sq_i2s_pcm_buf;
 
+#ifdef I2S_DEBUG_ON
+	printf("transfer start  ......\n");
+#endif
 	/* Start to transfer */
 	sq_i2s_write(
 			sq_i2s_conf |
@@ -886,11 +904,15 @@ sq_i2s_play_pcm_normal(int autotest)
 		ret = sq_audio_control_function();
 		if (ret)
 			sq_i2s_tx_complete_flag = -1;
+
 	}
 
 	/* Wait for the transimission to be complete */
 	while (!sq_i2s_tx_complete_flag)
 		/* NOP */;
+#ifdef I2S_DEBUG_ON
+	printf("transfer finish	......\n");
+#endif
 
 	/* Disable the interrupt */
 	sq_i2s_write(
@@ -1065,7 +1087,7 @@ sq_i2s_capture_pcm_normal(int autotest)
 			frequecy_setting |
 			sq_i2s_sample_res |
 			SQ_I2S_STEREO |
-			SQ_I2S_BUS_IF_I2S |
+			SQ_I2S_BUS_IF_LJ |
 			SQ_I2S_MASTER,
 			SQ_I2S_RXCTL);
 
@@ -1449,12 +1471,18 @@ sq_i2s_tx_dma_play_complete(void *data)
 {
 	if (sq_i2s_tx_complete_flag){
 		sq_i2s_tx_complete_interrupt_flag = 1;	
+#ifdef I2S_DEBUG_ON
+		printf("TX DMA Play Complete\n");  
+#endif  
 		return;
 	}	
 	sq_i2s_dma_ring_buf_pos += PERIOD_SIZE;
 	sq_i2s_dma_ring_buf_pos %= RING_BUF_SIZE;
 	sq_i2s_period_int_flag = 1;
 	sq_set_dma_page_number(sq_i2s_tx_dma_ch_num, 1);	/* repeat to play pcm again */
+#ifdef I2S_DEBUG_ON
+	printf("TX DMA Play Complete repeat\n");   
+#endif
 }
 
 static void 
@@ -1474,6 +1502,9 @@ static void
 sq_i2s_tx_dma_page_interrupt(void *data)
 {
 	sq_i2s_tx_complete_flag = 1;
+#ifdef I2S_DEBUG_ON
+	printf("sq_i2s_tx_dma_page_interrupt\n");   
+#endif	
 }
 
 static void 
@@ -1491,6 +1522,9 @@ sq_i2s_rx_dma_page_interrupt(void *data)
 	sq_i2s_write(
 			sq_i2s_conf,
 			SQ_I2S_OPR);
+#ifdef I2S_DEBUG_ON
+	printf("sq_i2s_rx_dma_page_interrupt\n");   
+#endif		
 }
 
 static void
@@ -1882,6 +1916,8 @@ I2STesting(int autotest)
 #endif
 	ret |= audio_dac_initialize();
 	ret |= audio_adc_initialize();
+
+	//audio_dac_master_volume(MAX_VOLUME);
 
 // 20080714 cyli add for INR
 #ifdef CONFIG_INR_PC7230

@@ -188,7 +188,7 @@ cdk_scu_check_pll_lock(void)
 	
 	// wait for PLL Locked
 	do {
-		cdk_scu_read(CDK_SCU_MPLLCON, &tmp);
+		cdk_scu_read(CDK_SCU_MPLLCON, &tmp); 
 		tmp &= SCU_PLL_LOCK;
 		if (!tmp)
 			printf("[%d] PLL Non-locked!\n", i);

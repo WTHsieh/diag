@@ -5,6 +5,7 @@
 #include "ms6335.h"
 #include "codec-ctrl.h"
 
+#define CODEC_CTRL_DEBUG_ON
 
 int (*sq_audio_control_function)(void);
 
@@ -234,10 +235,13 @@ sq_audio_dac_master_volume_increment(void)
 #else
 	for (i = 0; i <= MAX_VOLUME ; i++) {
 #endif
+#ifdef CODEC_CTRL_DEBUG_ON
+		printf("sq_audio_dac_master_volume_increment = %d \n",i);
+#endif
 		ret = audio_dac_master_volume(i);
 		if (ret)
 			return -1;
-		MSDELAY(1000);
+		MSDELAY(100);
 	}
 #ifdef CONFIG_UDA1342TS
 	ret = audio_dac_master_volume(0);
@@ -262,10 +266,14 @@ sq_audio_dac_master_volume_decrement(void)
 #else
 	for (i = MAX_VOLUME; i >= 0; i--) {
 #endif
+#ifdef CODEC_CTRL_DEBUG_ON
+		printf("sq_audio_dac_master_volume_decrement = %d \n",i);
+#endif
+
 		ret = audio_dac_master_volume(i);
 		if (ret)
 			return -1;
-		MSDELAY(1000);
+		MSDELAY(100);
 	}
 #ifdef CONFIG_UDA1342TS
 	ret = audio_dac_master_volume(0);

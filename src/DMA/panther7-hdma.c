@@ -102,20 +102,24 @@ panther7_hdma_enable(u32 ch, struct sq_dma *dma)
 {
 	u32 inter_ch = *((u32 *)dma->private_data);
 	u32 tmp, data_size;
-	u32 conf = PANTHER7_HDMA_SLICE_MODE_DIS |
-		PANTHER7_HDMA_CH_EN |
-		PANTHER7_HDMA_INT_MODE_INTERRUPT |
-		PANTHER7_HDMA_FLY_DIS |
-		PANTHER7_HDMA_BURST_SINGLE |
-		PANTHER7_HDMA_EXT_HDREQ_SEL(0) |
-		PANTHER7_HDMA_DIR_SRC_INC |
-		PANTHER7_HDMA_DIR_DST_INC |
-		PANTHER7_HDMA_DATA_BYTE |
-		PANTHER7_HDMA_SWDMA_OP_NO |
-		PANTHER7_HDMA_HWDMA_TRIGGER_DIS;
+	/* inital setting */
+	u32 conf = PANTHER7_HDMA_SLICE_MODE_DIS |               // slice mode disable
+		PANTHER7_HDMA_CH_EN |                               // HDMA Ch Enable 
+		PANTHER7_HDMA_INT_MODE_INTERRUPT |                  // Set Interrupt Mode  
+		PANTHER7_HDMA_FLY_DIS |                             // Fly Mode Disable
+		PANTHER7_HDMA_BURST_SINGLE |                        // Transfer Mode  set single 
+		PANTHER7_HDMA_EXT_HDREQ_SEL(0) |                    // External HDREQ source selection 
+		PANTHER7_HDMA_DIR_SRC_INC |                         // source address increment 
+		PANTHER7_HDMA_DIR_DST_INC |                         // destination address increment 
+		PANTHER7_HDMA_DATA_BYTE |                           // Transfer data size set byte 
+		PANTHER7_HDMA_SWDMA_OP_NO |                         // SW operation set No command  
+		PANTHER7_HDMA_HWDMA_TRIGGER_DIS;                    // HW trigger DMA Mode disable 
 
-	if (SQ_DMA_MODE_SLICE == dma->mode)
+	/* slice mode setting */	
+	if (SQ_DMA_MODE_SLICE == dma->mode)                    
 		conf |= PANTHER7_HDMA_SLICE_MODE_EN;
+	
+	/* Transfer Mode Selection  */
 	switch (dma->burst_type) {
 	case SQ_DMA_BURST_SINGLE:
 		conf |= PANTHER7_HDMA_BURST_SINGLE;
@@ -130,11 +134,15 @@ panther7_hdma_enable(u32 ch, struct sq_dma *dma)
 		conf |= PANTHER7_HDMA_BURST_INCR16;
 		break;
 	}
+
+	/* external HDREQ selection */ 
 	conf |= PANTHER7_HDMA_EXT_HDREQ_SEL(dma->ext_hdreq);
 	if (SQ_DMA_DIR_FIXED == dma->src_dir)
 		conf |= PANTHER7_HDMA_DIR_SRC_FIXED;
 	if (SQ_DMA_DIR_FIXED == dma->dst_dir)
 		conf |= PANTHER7_HDMA_DIR_DST_FIXED;
+
+	/* Transfer data size selection */
 	switch (dma->data_size) {
 	case SQ_DMA_DATA_BYTE:
 		data_size = 1;
@@ -149,26 +157,34 @@ panther7_hdma_enable(u32 ch, struct sq_dma *dma)
 		conf |= PANTHER7_HDMA_DATA_WORD;
 		break;
 	}
+	
+	/* SW or HW trigger Mode */
 	if ((SQ_DMA_MODE_SLICE == dma->mode) ||
 	    (SQ_DMA_MODE_HW == dma->mode))
 		conf |= PANTHER7_HDMA_HWDMA_TRIGGER_EN;
 	else
 		conf |= PANTHER7_HDMA_SWDMA_OP_START;
+	
+	/* selection HDMA CH setting */
 	switch (inter_ch) {
 	case 0:
 		/* Unmask channel 0 all interrupt */
 		tmp = PANTHER7_HDMA_CH0_INT_MASK | PANTHER7_HDMA_CH0_PAGE_INT_MASK | PANTHER7_HDMA_CH0_PAGE_ACCUM_OVF_INT_MASK;
 		sq_reg_write(PANTHER7_HDMA_ISR,
 				sq_reg_read(PANTHER7_HDMA_ISR, dma->base_addr)&(~tmp),
-				dma->base_addr);
-    
-		sq_reg_write(PANTHER7_HDMA_ISRC0, dma->src_addr , dma->base_addr);
+				dma->base_addr);		
+        /* HDMA initial source address  */
+		sq_reg_write(PANTHER7_HDMA_ISRC0, dma->src_addr , dma->base_addr);		
+		/* HDMA initial destination  address  */
 		sq_reg_write(PANTHER7_HDMA_IDST0, dma->dst_addr , dma->base_addr);
+		/* set Transfer Data Count */
 		panther7_hdma_set_count(dma);
-		if (SQ_DMA_MODE_SLICE == dma->mode) {
-			sq_reg_write(PANTHER7_HDMA_ISCNT0, dma->slice_cnt-1, dma->base_addr);
-			sq_reg_write(PANTHER7_HDMA_IADDR_BS0, dma->buf_size-data_size, dma->base_addr);
+		/* Slice Mode Para Setting */
+		if (SQ_DMA_MODE_SLICE == dma->mode) {		 
+			sq_reg_write(PANTHER7_HDMA_ISCNT0, dma->slice_cnt-1, dma->base_addr);             // Set Slice Count 
+			sq_reg_write(PANTHER7_HDMA_IADDR_BS0, dma->buf_size-data_size, dma->base_addr);   // Set Address Buf Size 
 		}
+		/* Set conf to Control register  */
 		sq_reg_write(PANTHER7_HDMA_CON0, conf, dma->base_addr);
 		break;
 	case 1:
@@ -295,15 +311,15 @@ panther7_hdma_isr_0(void *_dma)
 			sq_reg_read(PANTHER7_HDMA_ISR, dma->base_addr) & (~int_stat),
 			dma->base_addr);
 
-	if (int_stat & PANTHER7_HDMA_CH0_INT_ACT) {
+	if (int_stat & PANTHER7_HDMA_CH0_INT_ACT) {                     // Interrupt Active            
 		if (dma->notifier->complete)
 			dma->notifier->complete(dma->notifier->data);
 	}
-	if (int_stat & PANTHER7_HDMA_CH0_PAGE_INT_ACT) {
+	if (int_stat & PANTHER7_HDMA_CH0_PAGE_INT_ACT) {                // Page Count Down Interrupt Active 
 		if (dma->notifier->page_interrupt)
 			dma->notifier->page_interrupt(dma->notifier->data);
 	}
-	if (int_stat & PANTHER7_HDMA_CH0_PAGE_ACCUM_OVF_INT_ACT) {
+	if (int_stat & PANTHER7_HDMA_CH0_PAGE_ACCUM_OVF_INT_ACT) {      // Page Overflow interrupt Active 
 		if (dma->notifier->page_accumulation_overflow)
 			dma->notifier->page_accumulation_overflow(dma->notifier->data);
 	}
