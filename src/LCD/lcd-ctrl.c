@@ -1452,7 +1452,7 @@ int single_frame_test(int autotest)
 	sq_lcd_set.swap = 0;	
 	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)& ~SQ_LCD_CTRL0_PAGESWAP, SQ_LCD_CTRL0);
 
-	sq_lcd_write(COLOR_BAR_BASE0, SQ_LCD_PAGE0_ADDR);
+	sq_lcd_write(COLOR_BAR_BASE0, SQ_LCD_PAGE0_ADDR); // Set Page0 Address
 
 
 	if (sq_lcd_set.bpp == 1)
@@ -1686,8 +1686,8 @@ int tft_lut_test(int autotest)
 	u32_t isr_cnt = 0;
 	
 	sq_lcd_set.bpp = 2;
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_COLOURDEP | SQ_LCD_CTRL0_LUTEN, SQ_LCD_CTRL0);
-
+	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_COLOURDEP | SQ_LCD_CTRL0_LUTEN, SQ_LCD_CTRL0); // LUT Depth 24bpp  
+                                                                                                        // LUT enable       
 	u32 *p = (u32 *) LCD_LUT_BASE;
 
 	for (color = 0; color < 8; color++)
@@ -1695,10 +1695,14 @@ int tft_lut_test(int autotest)
 		*p++ = BPP24_RGB[color];
 	}
 
-	sq_lcd_write(LCD_LUT_BASE , SQ_LCD_LUT_ADDR);
+	sq_lcd_write(LCD_LUT_BASE , SQ_LCD_LUT_ADDR);  // Set LUT Address
 
 	//initial INTR
-	sq_lcd_write(0x3f, SQ_LCD_INTR_EN);
+	sq_lcd_write(0x3f, SQ_LCD_INTR_EN); // Enable All int  
+	                                    // MDA Error,Output Halted,Output FIFO empty  
+	                                    // LUT load Complete 
+	                                    // page 1 load from memory 
+	                                    // page 0 load from memory  	                                    
 	request_irq(sq_lcd_irq, sq_cade_lcd_isr, (void*)&isr_cnt);	
 
 	while(isr_cnt == 0)

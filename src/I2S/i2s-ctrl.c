@@ -880,6 +880,8 @@ sq_i2s_play_pcm_normal(int autotest)
 			SQ_I2S_RX_FIFO_OVR_INT_DIS,
 			SQ_I2S_IER);
 
+	sq_i2s_make_test_pattern(sq_i2s_pcm_buf, PCM_BUF_SIZE);	
+
 	/* Reset the flags */
 	sq_i2s_tx_complete_flag = 0;
 
