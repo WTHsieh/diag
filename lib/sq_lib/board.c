@@ -2,7 +2,7 @@
 #include <clock.h>
 #include <io.h>
 
-//#define CONFIG_SQ_WAIT_DEBUG
+#define CONFIG_SQ_WAIT_DEBUG
 #ifdef CONFIG_SQ_WAIT_DEBUG
 	#define WAIT_DBG(fmt, args...) printf("SQ_WAIT: " fmt, ## args)
 #else
@@ -22,6 +22,7 @@ sq_wait_for_int(volatile int *flag, int sec)
 	WAIT_DBG("flag = %d, sec = %d, threshold = 0x%08x\n", *flag, sec, threshold);
 
 	while (1 != *flag) {
+		//WAIT_DBG("t = %x\n", t); 
 		if (t >= threshold)
 			return -1;
 		t++;

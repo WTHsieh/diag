@@ -15,18 +15,24 @@ wdt_watching(int autotest)
 #endif
 #ifdef CONFIG_SQ8000
 	sq_scu_wdt_reset_enable(1);
+
 #endif 
 
 	// set reload reg, prescaler
-	iowrite32(sq_get_apb_clock() / 60 * 3, SQ_WDTLR);
+	//iowrite32(sq_get_apb_clock() / 60 * 3 , SQ_WDTLR);
+	iowrite32(0xFFFF , SQ_WDTLR);
 	WDT_PRESCALE(PRESCALE_64);
 
 	printf("WDT: The system will reset now!!\n");
-
+    
 	WDT_RST_EN();
 	WDT_EN();
+    
+	while(1){
+		printf("WDT_RST_EN() : WDT Count=%d \n",readw(SQ_WDTCVR));		
+	}
 
-	if (sq_wait_for_int(&pseudo_flag, 5)) {
+	if (sq_wait_for_int(&pseudo_flag, 2)) {
 		printf("Timeout!! The system does not reset!!\n");
 		ret = -1;
 	}
