@@ -1459,7 +1459,7 @@ int single_frame_test(int autotest)
 	{
 		Sq_ColorFSFill (BPP24_RGB[1],COLOR_BAR_BASE0);
 	}
-	else if (sq_lcd_set.bpp == 2)
+	else if (sq_lcd_set.bpp == 2)     // LUT Test 
 	{
 		Sq_LUT_Fill(1,COLOR_BAR_BASE0);
 	}
@@ -1884,15 +1884,15 @@ int SQ_LCD_Testing (int autotest)
 	int ret = 0;
 
 #ifdef CONFIG_SQ8000
-	sq_scu_dev_enable(SQ_DEVCON_PWM0);
+	sq_scu_dev_enable(SQ_DEVCON_PWM0);  // PWM Setting for ?
 	sq_scu_dev_enable(SQ_DEVCON_LCDC);
 #endif
 
 	//PWM Setting
 #ifdef CONFIG_SQ8000
-	writel (6, 0x19090004);
-	writel (0xf, 0x19090008);
-	writel (0x29, 0x1909000c);
+	writel (6, 0x19090004);    // Set  PWMT0_HRC 
+	writel (0xf, 0x19090008);  // Set  PWMT0_LRC 
+	writel (0x29, 0x1909000c); // Set  PWMT0_CTRL [PWM TIMER Enable]
 #endif
 #ifdef CONFIG_LDK3V21
 	writel (6, 0x1e750004);

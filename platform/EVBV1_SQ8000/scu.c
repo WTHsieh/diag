@@ -1433,10 +1433,10 @@ sq_scu_wdt_reset_enable(int en)
 	
 	tmp = sq_scu_read(SQ_SCU_DEVCON) ;
 	
-	if(en == 1)
-		tmp |= SCU_DEVCON_WDT_RST;
+	if(en == 0)  
+		tmp |= SCU_DEVCON_WDT_RST;   // set register 1= Disable   
 	else
-		tmp &= ~SCU_DEVCON_WDT_RST;
+		tmp &= ~SCU_DEVCON_WDT_RST;   // set register 0= Enable   
 		
 	sq_scu_write(tmp, SQ_SCU_DEVCON);	
 }
