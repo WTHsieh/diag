@@ -10,7 +10,7 @@
 # Normal rules
 #
 .*
-#*.o
+*.o
 *.o.*
 *.a
 *.ko
@@ -44,10 +44,10 @@ TAGS
 !.release
 !.revision
 !.config 
-<<<<<<< HEAD:.gitignore
+
 
 =======
->>>>>>> diag_040901:.gitignore
+
 # stgit generated dirs
 patches-*
 
