@@ -34,8 +34,8 @@
 #endif
 
 
-#define DEFAULT_WIDTH	(320)
-#define DEFAULT_HEIGHT	(240)
+#define DEFAULT_WIDTH	800//(320)
+#define DEFAULT_HEIGHT	480//(240)
 
 #define COLOR_BAR_BASE0		(SQ_MM_DDR_SDR_BANK1 + 0x200000)
 #define COLOR_BAR_BASE1		(SQ_MM_DDR_SDR_BANK1 + 0x300000)
@@ -53,12 +53,13 @@ struct sq_lcd{
 	u32 yuv;			//YUV format support	
 	u32 swap;
 	u32 yuv_format;	//mode 0; yuv420, mode 1 yuv 422
+	u32 inch;		// 0:3.5 inch 1:7 inch 2:10 inch
 };
 
 
-struct sq_lcd sq_lcd_set = {
-	.htiming = 0x14C42140,
-	.vtiming = 0x040f04f0,
+struct sq_lcd SQ_LCD_set = {
+	.htiming = 0x14242320,//0x14242140
+	.vtiming = 0x040f05e0,//0x040f04f0
 #if defined (CONFIG_PC7210)
 	.pixelclock = 0xa,
 #elif defined (CONFIG_SQ8000)
@@ -71,7 +72,42 @@ struct sq_lcd sq_lcd_set = {
 	.yuv = 0,
 	.swap = 0,
 	.yuv_format = 0,
+	.inch = 1,
 };
+
+
+
+struct lcd_timming{
+	u32 ht;
+	u32 vt;
+	u32 pixelclk;
+};
+
+struct lcd_timming lcd_res_timming_tbl[]={
+{
+(0x14 << 24) | (0x24 << 16) | (1 << 10) | 320,
+(0x04 << 24) | (0x0f << 16) | (2 << 10) | 240,
+4
+},
+
+{
+(128 << 24) | (87 << 16) | (12 << 10) | 800,
+(8 << 24)  | (18 << 16) | (1 << 10)  | 480,
+//(230 << 24) | (0 << 16) | (256/4 << 10) | 800,
+//(16 << 24)  | (1 << 16) | (44/4 << 10)  | 480,
+3
+},
+
+{
+(230 << 24) | (0 << 16) | (256/4 << 10) | 1024,
+(16 << 24)  | (1 << 16) | (44/4 << 10)  | 768,
+2
+},
+};
+
+
+
+
 
 const u32 BPP24_RGB[8]=
 {
@@ -189,66 +225,66 @@ struct yuv_format
 	u16 Cr;
 }; 
 
-static u32 sq_lcd_base = SQ_LCD_BASE;
-static u32 sq_lcd_irq = SQ_LCD_IRQ;
+static u32 SQ_LCD_base = SQ_LCD_BASE;
+static u32 SQ_LCD_irq = SQ_LCD_IRQ;
 
-static inline u32 sq_lcd_read(u32 reg)
+static inline u32 SQ_LCD_read(u32 reg)
 {
 	u32 val;
-	val = ioread32(sq_lcd_base + reg);
+	val = ioread32(SQ_LCD_base + reg);
 	return val;
 }
 
-static inline void sq_lcd_write(u32 val, u32 reg)
+static inline void SQ_LCD_write(u32 val, u32 reg)
 {
-	iowrite32(val, sq_lcd_base + reg);
+	iowrite32(val, SQ_LCD_base + reg);
 }
 
 int Memory_Color_Set(int i)
 {
-	if (sq_lcd_set.swap == 0)
+	if (SQ_LCD_set.swap == 0)
 	{
-		if (sq_lcd_set.bpp == 1)
+		if (SQ_LCD_set.bpp == 1)
 		{
 			Sq_ColorFSFill (BPP24_RGB[i], COLOR_BAR_BASE0);
 		}
-		else if (sq_lcd_set.bpp == 2)
+		else if (SQ_LCD_set.bpp == 2)
 		{
 			Sq_LUT_Fill(i,COLOR_BAR_BASE0);
 		}
-		else if (sq_lcd_set.bpp == 3)	//YUV420 format
+		else if (SQ_LCD_set.bpp == 3)	//YUV420 format
 		{
 			//Sq_LUT_Fill(i,COLOR_BAR_BASE0);
 		}
 		else
 		{
-			if(sq_lcd_set.bpp16mode == 1)
+			if(SQ_LCD_set.bpp16mode == 1)
 			{
 				Sq_Color_16BPP_FSFill (BPP16_RGB_R[i],COLOR_BAR_BASE0);
 			}
-			else if(sq_lcd_set.bpp16mode == 2)
+			else if(SQ_LCD_set.bpp16mode == 2)
 			{
 				Sq_Color_16BPP_FSFill (BPP16_RGB_G[i],COLOR_BAR_BASE0);
 			}
-			else if(sq_lcd_set.bpp16mode == 3)
+			else if(SQ_LCD_set.bpp16mode == 3)
 			{
 				Sq_Color_16BPP_FSFill (BPP16_RGB_B[i],COLOR_BAR_BASE0);
 			}
 			else
 			{
-				if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_0)
+				if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_0)
 				{
 					Sq_Color_16BPP_FSFill (BPP16_LUM_0[i],COLOR_BAR_BASE0);
 				}
-				else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_R)
+				else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_R)
 				{
 					Sq_Color_16BPP_FSFill (BPP16_LUM_R[i],COLOR_BAR_BASE0);
 				}
-				else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_G)
+				else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_G)
 				{
 					Sq_Color_16BPP_FSFill (BPP16_LUM_G[i],COLOR_BAR_BASE0);
 				}
-				else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_B)
+				else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_B)
 				{
 					Sq_Color_16BPP_FSFill (BPP16_LUM_B[i],COLOR_BAR_BASE0);
 				}
@@ -261,51 +297,51 @@ int Memory_Color_Set(int i)
 	}
 	else
 	{
-		if (sq_lcd_set.bpp == 1)
+		if (SQ_LCD_set.bpp == 1)
 		{
 			Sq_ColorFSFill (BPP24_RGB[i],COLOR_BAR_BASE0);
 			Sq_ColorFSFill (BPP24_RGB[i],COLOR_BAR_BASE1);			
 		}
-		else if (sq_lcd_set.bpp == 2)
+		else if (SQ_LCD_set.bpp == 2)
 		{
 			Sq_LUT_Fill(i,COLOR_BAR_BASE0);
 			Sq_LUT_Fill(i,COLOR_BAR_BASE1);			
 		}
 		else
 		{
-			if(sq_lcd_set.bpp16mode == 1)
+			if(SQ_LCD_set.bpp16mode == 1)
 			{
 				Sq_Color_16BPP_FSFill (BPP16_RGB_R[i],COLOR_BAR_BASE0);
 				Sq_Color_16BPP_FSFill (BPP16_RGB_R[i],COLOR_BAR_BASE1);				
 			}
-			else if(sq_lcd_set.bpp16mode == 2)
+			else if(SQ_LCD_set.bpp16mode == 2)
 			{
 				Sq_Color_16BPP_FSFill (BPP16_RGB_G[i],COLOR_BAR_BASE0);			
 				Sq_Color_16BPP_FSFill (BPP16_RGB_G[i],COLOR_BAR_BASE1);
 			}
-			else if(sq_lcd_set.bpp16mode == 3)
+			else if(SQ_LCD_set.bpp16mode == 3)
 			{
 				Sq_Color_16BPP_FSFill (BPP16_RGB_B[i],COLOR_BAR_BASE0);
 				Sq_Color_16BPP_FSFill (BPP16_RGB_B[i],COLOR_BAR_BASE1);				
 			}
 			else
 			{
-				if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_0)
+				if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_0)
 				{
 					Sq_Color_16BPP_FSFill (BPP16_LUM_0[i],COLOR_BAR_BASE0);
 					Sq_Color_16BPP_FSFill (BPP16_LUM_0[i],COLOR_BAR_BASE1);
 				}
-				else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_R)
+				else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_R)
 				{
 					Sq_Color_16BPP_FSFill (BPP16_LUM_R[i],COLOR_BAR_BASE0);
 					Sq_Color_16BPP_FSFill (BPP16_LUM_R[i],COLOR_BAR_BASE1);
 				}
-				else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_G)
+				else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_G)
 				{
 					Sq_Color_16BPP_FSFill (BPP16_LUM_G[i],COLOR_BAR_BASE0);
 					Sq_Color_16BPP_FSFill (BPP16_LUM_G[i],COLOR_BAR_BASE1);
 				}
-				else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_B)
+				else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_B)
 				{
 					Sq_Color_16BPP_FSFill (BPP16_LUM_B[i],COLOR_BAR_BASE0);
 					Sq_Color_16BPP_FSFill (BPP16_LUM_B[i],COLOR_BAR_BASE1);
@@ -362,18 +398,18 @@ int YUV_ColorFS_Bottom_fill(struct yuv_format *yuv_color, u32 color_base)
 	u8 *u;
 	u8 *v;	
 
-	if (sq_lcd_set.yuv_format == 0)	
+	if (SQ_LCD_set.yuv_format == 0)	
 		u = (u8 *) (color_base +  (height*width) + (height*width)/8);
 	else
 		u = (u8 *) (color_base +  (height*width) + (height*width)/4);
 	
 
-	if (sq_lcd_set.yuv_format == 0)
+	if (SQ_LCD_set.yuv_format == 0)
 		v = (u8 *)  (color_base +  height*width + (height*width)/4 + (height*width)/8);
 	else
 		v = (u8 *)  (color_base +  height*width + (height*width)/2 + (height*width)/4);
 
-	if(sq_lcd_set.yuv_format == 0)	//420
+	if(SQ_LCD_set.yuv_format == 0)	//420
 	{
 		LCD_DBG("YUV420 \n");
 		//Y1,Y2,Y3,Y4
@@ -435,7 +471,7 @@ int YUV_ColorFS_fill(struct yuv_format *yuv_color, u32 color_base)
 
 	u8 *p = (u8 *) color_base;
 
-	if(sq_lcd_set.yuv_format == 0)	//420
+	if(SQ_LCD_set.yuv_format == 0)	//420
 	{
 		LCD_DBG("YUV420 \n");
 		for (i = 0; i < height; i++)
@@ -492,7 +528,7 @@ int yuv_color_fill(int i)
 	struct yuv_format yuv_color;
 	
 	rgb2yuv_convert(BPP24_RGB[i], &yuv_color);
-	if(sq_lcd_set.swap == 0)	
+	if(SQ_LCD_set.swap == 0)	
 	{
 		YUV_ColorFS_fill(&yuv_color, COLOR_BAR_BASE0);
 		
@@ -509,7 +545,7 @@ int yuv_color_fill_black(int autotest)
 {
 	yuv_color_fill(0);
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 	
 	return 0;	
 }
@@ -518,7 +554,7 @@ int yuv_color_fill_red(int autotest)
 {
 	yuv_color_fill(1);		
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 
 	return 0;
 }
@@ -527,7 +563,7 @@ int yuv_color_fill_green(int autotest)
 {
 	yuv_color_fill(2);	
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 
 	return 0;
 }
@@ -536,7 +572,7 @@ int yuv_color_fill_blue(int autotest)
 {
 	yuv_color_fill(3);	
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 
 	return 0;
 }
@@ -545,7 +581,7 @@ int yuv_color_fill_cyan(int autotest)
 {
 	yuv_color_fill(4);	
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 
 	return 0;
 }
@@ -554,7 +590,7 @@ int yuv_color_fill_magenta(int autotest)
 {
 	yuv_color_fill(5);	
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 
 	return 0;
 }
@@ -563,7 +599,7 @@ int yuv_color_fill_yellow(int autotest)
 {
 	yuv_color_fill(6);	
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 
 	return 0;
 }
@@ -572,7 +608,7 @@ int yuv_color_fill_white(int autotest)
 {
 	yuv_color_fill(7);	
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 	
 
 	return 0;
@@ -591,7 +627,7 @@ int YUV_Color_Bar_V_Fill(u32 color_base)
 	u8 *y = (u8 *) color_base;
 	u8 *u = (u8 *) (color_base +  height*width);
 	u8 *v;
-	if (sq_lcd_set.yuv_format == 0)
+	if (SQ_LCD_set.yuv_format == 0)
 		v = (u8 *)  (color_base +  height*width + height*width/4);
 	else
 		v = (u8 *)  (color_base +  height*width + height*width/2);
@@ -599,7 +635,7 @@ int YUV_Color_Bar_V_Fill(u32 color_base)
  
 		
 		
-		if(sq_lcd_set.yuv_format == 0)	//420
+		if(SQ_LCD_set.yuv_format == 0)	//420
 		{
 			LCD_DBG("YUV420 \n");
 			//Y1,Y2,Y3,Y4
@@ -675,13 +711,13 @@ int YUV_Color_Bar_H_Fill(u32 color_base)
 	u8 *y = (u8 *) color_base;
 	u8 *u = (u8 *) (color_base +  height*width);
 	u8 *v;
-	if (sq_lcd_set.yuv_format == 0)
+	if (SQ_LCD_set.yuv_format == 0)
 		v = (u8 *)  (color_base +  height*width + height*width/4);
 	else
 		v = (u8 *)  (color_base +  height*width + height*width/2);
 
 
-	if(sq_lcd_set.yuv_format == 0)	//420
+	if(SQ_LCD_set.yuv_format == 0)	//420
 	{
 		LCD_DBG("YUV420 \n");
 		for (i = 0; i < height/2; i++)
@@ -805,13 +841,13 @@ int YUV_Color_Grid_Fill(u32 color_base)
 	for(j=0;j<8;j++) 
 		tmprgb1[j] = BPP24_RGB[j];
 	
-	if (sq_lcd_set.yuv_format == 0)
+	if (SQ_LCD_set.yuv_format == 0)
 		v = (u8 *)  (color_base +  height*width + height*width/4);
 	else
 		v = (u8 *)  (color_base +  height*width + height*width/2);
 
 
-	if(sq_lcd_set.yuv_format == 0)	//420
+	if(SQ_LCD_set.yuv_format == 0)	//420
 	{
 		LCD_DBG("YUV420 \n");
 		for (m = 0;m<8;m++)
@@ -895,7 +931,7 @@ int YUV_Color_Grid_Fill(u32 color_base)
 }
 int yuv_color_bar_v_fill()
 {
-	if(sq_lcd_set.swap == 0)	
+	if(SQ_LCD_set.swap == 0)	
 	{
 		YUV_Color_Bar_V_Fill(COLOR_BAR_BASE0);
 	}
@@ -905,14 +941,14 @@ int yuv_color_bar_v_fill()
 		YUV_Color_Bar_V_Fill(COLOR_BAR_BASE1);		
 	}
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 	
 	return 0;
 }
 
 int yuv_color_bar_h_fill()
 {
-	if(sq_lcd_set.swap == 0)	
+	if(SQ_LCD_set.swap == 0)	
 	{
 		YUV_Color_Bar_H_Fill(COLOR_BAR_BASE0);
 	}
@@ -922,14 +958,14 @@ int yuv_color_bar_h_fill()
 		YUV_Color_Bar_H_Fill(COLOR_BAR_BASE1);		
 	}
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 	
 	return 0;
 }
 
 int yuv_color_bar_grid_fill()
 {
-	if(sq_lcd_set.swap == 0)	
+	if(SQ_LCD_set.swap == 0)	
 	{
 		YUV_Color_Grid_Fill(COLOR_BAR_BASE0);
 	}
@@ -939,7 +975,7 @@ int yuv_color_bar_grid_fill()
 		YUV_Color_Grid_Fill(COLOR_BAR_BASE1);		
 	}
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 	
 	return 0;
 }
@@ -950,7 +986,7 @@ int color_fill_black(int autotest)
 {
 	Memory_Color_Set(0);
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 
 	return 0;
 }
@@ -959,7 +995,7 @@ int color_fill_red(int autotest)
 {
 	Memory_Color_Set(1);
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 
 	return 0;
 }
@@ -968,7 +1004,7 @@ int color_fill_green(int autotest)
 {
 	Memory_Color_Set(2);
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 
 	return 0;
 }
@@ -977,7 +1013,7 @@ int color_fill_blue(int autotest)
 {
 	Memory_Color_Set(3);
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 
 	return 0;
 }
@@ -986,7 +1022,7 @@ int color_fill_cyan(int autotest)
 {
 	Memory_Color_Set(4);
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 
 	return 0;
 }
@@ -995,7 +1031,7 @@ int color_fill_magenta(int autotest)
 {
 	Memory_Color_Set(5);
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 
 	return 0;
 }
@@ -1004,7 +1040,7 @@ int color_fill_yellow(int autotest)
 {
 	Memory_Color_Set(6);
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 
 	return 0;
 }
@@ -1013,7 +1049,7 @@ int color_fill_white(int autotest)
 {
 	Memory_Color_Set(7);
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 
 	return 0;
 }
@@ -1136,7 +1172,7 @@ void sq_cade_lcd_isr(void* pparam)
 	int intr;
 	u32_t* pcnt = (u32_t*) pparam;
 	
-	intr = sq_lcd_read(SQ_LCD_INTR_STS);
+	intr = SQ_LCD_read(SQ_LCD_INTR_STS);
 
 	if(intr & SQ_LCD_INTR_DMA_ERR)
 	{
@@ -1152,8 +1188,8 @@ void sq_cade_lcd_isr(void* pparam)
 	{
 		printf("SQ_LCD_INTR_FIFO_EMPTY \n");
 		//Reset CLCD
-		sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
-		sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0) | SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+		SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+		SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0) | SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 	}
 
 	if(intr & SQ_LCD_INTR_LUT_COMP)
@@ -1163,41 +1199,41 @@ void sq_cade_lcd_isr(void* pparam)
 
 	if(intr & SQ_LCD_INTR_PAGE0_READ)
 	{
-		if (sq_lcd_set.swap == 1)
+		if (SQ_LCD_set.swap == 1)
 		{
-			if (sq_lcd_set.bpp == 1) //24 bpp
+			if (SQ_LCD_set.bpp == 1) //24 bpp
 			{
 //				if (!(((*pcnt)/5)%8) % 2)
 					Sq_ColorFSFill (BPP24_RGB[((*pcnt)/5)%8],COLOR_BAR_BASE0);
 			}
-			else if (sq_lcd_set.bpp == 2)
+			else if (SQ_LCD_set.bpp == 2)
 			{
 				Sq_LUT_Fill (((*pcnt)/5)%8,COLOR_BAR_BASE0);
 			}
 			else 
 			{
 //				if (!(((*pcnt)/5)%8) % 2) {
-					if(sq_lcd_set.bpp16mode == 1)
+					if(SQ_LCD_set.bpp16mode == 1)
 						Sq_Color_16BPP_FSFill (BPP16_RGB_R[((*pcnt)/5)%8],COLOR_BAR_BASE0);
-					else if(sq_lcd_set.bpp16mode == 2) 
+					else if(SQ_LCD_set.bpp16mode == 2) 
 						Sq_Color_16BPP_FSFill (BPP16_RGB_G[((*pcnt)/5)%8],COLOR_BAR_BASE0);
-					else if (sq_lcd_set.bpp16mode == 3)
+					else if (SQ_LCD_set.bpp16mode == 3)
 						Sq_Color_16BPP_FSFill (BPP16_RGB_B[((*pcnt)/5)%8],COLOR_BAR_BASE0);
 					else
 					{
-						if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_0)
+						if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_0)
 						{
 							Sq_Color_16BPP_FSFill (BPP16_LUM_0[((*pcnt)/5)%8],COLOR_BAR_BASE0);
 						}
-						else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_R)
+						else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_R)
 						{
 							Sq_Color_16BPP_FSFill (BPP16_LUM_R[((*pcnt)/5)%8],COLOR_BAR_BASE0);
 						}
-						else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_G)
+						else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_G)
 						{
 							Sq_Color_16BPP_FSFill (BPP16_LUM_G[((*pcnt)/5)%8],COLOR_BAR_BASE0);
 						}
-						else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_B)
+						else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_B)
 						{
 							Sq_Color_16BPP_FSFill (BPP16_LUM_B[((*pcnt)/5)%8],COLOR_BAR_BASE0);
 						}
@@ -1211,35 +1247,35 @@ void sq_cade_lcd_isr(void* pparam)
 		}
 		else		//no swap
 		{
-			if (sq_lcd_set.bpp == 1) //24 bpp
+			if (SQ_LCD_set.bpp == 1) //24 bpp
 				Sq_ColorFSFill (BPP24_RGB[((*pcnt)/5)%8],COLOR_BAR_BASE0);
-			else if (sq_lcd_set.bpp == 2)
+			else if (SQ_LCD_set.bpp == 2)
 			{
 				Sq_LUT_Fill (((*pcnt)/5)%8,COLOR_BAR_BASE0);
 			}
 			else
 			{
-				if(sq_lcd_set.bpp16mode == 1)
+				if(SQ_LCD_set.bpp16mode == 1)
 					Sq_Color_16BPP_FSFill (BPP16_RGB_R[((*pcnt)/5)%8],COLOR_BAR_BASE0);
-				else if(sq_lcd_set.bpp16mode == 2) 
+				else if(SQ_LCD_set.bpp16mode == 2) 
 					Sq_Color_16BPP_FSFill (BPP16_RGB_G[((*pcnt)/5)%8],COLOR_BAR_BASE0);
-				else if (sq_lcd_set.bpp16mode == 3)
+				else if (SQ_LCD_set.bpp16mode == 3)
 					Sq_Color_16BPP_FSFill (BPP16_RGB_B[((*pcnt)/5)%8],COLOR_BAR_BASE0);
 				else
 				{
-					if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_0)
+					if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_0)
 					{
 						Sq_Color_16BPP_FSFill (BPP16_LUM_0[((*pcnt)/5)%8],COLOR_BAR_BASE0);
 					}
-					else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_R)
+					else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_R)
 					{
 						Sq_Color_16BPP_FSFill (BPP16_LUM_R[((*pcnt)/5)%8],COLOR_BAR_BASE0);
 					}
-					else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_G)
+					else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_G)
 					{
 						Sq_Color_16BPP_FSFill (BPP16_LUM_G[((*pcnt)/5)%8],COLOR_BAR_BASE0);
 					}
-					else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_B)
+					else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_B)
 					{
 						Sq_Color_16BPP_FSFill (BPP16_LUM_B[((*pcnt)/5)%8],COLOR_BAR_BASE0);
 					}
@@ -1258,41 +1294,41 @@ void sq_cade_lcd_isr(void* pparam)
 	}
 	if(intr & SQ_LCD_INTR_PAGE1_READ)
 	{
-		if (sq_lcd_set.swap == 1)
+		if (SQ_LCD_set.swap == 1)
 		{
-			if (sq_lcd_set.bpp == 1) //24 bpp
+			if (SQ_LCD_set.bpp == 1) //24 bpp
 			{
 //				if ((((*pcnt)/5)%8) % 2)
 					Sq_ColorFSFill (BPP24_RGB[((*pcnt)/5)%8],COLOR_BAR_BASE1);
 			}
-			else if (sq_lcd_set.bpp == 2)
+			else if (SQ_LCD_set.bpp == 2)
 			{
 				Sq_LUT_Fill (((*pcnt)/5)%8,COLOR_BAR_BASE1);
 			}
 			else 
 			{
 //				if ((((*pcnt)/5)%8) % 2) {
-					if(sq_lcd_set.bpp16mode == 1)
+					if(SQ_LCD_set.bpp16mode == 1)
 						Sq_Color_16BPP_FSFill (BPP16_RGB_R[((*pcnt)/5)%8],COLOR_BAR_BASE1);
-					else if(sq_lcd_set.bpp16mode == 2) 
+					else if(SQ_LCD_set.bpp16mode == 2) 
 						Sq_Color_16BPP_FSFill (BPP16_RGB_G[((*pcnt)/5)%8],COLOR_BAR_BASE1);
-					else if(sq_lcd_set.bpp16mode ==3)
+					else if(SQ_LCD_set.bpp16mode ==3)
 						Sq_Color_16BPP_FSFill (BPP16_RGB_B[((*pcnt)/5)%8],COLOR_BAR_BASE1);
 					else 
 					{
-						if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_0)
+						if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_0)
 						{
 							Sq_Color_16BPP_FSFill (BPP16_LUM_0[((*pcnt)/5)%8],COLOR_BAR_BASE1);
 						}
-						else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_R)
+						else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_R)
 						{
 							Sq_Color_16BPP_FSFill (BPP16_LUM_R[((*pcnt)/5)%8],COLOR_BAR_BASE1);
 						}
-						else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_G)
+						else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_G)
 						{
 							Sq_Color_16BPP_FSFill (BPP16_LUM_G[((*pcnt)/5)%8],COLOR_BAR_BASE1);				
 						}
-						else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_B)
+						else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_B)
 						{
 							Sq_Color_16BPP_FSFill (BPP16_LUM_B[((*pcnt)/5)%8],COLOR_BAR_BASE1);				
 						}
@@ -1308,7 +1344,7 @@ void sq_cade_lcd_isr(void* pparam)
 		else //no swap
 		{
 			
-			printf("SQ_LCD_INTR_PAGE1_READ error !! ctrl0: %x \n",sq_lcd_read(SQ_LCD_CTRL0));
+			printf("SQ_LCD_INTR_PAGE1_READ error !! ctrl0: %x \n",SQ_LCD_read(SQ_LCD_CTRL0));
 			
 		}
 		(*pcnt)++;		
@@ -1327,13 +1363,13 @@ void sq_cade_lcd_isr(void* pparam)
 	
 }
 
-void sq_lcd_yuv_isr(void* pparam)
+void SQ_LCD_yuv_isr(void* pparam)
 {
 	int intr;
 	struct yuv_format yuv_color;
 	u32_t* pcnt = (u32_t*) pparam;
 	
-	intr = sq_lcd_read(SQ_LCD_INTR_STS);
+	intr = SQ_LCD_read(SQ_LCD_INTR_STS);
 
 	if(intr & SQ_LCD_INTR_DMA_ERR)
 	{
@@ -1349,8 +1385,8 @@ void sq_lcd_yuv_isr(void* pparam)
 	{
 		printf("SQ_LCD_INTR_FIFO_EMPTY \n");
 		//Reset CLCD
-		sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
-		sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0) | SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+		SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+		SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0) | SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 	}
 
 	if(intr & SQ_LCD_INTR_LUT_COMP)
@@ -1361,7 +1397,7 @@ void sq_lcd_yuv_isr(void* pparam)
 	if(intr & SQ_LCD_INTR_PAGE0_READ)
 	{
 		LCD_DBG("SQ_LCD_INTR_PAGE0_READ \n");
-		if (sq_lcd_set.swap == 1)
+		if (SQ_LCD_set.swap == 1)
 		{
 			rgb2yuv_convert(BPP24_RGB[((*pcnt)/5)%8], &yuv_color);
 			YUV_ColorFS_Bottom_fill(&yuv_color, COLOR_BAR_BASE0);
@@ -1376,14 +1412,14 @@ void sq_lcd_yuv_isr(void* pparam)
 	if(intr & SQ_LCD_INTR_PAGE1_READ)
 	{
 		LCD_DBG("SQ_LCD_INTR_LUT_COMP \n");
-		if (sq_lcd_set.swap == 1)
+		if (SQ_LCD_set.swap == 1)
 		{
 			rgb2yuv_convert(BPP24_RGB[((*pcnt)/5)%8], &yuv_color);
 			YUV_ColorFS_Bottom_fill(&yuv_color, COLOR_BAR_BASE1);
 		}
 		else		//no swap
 		{
-			printf("SQ_LCD_INTR_PAGE1_READ error !! ctrl0: %x \n",sq_lcd_read(SQ_LCD_CTRL0));
+			printf("SQ_LCD_INTR_PAGE1_READ error !! ctrl0: %x \n",SQ_LCD_read(SQ_LCD_CTRL0));
 		}
 		(*pcnt)++;
 	}
@@ -1407,7 +1443,7 @@ struct test_item_container color_fill_test_container;
 int lcd_color_fill(int autotest)
 {
 	int ret;
-	if (sq_lcd_set.yuv == 0)
+	if (SQ_LCD_set.yuv == 0)
 		ret = test_item_ctrl(&color_fill_test_container, autotest);
 	else //yuv format
 		ret = test_item_ctrl(&yuv_color_fill_test_container, autotest);
@@ -1418,25 +1454,25 @@ int lcd_inter(int autotest)
 {
 	u32_t isr_cnt = 0;
 	//initial INTR
-	sq_lcd_write(0x3f, SQ_LCD_INTR_EN);
+	SQ_LCD_write(0x3f, SQ_LCD_INTR_EN);
 
 	yuv_color_fill(1);
 	
-	if(sq_lcd_set.yuv == 0)
+	if(SQ_LCD_set.yuv == 0)
 		request_irq(SQ_LCD_IRQ, sq_cade_lcd_isr, (void*)&isr_cnt);	
 	else
-		request_irq(SQ_LCD_IRQ, sq_lcd_yuv_isr, (void*)&isr_cnt);	
+		request_irq(SQ_LCD_IRQ, SQ_LCD_yuv_isr, (void*)&isr_cnt);	
 
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 
 	while(isr_cnt < 80);
 
 	free_irq(SQ_LCD_IRQ);
 	//initial INTR
-	sq_lcd_write(0, SQ_LCD_INTR_EN);
+	SQ_LCD_write(0, SQ_LCD_INTR_EN);
 	
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);	
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);	
 
 	return 0;
 }
@@ -1449,49 +1485,49 @@ int single_frame_test(int autotest)
 
 	
 	//Disable PAGE SWAP
-	sq_lcd_set.swap = 0;	
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)& ~SQ_LCD_CTRL0_PAGESWAP, SQ_LCD_CTRL0);
+	SQ_LCD_set.swap = 0;	
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)& ~SQ_LCD_CTRL0_PAGESWAP, SQ_LCD_CTRL0);
 
-	sq_lcd_write(COLOR_BAR_BASE0, SQ_LCD_PAGE0_ADDR); // Set Page0 Address
+	SQ_LCD_write(COLOR_BAR_BASE0, SQ_LCD_PAGE0_ADDR); // Set Page0 Address
 
 
-	if (sq_lcd_set.bpp == 1)
+	if (SQ_LCD_set.bpp == 1)
 	{
 		Sq_ColorFSFill (BPP24_RGB[1],COLOR_BAR_BASE0);
 	}
-	else if (sq_lcd_set.bpp == 2)     // LUT Test 
+	else if (SQ_LCD_set.bpp == 2)     // LUT Test 
 	{
 		Sq_LUT_Fill(1,COLOR_BAR_BASE0);
 	}
 	else
 	{
-		if(sq_lcd_set.bpp16mode == 1)
+		if(SQ_LCD_set.bpp16mode == 1)
 		{
 			Sq_Color_16BPP_FSFill (BPP16_RGB_R[1],COLOR_BAR_BASE0);
 		}
-		else if(sq_lcd_set.bpp16mode == 2)
+		else if(SQ_LCD_set.bpp16mode == 2)
 		{
 			Sq_Color_16BPP_FSFill (BPP16_RGB_G[1],COLOR_BAR_BASE0);
 		}
-		else if(sq_lcd_set.bpp16mode == 3)
+		else if(SQ_LCD_set.bpp16mode == 3)
 		{
 			Sq_Color_16BPP_FSFill (BPP16_RGB_B[1],COLOR_BAR_BASE0);
 		}
 		else 
 		{
-			if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_0)
+			if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_0)
 			{
 				Sq_Color_16BPP_FSFill (BPP16_LUM_0[1],COLOR_BAR_BASE0);
 			}
-			else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_R)
+			else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_R)
 			{
 				Sq_Color_16BPP_FSFill (BPP16_LUM_R[1],COLOR_BAR_BASE0);
 			}
-			else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_G)
+			else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_G)
 			{
 				Sq_Color_16BPP_FSFill (BPP16_LUM_G[1],COLOR_BAR_BASE0);
 			}
-			else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_B)
+			else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_B)
 			{
 				Sq_Color_16BPP_FSFill (BPP16_LUM_B[1],COLOR_BAR_BASE0);
 			}
@@ -1504,7 +1540,7 @@ int single_frame_test(int autotest)
 
 	ret = test_item_ctrl(&lcd_intr_test_container, autotest);
 
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);	
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);	
 
 
 	return ret;	
@@ -1515,57 +1551,57 @@ int double_frame_test(int autotest)
 	int ret;
 
 	//Enable PAGE SWAP
-	sq_lcd_set.swap = 1;	
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_PAGESWAP, SQ_LCD_CTRL0);
+	SQ_LCD_set.swap = 1;	
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_PAGESWAP, SQ_LCD_CTRL0);
 
-	sq_lcd_write(COLOR_BAR_BASE0, SQ_LCD_PAGE0_ADDR);
-	sq_lcd_write(COLOR_BAR_BASE1, SQ_LCD_PAGE1_ADDR);	
+	SQ_LCD_write(COLOR_BAR_BASE0, SQ_LCD_PAGE0_ADDR);
+	SQ_LCD_write(COLOR_BAR_BASE1, SQ_LCD_PAGE1_ADDR);	
 
-	if (sq_lcd_set.bpp == 1)
+	if (SQ_LCD_set.bpp == 1)
 	{
 		Sq_ColorFSFill (COLOR_RED,COLOR_BAR_BASE0);
 		Sq_ColorFSFill (COLOR_BLUE,COLOR_BAR_BASE1);
 	}
-	else if (sq_lcd_set.bpp == 2)
+	else if (SQ_LCD_set.bpp == 2)
 	{
 		Sq_LUT_Fill(1,COLOR_BAR_BASE0);
 		Sq_LUT_Fill(1,COLOR_BAR_BASE1);
 	}
 	else
 	{
-		if(sq_lcd_set.bpp16mode == 1)
+		if(SQ_LCD_set.bpp16mode == 1)
 		{
 			Sq_Color_16BPP_FSFill (BPP16_RGB_R[1],COLOR_BAR_BASE0);
 			Sq_Color_16BPP_FSFill (BPP16_RGB_R[1],COLOR_BAR_BASE1);
 		}
-		else if(sq_lcd_set.bpp16mode == 2)
+		else if(SQ_LCD_set.bpp16mode == 2)
 		{
 			Sq_Color_16BPP_FSFill (BPP16_RGB_G[1],COLOR_BAR_BASE0);
 			Sq_Color_16BPP_FSFill (BPP16_RGB_G[1],COLOR_BAR_BASE1);
 		}
-		else if(sq_lcd_set.bpp16mode == 3)
+		else if(SQ_LCD_set.bpp16mode == 3)
 		{
 			Sq_Color_16BPP_FSFill (BPP16_RGB_B[1],COLOR_BAR_BASE0);
 			Sq_Color_16BPP_FSFill (BPP16_RGB_B[1],COLOR_BAR_BASE1);
 		}
 		else		//lum mode
 		{
-			if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_0)
+			if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_0)
 			{
 				Sq_Color_16BPP_FSFill (BPP16_LUM_0[1],COLOR_BAR_BASE0);
 				Sq_Color_16BPP_FSFill (BPP16_LUM_0[1],COLOR_BAR_BASE1);
 			}
-			else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_R)
+			else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_R)
 			{
 				Sq_Color_16BPP_FSFill (BPP16_LUM_R[1],COLOR_BAR_BASE0);
 				Sq_Color_16BPP_FSFill (BPP16_LUM_R[1],COLOR_BAR_BASE1);
 			}
-			else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_G)
+			else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_G)
 			{
 				Sq_Color_16BPP_FSFill (BPP16_LUM_G[1],COLOR_BAR_BASE0);
 				Sq_Color_16BPP_FSFill (BPP16_LUM_G[1],COLOR_BAR_BASE1);				
 			}
-			else if(sq_lcd_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_B)
+			else if(SQ_LCD_set.lummode == SQ_LCD_CTRL0_LUMCONFIG_B)
 			{
 				Sq_Color_16BPP_FSFill (BPP16_LUM_B[1],COLOR_BAR_BASE0);
 				Sq_Color_16BPP_FSFill (BPP16_LUM_B[1],COLOR_BAR_BASE1);				
@@ -1581,47 +1617,47 @@ int double_frame_test(int autotest)
 	
 	ret = test_item_ctrl(&lcd_intr_test_container, autotest);
 
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);		
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);		
 	return ret;
 }
 
-struct test_item_container sq_lcd_controller_test_container;
+struct test_item_container SQ_LCD_controller_test_container;
 
 int bpp16_red_test(int autotest)
 {
 	int ret = 0;
-	sq_lcd_set.bpp16mode = 1;
-	sq_lcd_write((sq_lcd_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_COLOUR)) | SQ_LCD_CTRL0_COLOUR_RED, SQ_LCD_CTRL0);	
-	ret = test_item_ctrl(&sq_lcd_controller_test_container, autotest);
+	SQ_LCD_set.bpp16mode = 1;
+	SQ_LCD_write((SQ_LCD_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_COLOUR)) | SQ_LCD_CTRL0_COLOUR_RED, SQ_LCD_CTRL0);	
+	ret = test_item_ctrl(&SQ_LCD_controller_test_container, autotest);
 		return ret;
 }
 
 int bpp16_green_test(int autotest)
 {
 	int ret = 0;
-	sq_lcd_set.bpp16mode = 2;
-	sq_lcd_write((sq_lcd_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_COLOUR)) | SQ_LCD_CTRL0_COLOUR_GREEN, SQ_LCD_CTRL0);
-	ret = test_item_ctrl(&sq_lcd_controller_test_container, autotest);
+	SQ_LCD_set.bpp16mode = 2;
+	SQ_LCD_write((SQ_LCD_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_COLOUR)) | SQ_LCD_CTRL0_COLOUR_GREEN, SQ_LCD_CTRL0);
+	ret = test_item_ctrl(&SQ_LCD_controller_test_container, autotest);
 		return ret;
 }
 
 int bpp16_blue_test(int autotest)
 {
 	int ret = 0;
-	sq_lcd_set.bpp16mode = 3;
+	SQ_LCD_set.bpp16mode = 3;
 
-	sq_lcd_write((sq_lcd_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_COLOUR))| SQ_LCD_CTRL0_COLOUR_BLUE, SQ_LCD_CTRL0);	
-	ret = test_item_ctrl(&sq_lcd_controller_test_container, autotest);
+	SQ_LCD_write((SQ_LCD_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_COLOUR))| SQ_LCD_CTRL0_COLOUR_BLUE, SQ_LCD_CTRL0);	
+	ret = test_item_ctrl(&SQ_LCD_controller_test_container, autotest);
 		return ret;
 }
 
 int bpp16_lum0_test(int autotest)
 {
 	int ret = 0;
-	sq_lcd_set.lummode = SQ_LCD_CTRL0_LUMCONFIG_0;
+	SQ_LCD_set.lummode = SQ_LCD_CTRL0_LUMCONFIG_0;
 
-	sq_lcd_write((sq_lcd_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_LUMCONFIG))| (sq_lcd_set.lummode << 17), SQ_LCD_CTRL0);	
-	ret = test_item_ctrl(&sq_lcd_controller_test_container, autotest);
+	SQ_LCD_write((SQ_LCD_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_LUMCONFIG))| (SQ_LCD_set.lummode << 17), SQ_LCD_CTRL0);	
+	ret = test_item_ctrl(&SQ_LCD_controller_test_container, autotest);
 		return ret;
 
 }
@@ -1629,10 +1665,10 @@ int bpp16_lum0_test(int autotest)
 int bpp16_lumr_test(int autotest)
 {
 	int ret = 0;
-	sq_lcd_set.lummode = SQ_LCD_CTRL0_LUMCONFIG_R;
+	SQ_LCD_set.lummode = SQ_LCD_CTRL0_LUMCONFIG_R;
 
-	sq_lcd_write((sq_lcd_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_LUMCONFIG))| (sq_lcd_set.lummode << 17), SQ_LCD_CTRL0);	
-	ret = test_item_ctrl(&sq_lcd_controller_test_container, autotest);
+	SQ_LCD_write((SQ_LCD_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_LUMCONFIG))| (SQ_LCD_set.lummode << 17), SQ_LCD_CTRL0);	
+	ret = test_item_ctrl(&SQ_LCD_controller_test_container, autotest);
 		return ret;
 
 }
@@ -1640,10 +1676,10 @@ int bpp16_lumr_test(int autotest)
 int bpp16_lumg_test(int autotest)
 {
 	int ret = 0;
-	sq_lcd_set.lummode = SQ_LCD_CTRL0_LUMCONFIG_G;
+	SQ_LCD_set.lummode = SQ_LCD_CTRL0_LUMCONFIG_G;
 
-	sq_lcd_write((sq_lcd_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_LUMCONFIG))| (sq_lcd_set.lummode << 17), SQ_LCD_CTRL0);	
-	ret = test_item_ctrl(&sq_lcd_controller_test_container, autotest);
+	SQ_LCD_write((SQ_LCD_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_LUMCONFIG))| (SQ_LCD_set.lummode << 17), SQ_LCD_CTRL0);	
+	ret = test_item_ctrl(&SQ_LCD_controller_test_container, autotest);
 		return ret;
 
 }
@@ -1651,30 +1687,30 @@ int bpp16_lumg_test(int autotest)
 int bpp16_lumb_test(int autotest)
 {
 	int ret = 0;
-	sq_lcd_set.lummode = SQ_LCD_CTRL0_LUMCONFIG_B;
+	SQ_LCD_set.lummode = SQ_LCD_CTRL0_LUMCONFIG_B;
 
-	sq_lcd_write((sq_lcd_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_LUMCONFIG))| (sq_lcd_set.lummode << 17), SQ_LCD_CTRL0);	
-	ret = test_item_ctrl(&sq_lcd_controller_test_container, autotest);
+	SQ_LCD_write((SQ_LCD_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_LUMCONFIG))| (SQ_LCD_set.lummode << 17), SQ_LCD_CTRL0);	
+	ret = test_item_ctrl(&SQ_LCD_controller_test_container, autotest);
 		return ret;
 }
 
 int bpp16_lumrgb_test(int autotest)
 {
 	int ret = 0;
-	sq_lcd_set.lummode = SQ_LCD_CTRL0_LUMCONFIG_RGB;
+	SQ_LCD_set.lummode = SQ_LCD_CTRL0_LUMCONFIG_RGB;
 
-	sq_lcd_write((sq_lcd_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_LUMCONFIG))| (sq_lcd_set.lummode << 17), SQ_LCD_CTRL0);	
-	ret = test_item_ctrl(&sq_lcd_controller_test_container, autotest);
+	SQ_LCD_write((SQ_LCD_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_LUMCONFIG))| (SQ_LCD_set.lummode << 17), SQ_LCD_CTRL0);	
+	ret = test_item_ctrl(&SQ_LCD_controller_test_container, autotest);
 		return ret;
 }
 
-struct test_item_container sq_lcd_16bpp_lum_test_container;
+struct test_item_container SQ_LCD_16bpp_lum_test_container;
 int bpp16_lum_test(int autotest)
 {
 	int ret = 0;
-	sq_lcd_set.bpp16mode = 0;
-	sq_lcd_write((sq_lcd_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_COLOUR)) , SQ_LCD_CTRL0);	
-	ret = test_item_ctrl(&sq_lcd_16bpp_lum_test_container, autotest);
+	SQ_LCD_set.bpp16mode = 0;
+	SQ_LCD_write((SQ_LCD_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_COLOUR)) , SQ_LCD_CTRL0);	
+	ret = test_item_ctrl(&SQ_LCD_16bpp_lum_test_container, autotest);
 		return ret;
 }
 
@@ -1685,8 +1721,8 @@ int tft_lut_test(int autotest)
 	int ret = 0;
 	u32_t isr_cnt = 0;
 	
-	sq_lcd_set.bpp = 2;
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_COLOURDEP | SQ_LCD_CTRL0_LUTEN, SQ_LCD_CTRL0); // LUT Depth 24bpp  
+	SQ_LCD_set.bpp = 2;
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_COLOURDEP | SQ_LCD_CTRL0_LUTEN, SQ_LCD_CTRL0); // LUT Depth 24bpp  
                                                                                                         // LUT enable       
 	u32 *p = (u32 *) LCD_LUT_BASE;
 
@@ -1695,15 +1731,15 @@ int tft_lut_test(int autotest)
 		*p++ = BPP24_RGB[color];
 	}
 
-	sq_lcd_write(LCD_LUT_BASE , SQ_LCD_LUT_ADDR);  // Set LUT Address
+	SQ_LCD_write(LCD_LUT_BASE , SQ_LCD_LUT_ADDR);  // Set LUT Address
 
 	//initial INTR
-	sq_lcd_write(0x3f, SQ_LCD_INTR_EN); // Enable All int  
+	SQ_LCD_write(0x3f, SQ_LCD_INTR_EN); // Enable All int  
 	                                    // MDA Error,Output Halted,Output FIFO empty  
 	                                    // LUT load Complete 
 	                                    // page 1 load from memory 
 	                                    // page 0 load from memory  	                                    
-	request_irq(sq_lcd_irq, sq_cade_lcd_isr, (void*)&isr_cnt);	
+	request_irq(SQ_LCD_irq, sq_cade_lcd_isr, (void*)&isr_cnt);	
 
 	while(isr_cnt == 0)
 	{
@@ -1717,27 +1753,27 @@ int tft_lut_test(int autotest)
 	printf("free_irq \n");
 	free_irq(SQ_LCD_IRQ);
 	//Diable INTR
-	sq_lcd_write(0, SQ_LCD_INTR_EN);
+	SQ_LCD_write(0, SQ_LCD_INTR_EN);
 	
-	ret = test_item_ctrl(&sq_lcd_controller_test_container, autotest);
+	ret = test_item_ctrl(&SQ_LCD_controller_test_container, autotest);
 
 	//Disable LUT 
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0) &  (~SQ_LCD_CTRL0_LUTEN), SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0) &  (~SQ_LCD_CTRL0_LUTEN), SQ_LCD_CTRL0);
 	return ret;
 }
 
-struct test_item_container sq_lcd_controller_16bpp_test_container;
+struct test_item_container SQ_LCD_controller_16bpp_test_container;
 
 int tft_16bpp_test(int autotest)
 {
 	int ret = 0;
 
-	sq_lcd_set.bpp = 0;
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_24BPP  ,SQ_LCD_CTRL0);
+	SQ_LCD_set.bpp = 0;
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_24BPP  ,SQ_LCD_CTRL0);
 
-	ret = test_item_ctrl(&sq_lcd_controller_16bpp_test_container, autotest);
+	ret = test_item_ctrl(&SQ_LCD_controller_16bpp_test_container, autotest);
 
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_LUMCONFIG) & (~SQ_LCD_CTRL0_COLOUR) ,SQ_LCD_CTRL0);	
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_LUMCONFIG) & (~SQ_LCD_CTRL0_COLOUR) ,SQ_LCD_CTRL0);	
 	return ret;
 }
 
@@ -1746,21 +1782,21 @@ int tft_24bpp_test(int autotest)
 	int ret = 0;
 
 	//Enable 24 BPP
-	sq_lcd_set.bpp = 1;
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_24BPP ,SQ_LCD_CTRL0);
+	SQ_LCD_set.bpp = 1;
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_24BPP ,SQ_LCD_CTRL0);
 	
-	ret = test_item_ctrl(&sq_lcd_controller_test_container, autotest);
+	ret = test_item_ctrl(&SQ_LCD_controller_test_container, autotest);
 	return ret;
 }
 
-struct test_item_container sq_lcd_controller_bpp_container;
+struct test_item_container SQ_LCD_controller_bpp_container;
 
 int lcd_rgb_mode_test(int autotest)
 {
 	int ret = 0;
-	sq_lcd_set.yuv = 0;
-	sq_lcd_write(sq_lcd_read(SQ_LCD_YUV2RGB_CTRL)& (~SQ_LCD_YUV2RGB_EN),SQ_LCD_YUV2RGB_CTRL);
-	ret = test_item_ctrl(&sq_lcd_controller_bpp_container, autotest);
+	SQ_LCD_set.yuv = 0;
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_YUV2RGB_CTRL)& (~SQ_LCD_YUV2RGB_EN),SQ_LCD_YUV2RGB_CTRL);
+	ret = test_item_ctrl(&SQ_LCD_controller_bpp_container, autotest);
 	return ret;
 }
 
@@ -1771,27 +1807,27 @@ int yuv_single_frame_test(int autotest)
 	unsigned int width = DEFAULT_WIDTH;
 	
 	//Disable PAGE SWAP
-	sq_lcd_set.swap = 0;	
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)& ~SQ_LCD_CTRL0_PAGESWAP, SQ_LCD_CTRL0);
+	SQ_LCD_set.swap = 0;	
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)& ~SQ_LCD_CTRL0_PAGESWAP, SQ_LCD_CTRL0);
 
-	if(sq_lcd_set.yuv_format == 1)
+	if(SQ_LCD_set.yuv_format == 1)
 	{
-		sq_lcd_write(COLOR_BAR_BASE0, SQ_LCD_Y_PAGE0_ADDR);
-		sq_lcd_write(COLOR_BAR_BASE0 + (height*width), SQ_LCD_Cb_PAGE0_ADDR);
-		sq_lcd_write(COLOR_BAR_BASE0 + (height*width) + (height*width)/2, SQ_LCD_Cr_PAGE0_ADDR);
+		SQ_LCD_write(COLOR_BAR_BASE0, SQ_LCD_Y_PAGE0_ADDR);
+		SQ_LCD_write(COLOR_BAR_BASE0 + (height*width), SQ_LCD_Cb_PAGE0_ADDR);
+		SQ_LCD_write(COLOR_BAR_BASE0 + (height*width) + (height*width)/2, SQ_LCD_Cr_PAGE0_ADDR);
 	}
 	else
 	{
-		sq_lcd_write(COLOR_BAR_BASE0, SQ_LCD_Y_PAGE0_ADDR);
-		sq_lcd_write(COLOR_BAR_BASE0 + (height*width), SQ_LCD_Cb_PAGE0_ADDR);
-		sq_lcd_write(COLOR_BAR_BASE0 + (height*width) + (height*width)/4, SQ_LCD_Cr_PAGE0_ADDR);
+		SQ_LCD_write(COLOR_BAR_BASE0, SQ_LCD_Y_PAGE0_ADDR);
+		SQ_LCD_write(COLOR_BAR_BASE0 + (height*width), SQ_LCD_Cb_PAGE0_ADDR);
+		SQ_LCD_write(COLOR_BAR_BASE0 + (height*width) + (height*width)/4, SQ_LCD_Cr_PAGE0_ADDR);
 	}
 
 	yuv_color_fill(1);	
 
 	ret = test_item_ctrl(&lcd_intr_test_container, autotest);
 
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);	
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);	
 
 
 	return ret;	
@@ -1804,27 +1840,27 @@ int yuv_double_frame_test(int autotest)
 	unsigned int width = DEFAULT_WIDTH;
 	
 	//Enable PAGE SWAP
-	sq_lcd_set.swap = 1;	
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_PAGESWAP, SQ_LCD_CTRL0);
+	SQ_LCD_set.swap = 1;	
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_PAGESWAP, SQ_LCD_CTRL0);
 
-	if(sq_lcd_set.yuv_format == 1)
+	if(SQ_LCD_set.yuv_format == 1)
 	{
-		sq_lcd_write(COLOR_BAR_BASE0, SQ_LCD_Y_PAGE0_ADDR);
-		sq_lcd_write(COLOR_BAR_BASE0 + (height*width), SQ_LCD_Cb_PAGE0_ADDR);
-		sq_lcd_write(COLOR_BAR_BASE0 + (height*width) + (height*width)/2, SQ_LCD_Cr_PAGE0_ADDR);
-		sq_lcd_write(COLOR_BAR_BASE1, SQ_LCD_Y_PAGE1_ADDR);
-		sq_lcd_write(COLOR_BAR_BASE1 + (height*width), SQ_LCD_Cb_PAGE1_ADDR);
-		sq_lcd_write(COLOR_BAR_BASE1 + (height*width) + (height*width)/2, SQ_LCD_Cr_PAGE1_ADDR);
+		SQ_LCD_write(COLOR_BAR_BASE0, SQ_LCD_Y_PAGE0_ADDR);
+		SQ_LCD_write(COLOR_BAR_BASE0 + (height*width), SQ_LCD_Cb_PAGE0_ADDR);
+		SQ_LCD_write(COLOR_BAR_BASE0 + (height*width) + (height*width)/2, SQ_LCD_Cr_PAGE0_ADDR);
+		SQ_LCD_write(COLOR_BAR_BASE1, SQ_LCD_Y_PAGE1_ADDR);
+		SQ_LCD_write(COLOR_BAR_BASE1 + (height*width), SQ_LCD_Cb_PAGE1_ADDR);
+		SQ_LCD_write(COLOR_BAR_BASE1 + (height*width) + (height*width)/2, SQ_LCD_Cr_PAGE1_ADDR);
 		
 	}
 	else
 	{
-		sq_lcd_write(COLOR_BAR_BASE0, SQ_LCD_Y_PAGE0_ADDR);
-		sq_lcd_write(COLOR_BAR_BASE0 + (height*width), SQ_LCD_Cb_PAGE0_ADDR);
-		sq_lcd_write(COLOR_BAR_BASE0 + (height*width) + (height*width)/4, SQ_LCD_Cr_PAGE0_ADDR);
-		sq_lcd_write(COLOR_BAR_BASE1, SQ_LCD_Y_PAGE1_ADDR);
-		sq_lcd_write(COLOR_BAR_BASE1 + (height*width), SQ_LCD_Cb_PAGE1_ADDR);
-		sq_lcd_write(COLOR_BAR_BASE1 + (height*width) + (height*width)/4, SQ_LCD_Cr_PAGE1_ADDR);
+		SQ_LCD_write(COLOR_BAR_BASE0, SQ_LCD_Y_PAGE0_ADDR);
+		SQ_LCD_write(COLOR_BAR_BASE0 + (height*width), SQ_LCD_Cb_PAGE0_ADDR);
+		SQ_LCD_write(COLOR_BAR_BASE0 + (height*width) + (height*width)/4, SQ_LCD_Cr_PAGE0_ADDR);
+		SQ_LCD_write(COLOR_BAR_BASE1, SQ_LCD_Y_PAGE1_ADDR);
+		SQ_LCD_write(COLOR_BAR_BASE1 + (height*width), SQ_LCD_Cb_PAGE1_ADDR);
+		SQ_LCD_write(COLOR_BAR_BASE1 + (height*width) + (height*width)/4, SQ_LCD_Cr_PAGE1_ADDR);
 		
 	}
 
@@ -1832,52 +1868,106 @@ int yuv_double_frame_test(int autotest)
 
 	ret = test_item_ctrl(&lcd_intr_test_container, autotest);
 
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);	
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);	
 
 
 	return ret;	
 }
 
-struct test_item_container sq_lcd_yuv_frame_test_container;
+struct test_item_container SQ_LCD_yuv_frame_test_container;
 
 int lcd_yuv420_mode_test(int autotest)
 {
 	int ret = 0;
-	sq_lcd_set.yuv_format = 0;
-	sq_lcd_write(sq_lcd_read(SQ_LCD_YUV2RGB_CTRL)| SQ_LCD_YUV420 ,SQ_LCD_YUV2RGB_CTRL);
-	ret = test_item_ctrl(&sq_lcd_yuv_frame_test_container, autotest);
-	sq_lcd_write(sq_lcd_read(SQ_LCD_YUV2RGB_CTRL)& ~SQ_LCD_YUV420 ,SQ_LCD_YUV2RGB_CTRL);
+	SQ_LCD_set.yuv_format = 0;
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_YUV2RGB_CTRL)| SQ_LCD_YUV420 ,SQ_LCD_YUV2RGB_CTRL);
+	ret = test_item_ctrl(&SQ_LCD_yuv_frame_test_container, autotest);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_YUV2RGB_CTRL)& ~SQ_LCD_YUV420 ,SQ_LCD_YUV2RGB_CTRL);
 	return ret;
 }
 
 int lcd_yuv422_mode_test(int autotest)
 {
 	int ret = 0;
-	sq_lcd_set.yuv_format = 1;
-	sq_lcd_write(sq_lcd_read(SQ_LCD_YUV2RGB_CTRL)| SQ_LCD_YUV422 ,SQ_LCD_YUV2RGB_CTRL);
-	ret = test_item_ctrl(&sq_lcd_yuv_frame_test_container, autotest);	
-	sq_lcd_write(sq_lcd_read(SQ_LCD_YUV2RGB_CTRL)& ~SQ_LCD_YUV422 ,SQ_LCD_YUV2RGB_CTRL);
+	SQ_LCD_set.yuv_format = 1;
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_YUV2RGB_CTRL)| SQ_LCD_YUV422 ,SQ_LCD_YUV2RGB_CTRL);
+	ret = test_item_ctrl(&SQ_LCD_yuv_frame_test_container, autotest);	
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_YUV2RGB_CTRL)& ~SQ_LCD_YUV422 ,SQ_LCD_YUV2RGB_CTRL);
 	return ret;
 }
 
-struct test_item_container sq_lcd_controller_yuv_container;
+struct test_item_container SQ_LCD_controller_yuv_container;
 
 int lcd_yuv_mode_test(int autotest)
 {
 	int ret = 0;
 
-	sq_lcd_set.yuv = 1;
+	SQ_LCD_set.yuv = 1;
 	//TEMP ADD BUG FIXME
-//	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_24BPP,SQ_LCD_CTRL0);
+//	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_24BPP,SQ_LCD_CTRL0);
 	
-	sq_lcd_write(sq_lcd_read(SQ_LCD_YUV2RGB_CTRL)| SQ_LCD_YUV2RGB_EN,SQ_LCD_YUV2RGB_CTRL);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_YUV2RGB_CTRL)| SQ_LCD_YUV2RGB_EN,SQ_LCD_YUV2RGB_CTRL);
 	
-	ret = test_item_ctrl(&sq_lcd_controller_yuv_container, autotest);
-	sq_lcd_write(sq_lcd_read(SQ_LCD_YUV2RGB_CTRL) &  (~SQ_LCD_YUV2RGB_EN),SQ_LCD_YUV2RGB_CTRL);
+	ret = test_item_ctrl(&SQ_LCD_controller_yuv_container, autotest);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_YUV2RGB_CTRL) &  (~SQ_LCD_YUV2RGB_EN),SQ_LCD_YUV2RGB_CTRL);
 	return ret;
 }
 
-struct test_item_container sq_lcd_controller_format_container;
+void lcd_set_timming(void)
+{
+
+	//Set Panel timing
+	SQ_LCD_write(SQ_LCD_set.htiming, SQ_LCD_H_TIMING);
+	SQ_LCD_write(SQ_LCD_set.vtiming, SQ_LCD_V_TIMING);
+#ifdef CONFIG_PC9220	
+	SQ_LCD_write(SQ_LCD_CTRL0_PXCLK_POLAR |(SQ_LCD_CTRL0_PCLOCK * SQ_LCD_set.pixelclock)| SQ_LCD_CTRL0_HSYNC | SQ_LCD_CTRL0_VSYNC,SQ_LCD_CTRL0);
+#else
+	SQ_LCD_write((SQ_LCD_CTRL0_PCLOCK * SQ_LCD_set.pixelclock)| SQ_LCD_CTRL0_HSYNC | SQ_LCD_CTRL0_VSYNC,SQ_LCD_CTRL0);
+#endif
+
+}
+
+
+void lcd_set_3_5_inch_test(int autotest)
+{
+	SQ_LCD_set.htiming = lcd_res_timming_tbl[0].ht;
+	SQ_LCD_set.vtiming = lcd_res_timming_tbl[0].vt;
+	SQ_LCD_set.pixelclock = lcd_res_timming_tbl[0].pixelclk;
+
+
+	lcd_set_timming();
+
+}
+
+void lcd_set_7_inch_test(int autotest)
+{
+	SQ_LCD_set.htiming = lcd_res_timming_tbl[1].ht;
+	SQ_LCD_set.vtiming = lcd_res_timming_tbl[1].vt;
+	SQ_LCD_set.pixelclock = lcd_res_timming_tbl[1].pixelclk;
+
+	lcd_set_timming();
+}
+
+void lcd_set_10_inch_test(int autotest)
+{
+	SQ_LCD_set.htiming = lcd_res_timming_tbl[2].ht;
+	SQ_LCD_set.vtiming = lcd_res_timming_tbl[2].vt;
+	SQ_LCD_set.pixelclock = lcd_res_timming_tbl[2].pixelclk;
+
+	lcd_set_timming();
+}
+
+struct test_item_container SQ_LCD_res_select_container;
+
+int lcd_res_sel_test(int autotest)
+{
+	int ret = 0;
+
+	SQ_LCD_set.inch = test_item_ctrl(&SQ_LCD_res_select_container, autotest);
+	return ret;
+}
+
+struct test_item_container SQ_LCD_controller_format_container;
 
 int SQ_LCD_Testing (int autotest)
 {
@@ -1910,14 +2000,24 @@ int SQ_LCD_Testing (int autotest)
 
 
 	//Set Panel timing
-	sq_lcd_write(sq_lcd_set.htiming, SQ_LCD_H_TIMING);
-	sq_lcd_write(sq_lcd_set.vtiming, SQ_LCD_V_TIMING);
-#ifdef CONFIG_SQ8000	
-	sq_lcd_write(SQ_LCD_CTRL0_PXCLK_POLAR |(SQ_LCD_CTRL0_PCLOCK * sq_lcd_set.pixelclock)| SQ_LCD_CTRL0_HSYNC | SQ_LCD_CTRL0_VSYNC,SQ_LCD_CTRL0);
+#if  1
+	SQ_LCD_set.htiming = lcd_res_timming_tbl[SQ_LCD_set.inch].ht;
+	SQ_LCD_set.vtiming = lcd_res_timming_tbl[SQ_LCD_set.inch].vt;
+	SQ_LCD_set.pixelclock = lcd_res_timming_tbl[SQ_LCD_set.inch].pixelclk;
+
+	lcd_set_timming();
 #else
-	sq_lcd_write((SQ_LCD_CTRL0_PCLOCK * sq_lcd_set.pixelclock)| SQ_LCD_CTRL0_HSYNC | SQ_LCD_CTRL0_VSYNC,SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_set.htiming, SQ_LCD_H_TIMING);
+	SQ_LCD_write(SQ_LCD_set.vtiming, SQ_LCD_V_TIMING);
+#ifdef CONFIG_SQ8000	
+	SQ_LCD_write(SQ_LCD_CTRL0_PXCLK_POLAR |(SQ_LCD_CTRL0_PCLOCK * SQ_LCD_set.pixelclock)| SQ_LCD_CTRL0_HSYNC | SQ_LCD_CTRL0_VSYNC,SQ_LCD_CTRL0);
+#else
+	SQ_LCD_write((SQ_LCD_CTRL0_PCLOCK * SQ_LCD_set.pixelclock)| SQ_LCD_CTRL0_HSYNC | SQ_LCD_CTRL0_VSYNC,SQ_LCD_CTRL0);
 #endif
-	ret = test_item_ctrl(&sq_lcd_controller_format_container, autotest);
+#endif
+
+
+	ret = test_item_ctrl(&SQ_LCD_controller_format_container, autotest);
 
 #ifdef CONFIG_SQ8000
 	sq_scu_dev_disable(SQ_DEVCON_PWM0);
@@ -1954,36 +2054,36 @@ extern void Sq_vip_lcd_initial(int output422)
 #endif
 
 	//Set Panel timing
-	sq_lcd_write(sq_lcd_set.htiming, SQ_LCD_H_TIMING);
-	sq_lcd_write(sq_lcd_set.vtiming, SQ_LCD_V_TIMING);
+	SQ_LCD_write(SQ_LCD_set.htiming, SQ_LCD_H_TIMING);
+	SQ_LCD_write(SQ_LCD_set.vtiming, SQ_LCD_V_TIMING);
 #ifdef CONFIG_SQ8000	
-	sq_lcd_write(SQ_LCD_CTRL0_PXCLK_POLAR |(SQ_LCD_CTRL0_PCLOCK * sq_lcd_set.pixelclock)| SQ_LCD_CTRL0_HSYNC | SQ_LCD_CTRL0_VSYNC,SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_CTRL0_PXCLK_POLAR |(SQ_LCD_CTRL0_PCLOCK * SQ_LCD_set.pixelclock)| SQ_LCD_CTRL0_HSYNC | SQ_LCD_CTRL0_VSYNC,SQ_LCD_CTRL0);
 #else
-	sq_lcd_write((SQ_LCD_CTRL0_PCLOCK * sq_lcd_set.pixelclock)| SQ_LCD_CTRL0_HSYNC | SQ_LCD_CTRL0_VSYNC,SQ_LCD_CTRL0);
+	SQ_LCD_write((SQ_LCD_CTRL0_PCLOCK * SQ_LCD_set.pixelclock)| SQ_LCD_CTRL0_HSYNC | SQ_LCD_CTRL0_VSYNC,SQ_LCD_CTRL0);
 #endif
-	sq_lcd_set.yuv = 1;
+	SQ_LCD_set.yuv = 1;
 	
-	sq_lcd_write(sq_lcd_read(SQ_LCD_YUV2RGB_CTRL)| SQ_LCD_YUV2RGB_EN,SQ_LCD_YUV2RGB_CTRL);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_YUV2RGB_CTRL)| SQ_LCD_YUV2RGB_EN,SQ_LCD_YUV2RGB_CTRL);
 	
-	sq_lcd_set.yuv_format = 0;
+	SQ_LCD_set.yuv_format = 0;
 	if(output422)
-		sq_lcd_write(sq_lcd_read(SQ_LCD_YUV2RGB_CTRL)| SQ_LCD_YUV422 ,SQ_LCD_YUV2RGB_CTRL);
+		SQ_LCD_write(SQ_LCD_read(SQ_LCD_YUV2RGB_CTRL)| SQ_LCD_YUV422 ,SQ_LCD_YUV2RGB_CTRL);
 	else
-		sq_lcd_write(sq_lcd_read(SQ_LCD_YUV2RGB_CTRL)& ~SQ_LCD_YUV422 ,SQ_LCD_YUV2RGB_CTRL);
+		SQ_LCD_write(SQ_LCD_read(SQ_LCD_YUV2RGB_CTRL)& ~SQ_LCD_YUV422 ,SQ_LCD_YUV2RGB_CTRL);
 
 	//Disable PAGE SWAP
-	sq_lcd_set.swap = 0;	
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)& ~SQ_LCD_CTRL0_PAGESWAP, SQ_LCD_CTRL0);
+	SQ_LCD_set.swap = 0;	
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)& ~SQ_LCD_CTRL0_PAGESWAP, SQ_LCD_CTRL0);
 
-	sq_lcd_write(0x00a00000, SQ_LCD_Y_PAGE0_ADDR);
-	sq_lcd_write(0x00a60000 , SQ_LCD_Cb_PAGE0_ADDR);
-	sq_lcd_write(0x00a90000 , SQ_LCD_Cr_PAGE0_ADDR);
+	SQ_LCD_write(0x00a00000, SQ_LCD_Y_PAGE0_ADDR);
+	SQ_LCD_write(0x00a60000 , SQ_LCD_Cb_PAGE0_ADDR);
+	SQ_LCD_write(0x00a90000 , SQ_LCD_Cr_PAGE0_ADDR);
 
 	//Enable CLCD
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0)| SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 
 }
 extern void Sq_vip_lcd_stop()
 {
-	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
+	SQ_LCD_write(SQ_LCD_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_ENABLE, SQ_LCD_CTRL0);
 }

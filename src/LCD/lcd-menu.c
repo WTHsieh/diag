@@ -299,7 +299,7 @@ struct test_item_container sq_lcd_controller_yuv_container = {
 
 extern int lcd_rgb_mode_test(int autotest);
 extern int lcd_yuv_mode_test(int autotest);
-
+extern int lcd_res_sel_test(int autotest);
 struct test_item sq_lcd_format_items[] = {
 	{"LCD RGB format display", 
 	 lcd_rgb_mode_test,
@@ -309,6 +309,35 @@ struct test_item sq_lcd_format_items[] = {
 	 lcd_yuv_mode_test,
 	 LCD_YUV_MODE_TEST,
 	 LCD_YUV_MODE_TEST},
+	{"Panel res select", 
+	 lcd_res_sel_test,
+	 1,
+	 1},
+};
+
+extern int lcd_set_3_5_inch_test(int autotest);
+extern int lcd_set_7_inch_test(int autotest);
+extern int lcd_set_10_inch_test(int autotest);
+struct test_item sq_lcd_res_items[] = {
+	{"lcd is 3.5 inch", 
+	 lcd_set_3_5_inch_test,
+	 1,
+	 1},
+	{"lcd is 7 inch", 
+	 lcd_set_7_inch_test,
+	 1,
+	 1},
+	{"lcd is 10 inch", 
+	 lcd_set_10_inch_test,
+	 1,
+	 1},
+};
+
+struct test_item_container sq_lcd_res_select_container = {
+	.menu_name = "LCD RES Select Menu",
+	.shell_name = "Panel res select",
+	.items = sq_lcd_res_items,
+	.test_item_size = sizeof(sq_lcd_res_items)
 };
 
 struct test_item_container sq_lcd_controller_format_container = {

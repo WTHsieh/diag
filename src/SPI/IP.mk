@@ -5,7 +5,7 @@ lib_name	:= #??.a
 local_lib	:= #$(lib_dir)/$(lib_name)
 
 # compile source
-local_src	:= spi-master.c eeprom-test.c marvel-wifi-test.c tsc2000-test.c sq-spi-slave-test.c spi-master-menu.c spi-master-ctrl.c spi-slave-ctrl.c spi-slave-menu.c
+local_src	:= spi-master.c eeprom-test.c marvel-wifi-test.c ar7646-test.c tsc2000-test.c sq-spi-slave-test.c spi-master-menu.c spi-master-ctrl.c spi-slave-ctrl.c spi-slave-menu.c
 lib_src		:= 
 
 include build/common.mk

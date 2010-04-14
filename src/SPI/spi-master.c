@@ -126,6 +126,104 @@ sq_spi_transfer(void *tx_buf, void *rx_buf, u32 len)
 	return 0;
 }
 
+
+extern int
+sq_spi_transfer2(u16 *tx_buf, u16 *rx_buf, u32 len)
+{	
+	u32 tx_cnt = 0, rx_cnt = 0,tmp32 = 0;
+
+	sq_spi_isr_tx_buf_idx = 0;
+	sq_spi_isr_rx_buf_idx = 0;
+	sq_spi_isr_total_len = GET_TX_LEN(len);
+
+//	printf("-tbuf=0x%x-",*tx_buf);	
+	current_mode = MODE_CHAR_LEN_16;
+
+	if (tx_buf != NULL)
+		tx_cnt = GET_TX_LEN(len);
+	if (rx_buf != NULL)
+		rx_cnt = GET_RX_LEN(len);
+
+	*tx_buf = *tx_buf << 1;
+	sq_spi_isr_tx_buf = tx_buf;
+	sq_spi_isr_rx_buf = rx_buf;
+
+	/* Reset the flags */
+	sq_spi_tx_complete_flag = 0;
+	sq_spi_rx_complete_flag = 0;
+//	DEBUG("-Check if SPI controller is running\n");
+	/* Check if SPI controller is running */
+	while (SQ_SPI_TXRX_RUN == (sq_spi_read(SQ_SPI_FWCR) & SQ_SPI_TXRX_RUN))
+		/* NOP */;
+
+	/* Set transfer & receive data count */
+	//printf("-Set transfer & receive data count\n");	
+	sq_spi_write(tx_cnt, SQ_SPI_TXCR);
+	sq_spi_write(rx_cnt, SQ_SPI_RXCR);
+//	printf("-tx_cnt=0x%x rx_cnt=0x%x\n",tx_cnt,rx_cnt);
+	
+	sq_spi_write( SQ_SPI_CHAR_LEN_16 | (sq_spi_read(SQ_SPI_SSCR) & 0x87ff) ,SQ_SPI_SSCR);	
+	
+	if (tx_cnt > 0) {
+		while (SQ_SPI_TXFIFO_FULL != (sq_spi_read(SQ_SPI_FCR) & SQ_SPI_TXFIFO_FULL)) {
+		  //bit 9
+		  
+
+			if (MODE_CHAR_LEN_8 == current_mode) {
+				tmp32 = ((u8 *)sq_spi_isr_tx_buf)[sq_spi_isr_tx_buf_idx++]; 
+			} else if (MODE_CHAR_LEN_16 == current_mode) {
+				tmp32 = ((u16 *)sq_spi_isr_tx_buf)[sq_spi_isr_tx_buf_idx++];
+			}
+			sq_spi_write(tmp32, SQ_SPI_TXR);
+			//printf("-TX=0x%x - ",tmp32);
+						
+			if (sq_spi_isr_tx_buf_idx == sq_spi_isr_total_len) {
+				sq_spi_tx_complete_flag = 1;
+				break;
+			}
+			
+		}
+	}
+		
+	
+	if((sq_spi_tx_complete_flag != 1) && (tx_cnt > 0)) {
+		sq_spi_write(sq_spi_read(SQ_SPI_IER) | SQ_SPI_IER_TXFIFO_INT_EN, SQ_SPI_IER);
+	}
+	/* Start SPI transfer */
+//	DEBUG("-Start SPI transfer\n");	
+	sq_spi_write(
+			sq_spi_read(SQ_SPI_FWCR) |
+			SQ_SPI_EN |
+			SQ_SPI_TXRX_RUN,
+			SQ_SPI_FWCR);
+			
+	sq_spi_write( SQ_SPI_CHAR_LEN_16 | (sq_spi_read(SQ_SPI_SSCR) & 0x87ff) ,SQ_SPI_SSCR);
+	/* Wait for transfer to be complete */
+	//printf("-Wait for transfer to be complete\n");		
+	if (rx_cnt > 0) {
+		if (sq_wait_for_int(&sq_spi_rx_complete_flag, 30)) {
+			printf("Timeout\n");
+			return -1;
+		}
+	} 
+	else {
+		if (sq_wait_for_int(&sq_spi_tx_complete_flag, 30)) {
+			printf("Timeout\n");
+			return -1;
+		}
+	}
+	while (SQ_SPI_TXRX_RUN == (sq_spi_read(SQ_SPI_FWCR) & SQ_SPI_TXRX_RUN))
+		/* NOP */;
+		
+	*rx_buf = *rx_buf >> 4;
+//	printf("-RX=%12b ",*rx_buf);	
+//	printf("-RX=0x%x\n",*rx_buf);	
+	
+	return 0;
+}
+
+
+
 static u32
 sq_spi_power(u32 base, u32 exp)
 {
