@@ -115,15 +115,15 @@
 #define USE_I2S(...)  __VA_ARGS__
 #define SKIP_I2S(...)
 
-#define CONFIG_MS6335 1
-#define ENABLE_MS6335 1
-#define USE_MS6335(...)  __VA_ARGS__
-#define SKIP_MS6335(...)
+#undef CONFIG_MS6335
+#define ENABLE_MS6335 0
+#define USE_MS6335(...)
+#define SKIP_MS6335(...)  __VA_ARGS__
 
-#undef CONFIG_UDA1342TS
-#define ENABLE_UDA1342TS 0
-#define USE_UDA1342TS(...)
-#define SKIP_UDA1342TS(...)  __VA_ARGS__
+#define CONFIG_UDA1342TS 1
+#define ENABLE_UDA1342TS 1
+#define USE_UDA1342TS(...)  __VA_ARGS__
+#define SKIP_UDA1342TS(...)
 
 #define CONFIG_I2C 1
 #define ENABLE_I2C 1
