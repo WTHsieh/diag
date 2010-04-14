@@ -42,7 +42,7 @@ LDFLAGS		= -L$(dir $(shell $(CC) -print-libgcc-file-name)) -lgcc
 # ---------------------------------------------------------------------------
 
 
-include .config
+include sq8000.config
 sinclude .config.cmd
 include build/platform.in
 include build/CPU.in
@@ -149,8 +149,8 @@ help:
 # ---------------------------------------------------------------------------
 scripts/config/mconf: scripts/config/Makefile
 	@$(MAKE) -s -C scripts/config ncurses conf mconf
-	-@if [ ! -f .config ] ; then \
-		touch .config; \
+	-@if [ ! -f sq8000.config ] ; then \
+		touch sq8000.config; \
 	fi
 
 menuconfig: scripts/config/mconf
