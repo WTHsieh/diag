@@ -44,7 +44,10 @@ TAGS
 !.release
 !.revision
 !.config 
+<<<<<<< HEAD:.gitignore
 
+=======
+>>>>>>> diag_040901:.gitignore
 # stgit generated dirs
 patches-*
 
