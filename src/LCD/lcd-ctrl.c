@@ -57,7 +57,7 @@ struct sq_lcd{
 
 
 struct sq_lcd sq_lcd_set = {
-	.htiming = 0x14242140,
+	.htiming = 0x14C42140,
 	.vtiming = 0x040f04f0,
 #if defined (CONFIG_PC7210)
 	.pixelclock = 0xa,
@@ -1884,7 +1884,7 @@ int SQ_LCD_Testing (int autotest)
 	int ret = 0;
 
 #ifdef CONFIG_SQ8000
-	sq_scu_dev_enable(SQ_DEVCON_PWM0);  // PWM Setting for ?
+	sq_scu_dev_enable(SQ_DEVCON_PWM0);  // PWM Setting for LED Backlight 
 	sq_scu_dev_enable(SQ_DEVCON_LCDC);
 #endif
 
