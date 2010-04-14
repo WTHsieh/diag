@@ -10,7 +10,7 @@
 # Normal rules
 #
 .*
-*.o
+#*.o
 *.o.*
 *.a
 *.ko
