@@ -41,7 +41,9 @@
 #define COLOR_BAR_BASE1		(SQ_MM_DDR_SDR_BANK1 + 0x300000)
 #define LCD_LUT_BASE			(SQ_MM_DDR_SDR_BANK1 + 0x400000)
 
-#define DEFAULT_BAR_HEIGHT	(DEFAULT_HEIGHT/8)
+#define DEFAULT_BAR_HEIGHT	(sq_lcd_set.h/8)
+#define COLOR_BAR_NUM		8
+
 
 struct sq_lcd{
 	u32 htiming;		// Horizontal timing
@@ -54,6 +56,8 @@ struct sq_lcd{
 	u32 swap;
 	u32 yuv_format;	//mode 0; yuv420, mode 1 yuv 422
 	u32 inch;		// 0:3.5 inch 1:7 inch 2:10 inch
+	u32 w;
+	u32 h;
 };
 
 
@@ -73,6 +77,8 @@ struct sq_lcd sq_lcd_set = {
 	.swap = 0,
 	.yuv_format = 0,
 	.inch = 1,
+	.w = 800,
+	.h = 480,
 };
 
 
@@ -81,13 +87,17 @@ struct lcd_timming{
 	u32 ht;
 	u32 vt;
 	u32 pixelclk;
+	u32 w;
+	u32 h;
 };
 
 struct lcd_timming lcd_res_timming_tbl[]={
 {
 (0x14 << 24) | (0x24 << 16) | (1 << 10) | 320,
 (0x04 << 24) | (0x0f << 16) | (2 << 10) | 240,
-4
+4,
+320,
+240
 },
 
 {
@@ -95,13 +105,17 @@ struct lcd_timming lcd_res_timming_tbl[]={
 (8 << 24)  | (18 << 16) | (1 << 10)  | 480,
 //(230 << 24) | (0 << 16) | (256/4 << 10) | 800,
 //(16 << 24)  | (1 << 16) | (44/4 << 10)  | 480,
-3
+3,
+800,
+480
 },
 
 {
 (230 << 24) | (0 << 16) | (256/4 << 10) | 1024,
 (16 << 24)  | (1 << 16) | (44/4 << 10)  | 768,
-2
+2,
+1024,
+768
 },
 };
 
@@ -109,7 +123,7 @@ struct lcd_timming lcd_res_timming_tbl[]={
 
 
 
-const u32 BPP24_RGB[8]=
+const u32 BPP24_RGB[COLOR_BAR_NUM]=
 {
 		COLOR_BALCK,
 		COLOR_RED, 
@@ -121,7 +135,7 @@ const u32 BPP24_RGB[8]=
 		COLOR_WHITE,  
 };
 
-const u16 BPP16_RGB_R[8] =
+const u16 BPP16_RGB_R[COLOR_BAR_NUM] =
 {
 		COLOR_BALCK_16BPP_R,
 		COLOR_RED_16BPP_R,
@@ -133,7 +147,7 @@ const u16 BPP16_RGB_R[8] =
 		COLOR_WHITE_16BPP_R
 };
 
-const u16 BPP16_RGB_G[8] =
+const u16 BPP16_RGB_G[COLOR_BAR_NUM] =
 {
 		COLOR_BALCK_16BPP_G,
 		COLOR_RED_16BPP_G,
@@ -145,7 +159,7 @@ const u16 BPP16_RGB_G[8] =
 		COLOR_WHITE_16BPP_G
 };
 
-const u16 BPP16_RGB_B[8] =
+const u16 BPP16_RGB_B[COLOR_BAR_NUM] =
 {
 		COLOR_BALCK_16BPP_B,
 		COLOR_RED_16BPP_B,
@@ -158,7 +172,7 @@ const u16 BPP16_RGB_B[8] =
 };
 
 
-const u16 BPP16_LUM_0[8] =
+const u16 BPP16_LUM_0[COLOR_BAR_NUM] =
 {
 		COLOR_BALCK_LUM_0,
 		COLOR_RED_LUM_0,
@@ -170,7 +184,7 @@ const u16 BPP16_LUM_0[8] =
 		COLOR_WHITE_LUM_0
 };
 
-const u16 BPP16_LUM_R[8] =
+const u16 BPP16_LUM_R[COLOR_BAR_NUM] =
 {
 		COLOR_BALCK_LUM_R,
 		COLOR_RED_LUM_R,
@@ -182,7 +196,7 @@ const u16 BPP16_LUM_R[8] =
 		COLOR_WHITE_LUM_R
 };
 
-const u16 BPP16_LUM_G[8] =
+const u16 BPP16_LUM_G[COLOR_BAR_NUM] =
 {
 		COLOR_BALCK_LUM_G,
 		COLOR_RED_LUM_G,
@@ -194,7 +208,7 @@ const u16 BPP16_LUM_G[8] =
 		COLOR_WHITE_LUM_G
 };
 
-const u16 BPP16_LUM_B[8] =
+const u16 BPP16_LUM_B[COLOR_BAR_NUM] =
 {
 		COLOR_BALCK_LUM_B,
 		COLOR_RED_LUM_B,
@@ -206,7 +220,7 @@ const u16 BPP16_LUM_B[8] =
 		COLOR_WHITE_LUM_B
 };
 
-const u16 BPP16_LUM_RGB[8] =
+const u16 BPP16_LUM_RGB[COLOR_BAR_NUM] =
 {
 		COLOR_BALCK_LUM_RGB,
 		COLOR_RED_LUM_RGB,
@@ -389,8 +403,8 @@ int rgb2yuv_convert(int rgb_format, struct yuv_format *yuv_color)
 
 int YUV_ColorFS_Bottom_fill(struct yuv_format *yuv_color, u32 color_base)
 {
-	unsigned int height = DEFAULT_HEIGHT;
-	unsigned int width = DEFAULT_WIDTH;
+	unsigned int height = sq_lcd_set.h;
+	unsigned int width = sq_lcd_set.w;
 
 	int i, j;
 
@@ -420,8 +434,8 @@ int YUV_ColorFS_Bottom_fill(struct yuv_format *yuv_color, u32 color_base)
 
 				*y = yuv_color->Y; //Y1
 				*(y+1) = yuv_color->Y; //Y2
-				*(y+320) = yuv_color->Y; //Y3
-				*(y+321) = yuv_color->Y; //Y4
+				*(y+sq_lcd_set.w) = yuv_color->Y; //Y3
+				*(y+sq_lcd_set.w+1) = yuv_color->Y; //Y4
 
 				y+=2;
 				//U
@@ -432,7 +446,7 @@ int YUV_ColorFS_Bottom_fill(struct yuv_format *yuv_color, u32 color_base)
 				v++;
 				
 			}
-			y+=320;
+			y+=sq_lcd_set.w;
 		}
 		
 	}		//422
@@ -464,8 +478,8 @@ int YUV_ColorFS_Bottom_fill(struct yuv_format *yuv_color, u32 color_base)
 
 int YUV_ColorFS_fill(struct yuv_format *yuv_color, u32 color_base)
 {
-	unsigned int height = DEFAULT_HEIGHT;
-	unsigned int width = DEFAULT_WIDTH;
+	unsigned int height = sq_lcd_set.h;
+	unsigned int width = sq_lcd_set.w;
 
 	int i, j;
 
@@ -618,8 +632,8 @@ int YUV_Color_Bar_V_Fill(u32 color_base)
 {
 	struct yuv_format yuv_color;
 	
-	unsigned int height = DEFAULT_HEIGHT;
-	unsigned int width = DEFAULT_WIDTH;
+	unsigned int height = sq_lcd_set.h;
+	unsigned int width = sq_lcd_set.w;
 
 	int i;
 	int j;
@@ -641,14 +655,14 @@ int YUV_Color_Bar_V_Fill(u32 color_base)
 			//Y1,Y2,Y3,Y4
 			for (i = 0; i < height/2; i++)
 			{
-				rgb2yuv_convert(BPP24_RGB[i/15], &yuv_color);			
+				rgb2yuv_convert(BPP24_RGB[i/(height/2/COLOR_BAR_NUM)], &yuv_color);			
 				for (j = 0; j < width/2; j++)
 				{
 
 					*y = yuv_color.Y; //Y1
 					*(y+1) = yuv_color.Y; //Y2
-					*(y+320) = yuv_color.Y; //Y3
-					*(y+321) = yuv_color.Y; //Y4
+					*(y+width) = yuv_color.Y; //Y3
+					*(y+width+1) = yuv_color.Y; //Y4
 
 					y+=2;
 					//U
@@ -659,7 +673,7 @@ int YUV_Color_Bar_V_Fill(u32 color_base)
 					v++;
 					
 				}
-				y+=320;
+				y+=width;
 				
  				
 			}
@@ -671,7 +685,7 @@ int YUV_Color_Bar_V_Fill(u32 color_base)
 			//Y1,Y2,Y3,Y4
 			for (i = 0; i < height; i++)
 			{
-				rgb2yuv_convert(BPP24_RGB[i/30], &yuv_color);			
+				rgb2yuv_convert(BPP24_RGB[i/(height/COLOR_BAR_NUM)], &yuv_color);			
 				for (j = 0; j < width/2; j++)
 				{
 
@@ -701,8 +715,8 @@ int YUV_Color_Bar_H_Fill(u32 color_base)
 {
 	struct yuv_format yuv_color;
 	
-	unsigned int height = DEFAULT_HEIGHT;
-	unsigned int width = DEFAULT_WIDTH;
+	unsigned int height = sq_lcd_set.h;
+	unsigned int width = sq_lcd_set.w;
 
 	int i;
 	int j;
@@ -723,16 +737,16 @@ int YUV_Color_Bar_H_Fill(u32 color_base)
 		for (i = 0; i < height/2; i++)
 		{
 			
-			for (l = 0; l < 8; l++)
+			for (l = 0; l < COLOR_BAR_NUM; l++)
 			{
 				rgb2yuv_convert(BPP24_RGB[l], &yuv_color);			
-				for (j = 0; j < 40/2; j++)
+				for (j = 0; j < width/COLOR_BAR_NUM/2; j++)
 				{
 
 					*y = yuv_color.Y; //Y1
 					*(y+1) = yuv_color.Y; //Y2
-					*(y+320) = yuv_color.Y; //Y3
-					*(y+321) = yuv_color.Y; //Y4
+					*(y+width) = yuv_color.Y; //Y3
+					*(y+width+1) = yuv_color.Y; //Y4
 
 					y+=2;
 					//U
@@ -745,7 +759,7 @@ int YUV_Color_Bar_H_Fill(u32 color_base)
 				}
 			}
 			
-			y+=320;
+			y+=width;
 			
 				
 		}
@@ -757,10 +771,10 @@ int YUV_Color_Bar_H_Fill(u32 color_base)
 		//Y1,Y2,Y3,Y4
 		for (i = 0; i < height; i++)
 		{
-			for (l = 0; l < 8; l++)
+			for (l = 0; l < COLOR_BAR_NUM; l++)
 			{
 				rgb2yuv_convert(BPP24_RGB[l], &yuv_color);			
-				for (j = 0; j < 40/2; j++)
+				for (j = 0; j < width/COLOR_BAR_NUM/2; j++)
 				{
 
 					*y = yuv_color.Y; //Y1
@@ -794,15 +808,15 @@ int YUV420_Grid_Fill(int height, int color_offset, struct yuv_format *yuv_base)
 	
 	for (i = 0; i < height/2; i++)
 	{
-			for (l = 0; l < 8; l++)
+			for (l = 0; l < COLOR_BAR_NUM; l++)
 			{
 				rgb2yuv_convert(BPP24_RGB[l], &yuv_color);			
-				for (j = 0; j < 40/2; j++)
+				for (j = 0; j < width/COLOR_BAR_NUM/2; j++)
 				{
 					*(yuv_base->Y) = yuv_color.Y; //Y1
 					*(yuv_base->Y+1) = yuv_color.Y; //Y2
-					*(yuv_base->Y+320) = yuv_color.Y; //Y3
-					*(yuv_base->Y+321) = yuv_color.Y; //Y4
+					*(yuv_base->Y+width) = yuv_color.Y; //Y3
+					*(yuv_base->Y+width+1) = yuv_color.Y; //Y4
 
 					yuv_base->Y+=2;
 					//U
@@ -814,7 +828,7 @@ int YUV420_Grid_Fill(int height, int color_offset, struct yuv_format *yuv_base)
 					
 				}
 			}
-			yuv_base->Y+=320;
+			yuv_base->Y+=width;
 	}
 #endif
 	return 0;
@@ -824,8 +838,8 @@ int YUV_Color_Grid_Fill(u32 color_base)
 {
 	struct yuv_format yuv_color;
 	
-	unsigned int height = DEFAULT_HEIGHT;
-	unsigned int width = DEFAULT_WIDTH;
+	unsigned int height = sq_lcd_set.h;
+	unsigned int width = sq_lcd_set.w;
 
 	int i;
 	int j;
@@ -852,18 +866,18 @@ int YUV_Color_Grid_Fill(u32 color_base)
 		LCD_DBG("YUV420 \n");
 		for (m = 0;m<8;m++)
 		{
-			for (i = 0; i < height/2/8; i++)
+			for (i = 0; i < height/2/COLOR_BAR_NUM; i++)
 			{
-					for (l = 0; l < 8; l++)
+					for (l = 0; l < COLOR_BAR_NUM; l++)
 					{
 						rgb2yuv_convert(tmprgb1[l], &yuv_color);			
-						for (j = 0; j < 40/2; j++)
+						for (j = 0; j < width/COLOR_BAR_NUM/2; j++)
 						{
 
 							*y = yuv_color.Y; //Y1
 							*(y+1) = yuv_color.Y; //Y2
-							*(y+320) = yuv_color.Y; //Y3
-							*(y+321) = yuv_color.Y; //Y4
+							*(y+width) = yuv_color.Y; //Y3
+							*(y+width+1) = yuv_color.Y; //Y4
 
 							y+=2;
 							//U
@@ -875,13 +889,13 @@ int YUV_Color_Grid_Fill(u32 color_base)
 							
 						}
 					}
-					y+=320;
+					y+=width;
 			}
 			//shit color
-			for(j=0;j<8;j++) 
+			for(j=0;j<COLOR_BAR_NUM;j++) 
 				tmprgb2[j+1] = tmprgb1[j];
-			tmprgb2[0] = tmprgb2[8];
-			for(j=0;j<8;j++) 
+			tmprgb2[0] = tmprgb2[COLOR_BAR_NUM];
+			for(j=0;j<COLOR_BAR_NUM;j++) 
 				tmprgb1[j] = tmprgb2[j];
 			
 		}
@@ -891,14 +905,14 @@ int YUV_Color_Grid_Fill(u32 color_base)
 	else
 	{
 		LCD_DBG("YUV422 \n");
-		for (m = 0;m<8;m++)
+		for (m = 0;m<COLOR_BAR_NUM;m++)
 		{
-			for (i = 0; i < height/8; i++)
+			for (i = 0; i < height/COLOR_BAR_NUM; i++)
 			{
-					for (l = 0; l < 8; l++)
+					for (l = 0; l < COLOR_BAR_NUM; l++)
 					{
 						rgb2yuv_convert(tmprgb1[l], &yuv_color);			
-						for (j = 0; j < 40/2; j++)
+						for (j = 0; j < width/COLOR_BAR_NUM/2; j++)
 						{
 
 							*y = yuv_color.Y; //Y1
@@ -916,10 +930,10 @@ int YUV_Color_Grid_Fill(u32 color_base)
 					}
 			}
 			//shit color
-			for(j=0;j<8;j++) 
+			for(j=0;j<COLOR_BAR_NUM;j++) 
 				tmprgb2[j+1] = tmprgb1[j];
-			tmprgb2[0] = tmprgb2[8];
-			for(j=0;j<8;j++) 
+			tmprgb2[0] = tmprgb2[COLOR_BAR_NUM];
+			for(j=0;j<COLOR_BAR_NUM;j++) 
 				tmprgb1[j] = tmprgb2[j];
 			
 		}
@@ -1056,8 +1070,8 @@ int color_fill_white(int autotest)
 
 int Sq_LUT_Fill(int index , u32 color_base)
 {
-  unsigned int height = DEFAULT_HEIGHT;
-  unsigned int width = DEFAULT_WIDTH;
+  unsigned int height = sq_lcd_set.h;
+  unsigned int width = sq_lcd_set.w;
   int i, j;
   
   u8 *p = (u8 *) color_base;
@@ -1073,8 +1087,8 @@ int Sq_LUT_Fill(int index , u32 color_base)
 
 int Sq_Color_16BPP_FSFill (int color , u32 color_base)
 {
-  unsigned int height = DEFAULT_HEIGHT;
-  unsigned int width = DEFAULT_WIDTH;
+  unsigned int height = sq_lcd_set.h;
+  unsigned int width = sq_lcd_set.w;
   int i, j;
   
   u16 *p = (u16 *) color_base;
@@ -1089,8 +1103,8 @@ int Sq_Color_16BPP_FSFill (int color , u32 color_base)
 
 int Sq_ColorFSFill (u32 color , u32 color_base)
 {
-  unsigned int height = DEFAULT_HEIGHT;
-  unsigned int width = DEFAULT_WIDTH;
+  unsigned int height = sq_lcd_set.h;
+  unsigned int width = sq_lcd_set.w;
   int i, j;
   
   unsigned int *p = (unsigned int *) color_base;
@@ -1106,8 +1120,8 @@ int Sq_ColorFSFill (u32 color , u32 color_base)
 
 int Sq_CLCD_ColorBar (void)
 {
-	unsigned int height = DEFAULT_HEIGHT;
-	unsigned int width = DEFAULT_WIDTH;
+	unsigned int height = sq_lcd_set.h;
+	unsigned int width = sq_lcd_set.w;
 	unsigned int bar_height = DEFAULT_BAR_HEIGHT;
 	int i, j, color;
 	unsigned int *p = (unsigned int *) COLOR_BAR_BASE0;
@@ -1150,8 +1164,8 @@ int Sq_CLCD_ColorBar (void)
 
 int Sq_16BPP_ColorBar (void)
 {
-	unsigned int height = DEFAULT_HEIGHT;
-	unsigned int width = DEFAULT_WIDTH;
+	unsigned int height = sq_lcd_set.h;
+	unsigned int width = sq_lcd_set.w;
 	unsigned int bar_height = DEFAULT_BAR_HEIGHT;
 	int i, j, color;
 	u16 *p = (u16 *) COLOR_BAR_BASE0;
@@ -1704,13 +1718,13 @@ int bpp16_lumrgb_test(int autotest)
 		return ret;
 }
 
-struct test_item_container SQ_LCD_16bpp_lum_test_container;
+struct test_item_container sq_lcd_16bpp_lum_test_container;
 int bpp16_lum_test(int autotest)
 {
 	int ret = 0;
 	sq_lcd_set.bpp16mode = 0;
 	sq_lcd_write((sq_lcd_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_COLOUR)) , SQ_LCD_CTRL0);	
-	ret = test_item_ctrl(&SQ_LCD_16bpp_lum_test_container, autotest);
+	ret = test_item_ctrl(&sq_lcd_16bpp_lum_test_container, autotest);
 		return ret;
 }
 
@@ -1762,7 +1776,7 @@ int tft_lut_test(int autotest)
 	return ret;
 }
 
-struct test_item_container SQ_LCD_controller_16bpp_test_container;
+struct test_item_container sq_lcd_controller_16bpp_test_container;
 
 int tft_16bpp_test(int autotest)
 {
@@ -1771,7 +1785,7 @@ int tft_16bpp_test(int autotest)
 	sq_lcd_set.bpp = 0;
 	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0) & ~SQ_LCD_CTRL0_24BPP  ,SQ_LCD_CTRL0);
 
-	ret = test_item_ctrl(&SQ_LCD_controller_16bpp_test_container, autotest);
+	ret = test_item_ctrl(&sq_lcd_controller_16bpp_test_container, autotest);
 
 	sq_lcd_write(sq_lcd_read(SQ_LCD_CTRL0) & (~SQ_LCD_CTRL0_LUMCONFIG) & (~SQ_LCD_CTRL0_COLOUR) ,SQ_LCD_CTRL0);	
 	return ret;
@@ -1803,8 +1817,8 @@ int lcd_rgb_mode_test(int autotest)
 int yuv_single_frame_test(int autotest)
 {
 	int ret;
-	unsigned int height = DEFAULT_HEIGHT;
-	unsigned int width = DEFAULT_WIDTH;
+	unsigned int height = sq_lcd_set.h;
+	unsigned int width = sq_lcd_set.w;
 	
 	//Disable PAGE SWAP
 	sq_lcd_set.swap = 0;	
@@ -1836,8 +1850,8 @@ int yuv_single_frame_test(int autotest)
 int yuv_double_frame_test(int autotest)
 {
 	int ret;
-	unsigned int height = DEFAULT_HEIGHT;
-	unsigned int width = DEFAULT_WIDTH;
+	unsigned int height = sq_lcd_set.h;
+	unsigned int width = sq_lcd_set.w;
 	
 	//Enable PAGE SWAP
 	sq_lcd_set.swap = 1;	
@@ -1927,34 +1941,33 @@ void lcd_set_timming(void)
 
 }
 
+static 
+void lcd_set_inch_test(int sel)
+{
+	sq_lcd_set.htiming = lcd_res_timming_tbl[sel].ht;
+	sq_lcd_set.vtiming = lcd_res_timming_tbl[sel].vt;
+	sq_lcd_set.pixelclock = lcd_res_timming_tbl[sel].pixelclk;
+	sq_lcd_set.w = lcd_res_timming_tbl[sel].w;
+	sq_lcd_set.h = lcd_res_timming_tbl[sel].h;
+
+	lcd_set_timming();
+
+}
 
 void lcd_set_3_5_inch_test(int autotest)
 {
-	sq_lcd_set.htiming = lcd_res_timming_tbl[0].ht;
-	sq_lcd_set.vtiming = lcd_res_timming_tbl[0].vt;
-	sq_lcd_set.pixelclock = lcd_res_timming_tbl[0].pixelclk;
-
-
-	lcd_set_timming();
+	lcd_set_inch_test(0);
 
 }
 
 void lcd_set_7_inch_test(int autotest)
 {
-	sq_lcd_set.htiming = lcd_res_timming_tbl[1].ht;
-	sq_lcd_set.vtiming = lcd_res_timming_tbl[1].vt;
-	sq_lcd_set.pixelclock = lcd_res_timming_tbl[1].pixelclk;
-
-	lcd_set_timming();
+	lcd_set_inch_test(1);
 }
 
 void lcd_set_10_inch_test(int autotest)
 {
-	sq_lcd_set.htiming = lcd_res_timming_tbl[2].ht;
-	sq_lcd_set.vtiming = lcd_res_timming_tbl[2].vt;
-	sq_lcd_set.pixelclock = lcd_res_timming_tbl[2].pixelclk;
-
-	lcd_set_timming();
+	lcd_set_inch_test(2);
 }
 
 struct test_item_container sq_lcd_res_select_container;
