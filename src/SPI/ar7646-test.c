@@ -26,10 +26,11 @@
 #define	MAX_12BIT		((1<<12)-1)
 
 /* leave ADC powered up (disables penirq) between differential samples */
+/*
 //#define	READ_12BIT_VDD(x, adc, vref) (AR_START | AR_A2A1A0_d_ ## x \
 //	| AR_12_BIT | AR_VDD | \
 //	(adc ? AR_PD10_ADC_ON : 0) | (vref ? AR_PD10_REF_ON : 0))
-
+*/
 #define	READ_8BIT_VDD(x, adc, vref) (AR_START | AR_A2A1A0_d_ ## x \
 	| AR_8_BIT | AR_VDD | \
 	(adc ? AR_PD10_ADC_ON : 0) | (vref ? AR_PD10_REF_ON : 0))
@@ -204,7 +205,7 @@ sq_spi_ar7646_cmd1(u16 *x, u16 *y, u16 *z1, u16 *z2)
 
 extern int
 sq_spi_transfer2(void *tx_buf, void *rx_buf, u32 len);
-
+/*
 static int
 sq_spi_ar7646_cmd2(u16 *x, u16 *y)
 {
@@ -272,7 +273,7 @@ sq_spi_ar7646_cmd2(u16 *x, u16 *y)
 	
 	return 0;
 }
-
+*/
 
 static int
 sq_spi_ar7646_all_cmd(void)
@@ -361,6 +362,7 @@ ar7646_isr (void *pparam)
 
 }
 
+void
 set_spi_char_len(len){
 	sq_spi_write((sq_spi_read(SQ_SPI_SSCR) & ~0x7800) | 
 			len ,
@@ -373,8 +375,8 @@ sq_spi_ar7646_touch(int autotest)
 {
 	u8 divisor;
 	u16 rx_buf[1] = {0};
-	u32 i;
-	u16 x,y,z1,z2;	
+//	u32 i;
+//	u16 x,y,z1,z2;	
 	touch_count=0;
 	touch_flag=0;
 

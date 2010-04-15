@@ -55,6 +55,7 @@ extern int sq_spi_internal_test(int autotest);
 extern int sq_spi_eeprom(int autotest);
 extern int sq_spi_marvel_wifi(int autotest);
 extern int sq_spi_tsc2000_touch(int autotest);
+extern int sq_spi_ar7646_touch(int autotest);
 extern int sq_spi_sq_slave_test(int autotest);
 
 
@@ -80,9 +81,15 @@ struct test_item sq_spi_transfer_test_items[] = {
 	{
 		"With TCS2000 Touch Screen Test",
 		 sq_spi_tsc2000_touch,
-	 	0,
+	 	1,//0
 	 	1
 	},
+	{//channign
+		"With ar7646 Touch Screen Test",
+		 sq_spi_ar7646_touch,
+	 	1,//0
+	 	1		
+	},	
 	{
 		"With Sq Slave Test",
 		sq_spi_sq_slave_test,

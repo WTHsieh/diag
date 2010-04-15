@@ -63,6 +63,7 @@ extern int sq_spi_master0_test(int autotest)
 		sq_spi_transfer_test_items[1].enable = SQ_SPI_EEPROM_0_TEST;
 		sq_spi_transfer_test_items[2].enable = SQ_SPI_MARVEL_WIFI_0_TEST;
 		sq_spi_transfer_test_items[3].enable = SQ_SPI_TSC2000_0_TEST;
+ 	    sq_spi_transfer_test_items[4].enable = SQ_SPI_AR7646_0_TEST;	
 	}	
 	sq_spi_base = SQ_APB0_SPI0;
 #ifdef CONFIG_SQ8000
@@ -88,6 +89,7 @@ extern int sq_spi_master1_test(int autotest)
 		sq_spi_transfer_test_items[1].enable = SQ_SPI_EEPROM_1_TEST;
 		sq_spi_transfer_test_items[2].enable = SQ_SPI_MARVEL_WIFI_1_TEST;
 		sq_spi_transfer_test_items[3].enable = SQ_SPI_TSC2000_1_TEST;
+		sq_spi_transfer_test_items[4].enable = SQ_SPI_AR7646_1_TEST;
 	}
 	sq_spi_base = SQ_APB0_SPI1;
 #ifdef CONFIG_SQ8000
